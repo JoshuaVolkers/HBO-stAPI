@@ -1,0 +1,12 @@
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.deps.json
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.runtimeconfig.json
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.runtimeconfig.dev.json
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.dll
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.csproj.CoreCompileInputs.cache
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.AssemblyInfoInputs.cache
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.AssemblyInfo.cs
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.xml
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\bin\Debug\netcoreapp2.0\PoohAPI.pdb
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.dll
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.pdb
+C:\Users\joshu\source\repos\PoohAPI\PoohAPI\obj\Debug\netcoreapp2.0\PoohAPI.csprojResolveAssemblyReference.cache
