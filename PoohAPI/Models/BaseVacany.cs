@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PoohAPI.Models
 {
     //Class that contains basic information about a vacature.
-    public class BaseVacature
+    public class BaseVacancy
     {
         [Required]
         public int Id { get; set; } 
