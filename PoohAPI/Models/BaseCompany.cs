@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
-    // Class with basic company information
+    /// <summary>
+    /// Class with basic company information
+    /// </summary>
     public class BaseCompany
     {
         [Required]

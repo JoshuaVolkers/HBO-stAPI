@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
+    /// <summary>
+    /// Contains detailed information about vacancies, inherits BaseVacancy class.
+    /// </summary>
     public class Vacancy : BaseVacancy
     {
         public string CompanyWebsite { get; set; }
