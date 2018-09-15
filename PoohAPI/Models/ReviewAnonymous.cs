@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
+    /// <summary>
+    /// Class with review about a company without user id so the reviewer is anonymous
+    /// </summary>
     public class ReviewAnonymous
     {
         [Required]
