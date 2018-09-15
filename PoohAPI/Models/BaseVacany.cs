@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
-    //Class that contains basic information about a vacature.
+    /// <summary>
+    /// Class that contains basic information about a vacancy.
+    /// </summary>
     public class BaseVacancy
     {
         [Required]
@@ -20,6 +22,7 @@ namespace PoohAPI.Models
         public string Location { get; set; }
         [Required]
         public string Description { get; set; }
+        //Should be replaced with a Company object.
         public string Company { get; set; }
     }
 }

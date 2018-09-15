@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
+    /// <summary>
+    /// Class that contains information about a tag
+    /// </summary>
     public class Tag
     {
-        // Class that contains information about a tag
         [Required]
         public string Id { get; set; }
         [Required]

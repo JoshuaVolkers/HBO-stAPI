@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Models
 {
-    // Class with all information of the company
+    /// <summary>
+    /// Class with all information of the company, inherits BaseCompany class.
+    /// </summary>
     public class Company : BaseCompany
     {
         public string Description { get; set; }
