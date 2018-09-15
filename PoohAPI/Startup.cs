@@ -46,7 +46,9 @@ namespace PoohAPI
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                s.IncludeXmlComments(xmlPath);           
+                s.IncludeXmlComments(xmlPath);
+
+                s.DescribeAllEnumsAsStrings();
             });
         }
 
