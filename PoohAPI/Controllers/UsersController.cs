@@ -29,6 +29,22 @@ namespace PoohAPI.Controllers
         }
 
         /// <summary>
+        /// Starts the register process
+        /// </summary>
+        /// <param name="registerRequest">The registerRequest model</param>
+        /// <returns>The registered user</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incomplete personal information</response>  
+        [HttpPost]
+        [Route("register")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(401)]
+        public IActionResult Register([FromBody]RegisterRequest registerRequest)
+        {
+            return Ok();
+        }
+
+        /// <summary>
         /// Get's the userdata for the specified user
         /// </summary>
         /// <param name="id">The id of the user to retrieve</param>
@@ -92,18 +108,19 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Get's the users favorite vacancies.
         /// </summary>
+        /// <param name="id">The id of the user whose favorite vacancies should be retrieved</param>
         /// <returns>A list of vacancies</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user has no favorites</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("vacancies")]
+        [Route("{id}/vacancies")]
         [ProducesResponseType(typeof(IEnumerable<BaseVacancy>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetFavoriteVacancies()
+        public IActionResult GetFavoriteVacancies(int id)
         {
             return Ok(new List<BaseVacancy>());
         }
