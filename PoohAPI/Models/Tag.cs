@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PoohAPI.Models
 {
     /// <summary>
-    /// Class that contains information about a tag
+    /// Class that contains information about a tag. Basically a KeyValuePair replacer.
     /// </summary>
     public class Tag
     {

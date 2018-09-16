@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PoohAPI.Models
 {
     /// <summary>
-    /// Class with review information for a company
+    /// Class with review information for a company.
     /// </summary>
     public class Review
     {
@@ -17,8 +17,13 @@ namespace PoohAPI.Models
         public int CompanyId { get; set; }
         [Required]
         public int UserId { get; set; }
+        [Range(1.0, 5.0)]
         [Required]
         public double Stars { get; set; }
         public string WrittenReview { get; set; }
+        /// <summary>
+        /// This property denotes if a review has been verified by the company/internship coordinator.
+        /// </summary>
+        public bool VerifiedReview { get; set; }
     }
 }

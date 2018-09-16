@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PoohAPI.Models
 {
     /// <summary>
-    /// Class with basic company information
+    /// Class with basic company information.
     /// </summary>
     public class BaseCompany
     {

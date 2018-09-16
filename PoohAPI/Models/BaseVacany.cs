@@ -22,7 +22,7 @@ namespace PoohAPI.Models
         public string Location { get; set; }
         [Required]
         public string Description { get; set; }
-        //Should be replaced with a Company object.
-        public string Company { get; set; }
+        [Required]
+        public Company Company { get; set; }
     }
 }

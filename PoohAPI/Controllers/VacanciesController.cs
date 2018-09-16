@@ -17,6 +17,7 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="maxCount">The max amount of vacancies to return, defaults to 5</param>
         /// <param name="offset">The number of vacancies to skip</param>
+        /// <param name="searchWords">Searchwords to narrow the resultsets, comma seperated list</param>
         /// <param name="distanceInKM">Distance to the company's location, calculated from the location in the user's profile</param>
         /// <param name="education">The name of the education</param>
         /// <param name="educationalAttainment">The level of the education (HBO, WO, Univerity, etc.)</param>
@@ -27,7 +28,7 @@ namespace PoohAPI.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]double distanceInKM = 10.0, 
+        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string searchWords = null, [FromQuery]double distanceInKM = 10.0, 
             [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null)
         {
             return Ok(new List<Vacancy>());
@@ -50,6 +51,22 @@ namespace PoohAPI.Controllers
         }
 
         /// <summary>
+        /// Gets a specific baseVacancy by Id
+        /// </summary>
+        /// <param name="id">The Id of the vacancy to retrieve</param>
+        /// <returns>One specific baseVacancy</returns>
+        /// <response code="200">Returns the requested baseVacancy</response>
+        /// <response code="404">If the specified baseVacancy was not found</response>     
+        [HttpGet]
+        [Route("basic/{id}")]
+        [ProducesResponseType(typeof(BaseVacancy), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetBasicById(int id)
+        {
+            return Ok(new BaseVacancy() { Id = id });
+        }
+
+        /// <summary>
         /// Gets a specific vacancy by Id
         /// </summary>
         /// <param name="id">The Id of the vacancy to retrieve</param>
@@ -59,26 +76,9 @@ namespace PoohAPI.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Vacancy), 200)]
         [ProducesResponseType(404)]
-        public IActionResult Get(int id)
+        public IActionResult GetById(int id)
         {
             return Ok(new Vacancy() { Id = id });
-        }
-
-        /// <summary>
-        /// Adds the specified vacancy to the liked vacancies of the current user.
-        /// </summary>
-        /// <returns>The liked vacancy</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="404">If the specified vacancy was not found</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        [HttpPost]
-        [Route("{id}/like")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        public IActionResult LikeVacature()
-        {
-            return Ok();
         }
     }
 }
