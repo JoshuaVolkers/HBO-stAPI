@@ -36,7 +36,7 @@ namespace PoohAPI
                     {
                         Title = "ELBHO/HBO-stagemarkt API",
                         Version = "V1",
-                        Description = "An API providing endpoints for reading/writing operations on: Vacatures, Bedrijven, Gebruikers",
+                        Description = "An API providing endpoints for reading/writing operations on: vacancies, companies, users",
                         Contact = new Contact
                         {
                             Name = "Joshua Volkers",

@@ -13,5 +13,6 @@ namespace PoohAPI.Models
         public string Description { get; set; }
         public string EmailAddress { get; set; }
         public string Website { get; set; }
+        public IEnumerable<string> SocialLinks { get; set; }
     }
 }
