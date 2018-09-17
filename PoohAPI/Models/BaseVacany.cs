@@ -24,5 +24,7 @@ namespace PoohAPI.Models
         public string Description { get; set; }
         [Required]
         public Company Company { get; set; }
+        [Required]
+        public string Language { get; set; }
     }
 }

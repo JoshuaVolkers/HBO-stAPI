@@ -14,6 +14,10 @@ namespace PoohAPI.Models
         public string ZipCode { get; set; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
+        /// <summary>
+        /// The range property is used to determine the maximum circular range around the Longitude and Latitude properties.
+        /// </summary>
+        public double Range { get; set; }
 
     }
 }

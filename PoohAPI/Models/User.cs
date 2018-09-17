@@ -15,9 +15,14 @@ namespace PoohAPI.Models
         /// </summary>
         public string EducationalAttainment { get; set; }
         public IEnumerable<string> Educations { get; set; }
-        public double MaxDistance { get; set; }
         public Location Location { get; set; }
         public IEnumerable<BaseVacancy> FavoriteVacancies { get; set; }
         public IEnumerable<Review> Reviews { get; set; }
+        public IEnumerable<string> PreferredLanguages { get; set; }
     }
 }
+
+//TODO:
+// Endpoint maken om alle users op te halen, is voor admins.
+// Language filters voor companies en vacancies.
+// Review moet gedelete, aangepast kunnen worden binnen een bepaalde tijd.

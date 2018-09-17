@@ -25,5 +25,16 @@ namespace PoohAPI.Models
         /// This property denotes if a review has been verified by the company/internship coordinator.
         /// </summary>
         public bool VerifiedReview { get; set; }
+        public DateTime CreationDate { get; set; }
+        /// <summary>
+        /// Denotes whether or not the review has been Locked. Locked reviews can no longer be deleted or edited throught the API.
+        /// </summary>
+        public bool Locked
+        {
+            get
+            {
+                return CreationDate.AddHours(72) < DateTime.Now ? true : false;
+            }
+        }
     }
 }

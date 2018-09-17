@@ -21,5 +21,6 @@ namespace PoohAPI.Models
         public List<Tag> Tags { get; set; }
         public int LogoPath { get; set; }
         public double AverageReviewStars { get; set; }
+        public string Language { get; set; }
     }
 }
