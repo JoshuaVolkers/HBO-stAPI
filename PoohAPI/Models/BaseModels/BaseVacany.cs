@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Models
+namespace PoohAPI.Models.BaseModels
 {
     /// <summary>
     /// Class that contains basic information about a vacancy.
@@ -24,5 +24,7 @@ namespace PoohAPI.Models
         public string Description { get; set; }
         [Required]
         public Company Company { get; set; }
+        [Required]
+        public string Language { get; set; }
     }
 }

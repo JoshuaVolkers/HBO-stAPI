@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Models
+namespace PoohAPI.Models.BaseModels
 {
     /// <summary>
     /// Class with basic company information.
@@ -21,5 +21,6 @@ namespace PoohAPI.Models
         public List<Tag> Tags { get; set; }
         public int LogoPath { get; set; }
         public double AverageReviewStars { get; set; }
+        public string Language { get; set; }
     }
 }

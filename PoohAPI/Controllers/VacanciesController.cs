@@ -22,6 +22,7 @@ namespace PoohAPI.Controllers
         /// <param name="education">The name of the education</param>
         /// <param name="educationalAttainment">The level of the education (HBO, WO, Univerity, etc.)</param>
         /// <param name="intershipType">The type of intership</param>
+        /// <param name="languages">A comma seperated list of the languages to get vacancies for</param>
         /// <returns>A list of all vacancies</returns>
         /// <response code="200">Returns the list of vacancies</response>
         /// <response code="404">If no vacancies are found</response>   
@@ -29,7 +30,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string searchWords = null, [FromQuery]double distanceInKM = 10.0, 
-            [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null)
+            [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]string languages = null)
         {
             return Ok(new List<Vacancy>());
         }

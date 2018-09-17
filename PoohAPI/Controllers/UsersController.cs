@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Models;
+using PoohAPI.Models.BaseModels;
+using PoohAPI.Models.RequestModels;
 
 namespace PoohAPI.Controllers
 {
@@ -42,6 +45,31 @@ namespace PoohAPI.Controllers
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
             return Ok();
+        }
+
+        /// <summary>
+        /// Get's all of the users. (Admin rights are required for this endpoint!)
+        /// </summary>
+        /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
+        /// <param name="educations">A comma seperated list of educations</param>
+        /// <param name="location">A Location model, used to determine the range in which the user should have his location set</param>
+        /// <param name="preferredLanguages">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
+        /// <returns>A list of users</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If no users were found for the specified filters</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>  
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult GetAllUsers([FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
+            [FromQuery]Location location = null, [FromQuery]string preferredLanguages = null)
+        {
+            return Ok(new List<User>());
         }
 
         /// <summary>
@@ -95,7 +123,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
-        [Route("{id}/profile")]
+        [Route("{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -193,8 +221,35 @@ namespace PoohAPI.Controllers
         }
 
         /// <summary>
+        /// Updates the specified review.
+        /// </summary>
+        /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
+        /// <param name="reviewId">The id of the review to update</param>
+        /// <param name="reviewData">The updated review model</param>
+        /// <returns>A list of Review objects</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="400">If the specified review does not exist</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>  
+        [HttpPut]
+        [Route("{id}/reviews/{reviewId}")]
+        [ProducesResponseType(typeof(Review), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
+        {
+            //Check of review niet locked is.
+            if (reviewId == 1)
+                return Ok(new Review() { Id = reviewId });
+            else
+                return BadRequest("Review has been locked");
+        }
+
+        /// <summary>
         /// Deletes the specified review
         /// </summary>
+        /// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
         /// <param name="reviewId">The id of the review to delete</param>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
@@ -205,10 +260,11 @@ namespace PoohAPI.Controllers
         [Route("{id}/reviews/{reviewId}")]
         public IActionResult DeleteReview(int reviewId)
         {
+            //Check of review niet locked is.
             if (reviewId == 1)
                 return Ok();
             else
-                return BadRequest();
+                return BadRequest("Review has been locked");
         }
 
     }

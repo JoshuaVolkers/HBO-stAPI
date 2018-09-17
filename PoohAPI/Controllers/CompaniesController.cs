@@ -22,6 +22,7 @@ namespace PoohAPI.Controllers
         /// <param name="cityName">The city in which the companies should be located</param>
         /// <param name="countryCode">The ISO alpha-2 country code</param>
         /// <param name="tag">The tag which the returning companies should have</param>
+        /// <param name="languages">A comma seperated list of the languages to get companies for</param>
         /// <returns>A list of all companies</returns>
         /// <response code="200">Returns the list of companies</response>
         /// <response code="404">If no companies are found</response>   
@@ -30,7 +31,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]double minStars = 0, 
             [FromQuery]double maxStars = 5, [FromQuery]string cityName = null, [FromQuery]string countryCode = null,
-            [FromQuery]string tag = null)
+            [FromQuery]string tag = null, [FromQuery]string[] languages = null)
         {
             return Ok(new List<Company>());
         }

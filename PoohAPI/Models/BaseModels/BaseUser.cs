@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Models
+namespace PoohAPI.Models.BaseModels
 {
     /// <summary>
     /// BaseUser that contains the same information as the wp_users table in WordPress.
