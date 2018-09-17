@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoohAPI.Models.BaseModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,8 +22,3 @@ namespace PoohAPI.Models
         public IEnumerable<string> PreferredLanguages { get; set; }
     }
 }
-
-//TODO:
-// Endpoint maken om alle users op te halen, is voor admins.
-// Language filters voor companies en vacancies.
-// Review moet gedelete, aangepast kunnen worden binnen een bepaalde tijd.
