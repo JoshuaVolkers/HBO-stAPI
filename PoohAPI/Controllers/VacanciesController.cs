@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Models;
+using PoohAPI.Models.BaseModels;
 
 namespace PoohAPI.Controllers
 {

@@ -30,7 +30,7 @@ namespace PoohAPI.Controllers
         {
             return Ok();
         }
-
+        
         /// <summary>
         /// Starts the register process
         /// </summary>
