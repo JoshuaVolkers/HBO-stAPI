@@ -52,7 +52,8 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
         /// <param name="educations">A comma seperated list of educations</param>
-        /// <param name="location">A Location model, used to determine the range in which the user should have his location set</param>
+        /// <param name="city">The city in which the user should be located.</param>
+        /// <param name="range">The range in which the user's location should be found from the city parameter</param>
         /// <param name="preferredLanguages">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
         /// <returns>A list of users</returns>
         /// <response code="200">If the request was a success</response>
@@ -67,7 +68,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         public IActionResult GetAllUsers([FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
-            [FromQuery]Location location = null, [FromQuery]string preferredLanguages = null)
+            [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
         {
             return Ok(new List<User>());
         }
