@@ -30,7 +30,7 @@ namespace PoohAPI.Controllers
         {
             return Ok();
         }
-
+        
         /// <summary>
         /// Starts the register process
         /// </summary>
@@ -219,6 +219,27 @@ namespace PoohAPI.Controllers
         public IActionResult GetReviews()
         {
             return Ok(new List<Review>());
+        }
+
+        /// <summary>
+        /// Creates a new review.
+        /// </summary>
+        /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
+        /// <param name="reviewData">The updated review model</param>
+        /// <returns>A list of Review objects</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="400">If the required fields were not included</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>  
+        [HttpPost]
+        [Route("{id}/reviews")]
+        [ProducesResponseType(typeof(ReviewPost), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult PostReview([FromBody]ReviewPost reviewData)
+        {
+            return Ok();
         }
 
         /// <summary>
