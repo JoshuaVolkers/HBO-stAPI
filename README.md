@@ -13,4 +13,4 @@ Solution bevat de volgende API's
 ## Documentatie
 
 Volledige Swagger documentatie te vinden op:
-https://app.swaggerhub.com/apis/BigHos69/PoohAPI/V1
+https://app.swaggerhub.com/apis/JoshuaVolkers/PoohAPI/V1
