@@ -11,7 +11,7 @@ using PoohAPI.Models.RequestModels;
 namespace PoohAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/users")]
+    [Route("users")]
     public class UsersController : Controller
     {
 
