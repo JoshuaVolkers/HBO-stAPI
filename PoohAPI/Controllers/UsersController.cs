@@ -48,6 +48,22 @@ namespace PoohAPI.Controllers
         }
 
         /// <summary>
+        /// Checks if token is still valid
+        /// </summary>
+        /// <param name="token">The token to be checked</param>
+        /// <returns>A boolean that says if the token if valid</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="400">If no token was given as parameter</response>
+        [HttpPost]
+        [Route("checktoken")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult CheckToken([FromBody]Token token)
+        {
+            return Ok(new Boolean());
+        }
+
+        /// <summary>
         /// Get's all of the users. (Admin rights are required for this endpoint!)
         /// </summary>
         /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
@@ -144,7 +160,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}/vacancies")]
+        [Route("{id}/favorites")]
         [ProducesResponseType(typeof(IEnumerable<BaseVacancy>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -220,74 +236,74 @@ namespace PoohAPI.Controllers
         {
             return Ok(new List<Review>());
         }
+        
+        ///// <summary>
+        ///// Creates a new review.
+        ///// </summary>
+        ///// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
+        ///// <param name="reviewData">The updated review model</param>
+        ///// <returns>A list of Review objects</returns>
+        ///// <response code="200">If the request was a success</response>
+        ///// <response code="400">If the required fields were not included</response>   
+        ///// <response code="403">If the user was unauthorized</response>  
+        ///// <response code="401">If the user was unauthenticated</response>  
+        //[HttpPost]
+        //[Route("{id}/reviews")]
+        //[ProducesResponseType(typeof(ReviewPost), 200)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(403)]
+        //[ProducesResponseType(401)]
+        //public IActionResult PostReview([FromBody]ReviewPost reviewData)
+        //{
+        //    return Ok();
+        //}
 
-        /// <summary>
-        /// Creates a new review.
-        /// </summary>
-        /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewData">The updated review model</param>
-        /// <returns>A list of Review objects</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the required fields were not included</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
-        [HttpPost]
-        [Route("{id}/reviews")]
-        [ProducesResponseType(typeof(ReviewPost), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
-        public IActionResult PostReview([FromBody]ReviewPost reviewData)
-        {
-            return Ok();
-        }
+        ///// <summary>
+        ///// Updates the specified review.
+        ///// </summary>
+        ///// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
+        ///// <param name="reviewId">The id of the review to update</param>
+        ///// <param name="reviewData">The updated review model</param>
+        ///// <returns>A list of Review objects</returns>
+        ///// <response code="200">If the request was a success</response>
+        ///// <response code="400">If the specified review does not exist</response>   
+        ///// <response code="403">If the user was unauthorized</response>  
+        ///// <response code="401">If the user was unauthenticated</response>  
+        //[HttpPut]
+        //[Route("{id}/reviews/{reviewId}")]
+        //[ProducesResponseType(typeof(Review), 200)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(403)]
+        //[ProducesResponseType(401)]
+        //public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
+        //{
+        //    //Check of review niet locked is.
+        //    if (reviewId == 1)
+        //        return Ok(new Review() { Id = reviewId });
+        //    else
+        //        return BadRequest("Review has been locked");
+        //}
 
-        /// <summary>
-        /// Updates the specified review.
-        /// </summary>
-        /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to update</param>
-        /// <param name="reviewData">The updated review model</param>
-        /// <returns>A list of Review objects</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the specified review does not exist</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
-        [HttpPut]
-        [Route("{id}/reviews/{reviewId}")]
-        [ProducesResponseType(typeof(Review), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
-        public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
-        {
-            //Check of review niet locked is.
-            if (reviewId == 1)
-                return Ok(new Review() { Id = reviewId });
-            else
-                return BadRequest("Review has been locked");
-        }
-
-        /// <summary>
-        /// Deletes the specified review
-        /// </summary>
-        /// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to delete</param>
-        /// <returns></returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the specified reviewId does not exist</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
-        [HttpDelete]
-        [Route("{id}/reviews/{reviewId}")]
-        public IActionResult DeleteReview(int reviewId)
-        {
-            //Check of review niet locked is.
-            if (reviewId == 1)
-                return Ok();
-            else
-                return BadRequest("Review has been locked");
-        }
+        ///// <summary>
+        ///// Deletes the specified review
+        ///// </summary>
+        ///// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
+        ///// <param name="reviewId">The id of the review to delete</param>
+        ///// <returns></returns>
+        ///// <response code="200">If the request was a success</response>
+        ///// <response code="400">If the specified reviewId does not exist</response>   
+        ///// <response code="403">If the user was unauthorized</response>  
+        ///// <response code="401">If the user was unauthenticated</response>  
+        //[HttpDelete]
+        //[Route("{id}/reviews/{reviewId}")]
+        //public IActionResult DeleteReview(int reviewId)
+        //{
+        //    //Check of review niet locked is.
+        //    if (reviewId == 1)
+        //        return Ok();
+        //    else
+        //        return BadRequest("Review has been locked");
+        //}
 
     }
 }

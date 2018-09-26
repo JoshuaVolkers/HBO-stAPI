@@ -15,5 +15,6 @@ namespace PoohAPI.Models
         [Required]
         public double Stars { get; set; }
         public string WrittenReview { get; set; }
+        public string FirstName { get; set; }
     }
 }
