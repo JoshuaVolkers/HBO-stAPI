@@ -12,6 +12,9 @@ namespace PoohAPI.Models
     {
         public string City { get; set; }
         public string ZipCode { get; set; }
+        public string Street { get; set; }
+        public int HouseNumber { get; set; }
+        public string HouseNumberAdditions { get; set; }
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         /// <summary>

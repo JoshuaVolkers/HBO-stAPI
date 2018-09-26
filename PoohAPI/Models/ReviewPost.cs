@@ -19,5 +19,8 @@ namespace PoohAPI.Models
         [Required]
         public double Stars { get; set; }
         public string WrittenReview { get; set; }
+        public bool Anonymous { get; set; }
+        [Required]
+        public byte[] EmploymentContractPDF { get; set; }
     }
 }

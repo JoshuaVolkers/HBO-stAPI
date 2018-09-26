@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using PoohAPI.Enums;
 
 namespace PoohAPI.Models
 {
@@ -21,10 +22,14 @@ namespace PoohAPI.Models
         [Required]
         public double Stars { get; set; }
         public string WrittenReview { get; set; }
+        public bool Anonymous { get; set; }
+        [Required]
+        public byte[] EmploymentContractPDF { get; set; }
         /// <summary>
         /// This property denotes if a review has been verified by the company/internship coordinator.
         /// </summary>
-        public bool VerifiedReview { get; set; }
+        public ReviewVerificationStatus VerifiedReview { get; set; }
+        public DateTime VerificationDate { get; set; }
         public DateTime CreationDate { get; set; }
         /// <summary>
         /// Denotes whether or not the review has been Locked. Locked reviews can no longer be deleted or edited throught the API.

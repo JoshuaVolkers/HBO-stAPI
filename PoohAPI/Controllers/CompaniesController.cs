@@ -46,7 +46,7 @@ namespace PoohAPI.Controllers
         /// <param name="minStars">The min number of stars that the returning companies should have</param>
         /// <param name="maxStars">The max number of stars that the returning companies should have</param>
         /// <param name="cityName">The city in which the companies should be located</param>
-        /// <param name="countryCode">The ISO alpha-2 country code</param>
+        /// <param name="countryName">The name of the country where the company is located</param>
         /// <param name="tag">The tag which the returning companies should have</param>
         /// <param name="languages">A comma seperated list of the languages to get companies for</param>
         /// <param name="detailedCompanies">The type of model to return, false = BaseCompany, true = Company. Set to true to retrieve more details.</param>
@@ -57,7 +57,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Company>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]double minStars = 0,
-            [FromQuery]double maxStars = 5, [FromQuery]string cityName = null, [FromQuery]string countryCode = null,
+            [FromQuery]double maxStars = 5, [FromQuery]string cityName = null, [FromQuery]string countryName = null,
             [FromQuery]string tag = null, [FromQuery]string[] languages = null, [FromQuery]bool detailedCompanies = false )
         {
             if (detailedCompanies)
