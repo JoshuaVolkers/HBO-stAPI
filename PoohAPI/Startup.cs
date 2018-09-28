@@ -6,8 +6,13 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Reflection;
-using PoohAPI.Models;
 using Newtonsoft.Json;
+using AutoMapper;
+using Unity;
+using PoohAPI.Application;
+using PoohAPI.Infrastructure.UserDB.Repositories;
+using PoohAPI.Logic.Common.Interfaces;
+using PoohAPI.Logic.Users.Services;
 
 namespace PoohAPI
 {
@@ -23,12 +28,22 @@ namespace PoohAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper();
+
+            var container = new UnityContainer();
+
+            UnityConfig.RegisterTypes(container);
+
+            LogicInit.Init(container);
+
             services.AddMvc()
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Formatting = Formatting.Indented;
-                });
+                });     
 
+            //Swagger configuration
+            #region
             services.AddSwaggerGen(s =>
             {
                 s.SwaggerDoc("v1",
@@ -50,11 +65,17 @@ namespace PoohAPI
 
                 s.DescribeAllEnumsAsStrings();
             });
+            #endregion
+
+            //This cant be the way to go right?! How do you retain loos coupling with this?!
+            services.AddScoped<IUserReadService, UserReadService>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

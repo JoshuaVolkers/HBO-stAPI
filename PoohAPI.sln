@@ -3,7 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI", "PoohAPI\PoohAPI.csproj", "{9D02E79C-EF5E-4D4A-9B30-699DC1955460}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoohAPI", "PoohAPI\PoohAPI.csproj", "{9D02E79C-EF5E-4D4A-9B30-699DC1955460}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DomainLogic", "DomainLogic", "{F170E122-B3AE-4DE0-A95C-C2157CF12CC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FD5961F4-562D-4BBA-A132-86D2F13F68A7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationLogic", "ApplicationLogic", "{D32F242F-E7E8-4B1E-B6D4-59365597597A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Logic.Common", "PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj", "{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Infrastructure.UserDB", "PoohAPI.Infrastructure.UserDB\PoohAPI.Infrastructure.UserDB.csproj", "{7CC52E86-8A33-462F-902A-5EC61F81C788}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Infrastructure.Common", "PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj", "{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Logic.Users", "PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj", "{17B6AB1F-27E4-4352-9E8C-97348C020511}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Application", "PoohAPI.Application\PoohAPI.Application.csproj", "{996CDDD4-5716-46B4-A30C-D90C01DE637E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +31,36 @@ Global
 		{9D02E79C-EF5E-4D4A-9B30-699DC1955460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D02E79C-EF5E-4D4A-9B30-699DC1955460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D02E79C-EF5E-4D4A-9B30-699DC1955460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC52E86-8A33-462F-902A-5EC61F81C788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC52E86-8A33-462F-902A-5EC61F81C788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC52E86-8A33-462F-902A-5EC61F81C788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC52E86-8A33-462F-902A-5EC61F81C788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17B6AB1F-27E4-4352-9E8C-97348C020511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17B6AB1F-27E4-4352-9E8C-97348C020511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17B6AB1F-27E4-4352-9E8C-97348C020511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17B6AB1F-27E4-4352-9E8C-97348C020511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B} = {F170E122-B3AE-4DE0-A95C-C2157CF12CC8}
+		{7CC52E86-8A33-462F-902A-5EC61F81C788} = {FD5961F4-562D-4BBA-A132-86D2F13F68A7}
+		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD} = {FD5961F4-562D-4BBA-A132-86D2F13F68A7}
+		{17B6AB1F-27E4-4352-9E8C-97348C020511} = {F170E122-B3AE-4DE0-A95C-C2157CF12CC8}
+		{996CDDD4-5716-46B4-A30C-D90C01DE637E} = {D32F242F-E7E8-4B1E-B6D4-59365597597A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99FB13CE-5AD2-4D3C-8DCA-B852FE086571}

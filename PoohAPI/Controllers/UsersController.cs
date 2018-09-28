@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PoohAPI.Models;
-using PoohAPI.Models.BaseModels;
-using PoohAPI.Models.RequestModels;
+using PoohAPI.RequestModels;
+using System;
+using System.Collections.Generic;
+using PoohAPI.Logic.Common.Interfaces;
+using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Models.BaseModels;
 
 namespace PoohAPI.Controllers
 {
@@ -14,6 +13,12 @@ namespace PoohAPI.Controllers
     [Route("users")]
     public class UsersController : Controller
     {
+        private readonly IUserReadService _userReadService;
+
+        public UsersController(IUserReadService userReadService)
+        {
+            _userReadService = userReadService;
+        }
 
         /// <summary>
         /// Starts the login process
@@ -76,7 +81,6 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
-        [Authorize(Roles = "admin")]
         [HttpGet]
         [Route("")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
@@ -86,7 +90,7 @@ namespace PoohAPI.Controllers
         public IActionResult GetAllUsers([FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
             [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
         {
-            return Ok(new List<User>());
+            return Ok(_userReadService.GetAllUsersAsync().Result);
         }
 
         /// <summary>
@@ -106,7 +110,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetUserById(int id)
         {
-            return Ok(new User() { Id = id });
+            return Ok(_userReadService.GetUserByIdAsync(id).Result);
         }
 
         /// <summary>
@@ -236,74 +240,6 @@ namespace PoohAPI.Controllers
         {
             return Ok(new List<Review>());
         }
-        
-        ///// <summary>
-        ///// Creates a new review.
-        ///// </summary>
-        ///// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        ///// <param name="reviewData">The updated review model</param>
-        ///// <returns>A list of Review objects</returns>
-        ///// <response code="200">If the request was a success</response>
-        ///// <response code="400">If the required fields were not included</response>   
-        ///// <response code="403">If the user was unauthorized</response>  
-        ///// <response code="401">If the user was unauthenticated</response>  
-        //[HttpPost]
-        //[Route("{id}/reviews")]
-        //[ProducesResponseType(typeof(ReviewPost), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(403)]
-        //[ProducesResponseType(401)]
-        //public IActionResult PostReview([FromBody]ReviewPost reviewData)
-        //{
-        //    return Ok();
-        //}
-
-        ///// <summary>
-        ///// Updates the specified review.
-        ///// </summary>
-        ///// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        ///// <param name="reviewId">The id of the review to update</param>
-        ///// <param name="reviewData">The updated review model</param>
-        ///// <returns>A list of Review objects</returns>
-        ///// <response code="200">If the request was a success</response>
-        ///// <response code="400">If the specified review does not exist</response>   
-        ///// <response code="403">If the user was unauthorized</response>  
-        ///// <response code="401">If the user was unauthenticated</response>  
-        //[HttpPut]
-        //[Route("{id}/reviews/{reviewId}")]
-        //[ProducesResponseType(typeof(Review), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(403)]
-        //[ProducesResponseType(401)]
-        //public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
-        //{
-        //    //Check of review niet locked is.
-        //    if (reviewId == 1)
-        //        return Ok(new Review() { Id = reviewId });
-        //    else
-        //        return BadRequest("Review has been locked");
-        //}
-
-        ///// <summary>
-        ///// Deletes the specified review
-        ///// </summary>
-        ///// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        ///// <param name="reviewId">The id of the review to delete</param>
-        ///// <returns></returns>
-        ///// <response code="200">If the request was a success</response>
-        ///// <response code="400">If the specified reviewId does not exist</response>   
-        ///// <response code="403">If the user was unauthorized</response>  
-        ///// <response code="401">If the user was unauthenticated</response>  
-        //[HttpDelete]
-        //[Route("{id}/reviews/{reviewId}")]
-        //public IActionResult DeleteReview(int reviewId)
-        //{
-        //    //Check of review niet locked is.
-        //    if (reviewId == 1)
-        //        return Ok();
-        //    else
-        //        return BadRequest("Review has been locked");
-        //}
 
     }
 }
