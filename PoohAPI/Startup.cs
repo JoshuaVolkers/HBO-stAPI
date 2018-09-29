@@ -28,7 +28,17 @@ namespace PoohAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            #region AutoMapper configuration    
+
             services.AddAutoMapper();
+
+            var mapperConfig = AutoMapperInit.InitMappings();
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            services.AddSingleton(mapper);
+
+            #endregion
 
             var container = new UnityContainer();
 
@@ -36,14 +46,7 @@ namespace PoohAPI
 
             LogicInit.Init(container);
 
-            services.AddMvc()
-                .AddJsonOptions(options =>
-                {
-                    options.SerializerSettings.Formatting = Formatting.Indented;
-                });     
-
-            //Swagger configuration
-            #region
+            #region Swagger configuration
             services.AddSwaggerGen(s =>
             {
                 s.SwaggerDoc("v1",
@@ -67,9 +70,15 @@ namespace PoohAPI
             });
             #endregion
 
-            //This cant be the way to go right?! How do you retain loos coupling with this?!
+            //This cant be the way to go right?! How do you retain loose-coupling with this?!
             services.AddScoped<IUserReadService, UserReadService>();
             services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

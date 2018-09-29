@@ -10,36 +10,33 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
     public class UserRepository : IUserRepository
     {
         private WordPressClient _client { get; set; }
+        private IMapper _mapper;
 
-        public UserRepository()
+        public UserRepository(IMapper mapper)
         {
-            _client = new WordPressClient("http://dev.hbo-stagemarkt.nl/wp-json/");
-            _client.AuthMethod = AuthMethod.JWT;
-            _client.RequestJWToken("", "");
+            CreateClientAsync();
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<WPUser>> GetAllUsersAsync()
         {
             CreateClientAsync();
             var list = await _client.Users.GetAll();
-            return Mapper.Map<IEnumerable<WPUser>>(list);
+            return _mapper.Map<IEnumerable<WPUser>>(list);
         }
 
         public async Task<WPUser> GetUserByIdAsync(int id)
         {
             CreateClientAsync();
             var user = await _client.Users.GetByID(id);
-            return Mapper.Map<WPUser>(user);
+            return _mapper.Map<WPUser>(user);
         }
 
         private async void CreateClientAsync()
         {
-            if (!await _client.IsValidJWToken())
-            {
-                _client = new WordPressClient("http://dev.hbo-stagemarkt.nl/wp-json/");
-                _client.AuthMethod = AuthMethod.JWT;
-                await _client.RequestJWToken("", "");
-            }
+            _client = new WordPressClient("http://dev.hbo-stagemarkt.nl/wp-json/");
+            //_client.AuthMethod = AuthMethod.Basic;
+            //await _client.RequestJWToken("developer", "7QtO7xM1qMfsaclJ4C");
         }
     }
 }
