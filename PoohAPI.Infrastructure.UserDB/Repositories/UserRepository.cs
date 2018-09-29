@@ -36,7 +36,7 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             _client = new WordPressClient("http://dev.hbo-stagemarkt.nl/wp-json/");
             //_client.AuthMethod = AuthMethod.Basic;
-            //await _client.RequestJWToken("developer", "7QtO7xM1qMfsaclJ4C");
+            //await _client.RequestJWToken("", "");
         }
     }
 }
