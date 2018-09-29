@@ -6,7 +6,7 @@ namespace PoohAPI.Logic.Common.Interfaces
 {
     public interface IUserReadService
     {
-        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<IEnumerable<User>> GetAllUsersAsync(int maxCount, int offset);
         Task<User> GetUserByIdAsync(int id);
     }
 }

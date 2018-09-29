@@ -9,7 +9,7 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<WPUser>> GetAllUsersAsync();
+        Task<IEnumerable<WPUser>> GetAllUsersAsync(int maxCount, int offset);
         Task<WPUser> GetUserByIdAsync(int id);
     }
 }

@@ -73,6 +73,7 @@ namespace PoohAPI
             //This cant be the way to go right?! How do you retain loose-coupling with this?!
             services.AddScoped<IUserReadService, UserReadService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            
 
             services.AddMvc()
                 .AddJsonOptions(options =>

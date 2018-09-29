@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using PoohAPI.Infrastructure.UserDB.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WordPressPCL;
 using WordPressPCL.Models;
+using WordPressPCL.Utility;
 
 namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
@@ -18,10 +20,11 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<WPUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<WPUser>> GetAllUsersAsync(int maxCount, int offset)
         {
             CreateClientAsync();
-            var list = await _client.Users.GetAll();
+            var q = new UsersQueryBuilder {PerPage = maxCount, Offset = offset};
+            var list = await _client.Users.Query(q);          
             return _mapper.Map<IEnumerable<WPUser>>(list);
         }
 

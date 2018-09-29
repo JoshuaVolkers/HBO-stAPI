@@ -13,12 +13,14 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.FirstName, o => o.MapFrom(s => s.FirstName))
                 .ForMember(d => d.LastName, o => o.MapFrom(s => s.LastName))
                 .ForMember(d => d.RegisteredDate, o => o.MapFrom(s => s.RegisteredDate))
-                .ForMember(d => d.Meta, o => o.MapFrom(s => s.Meta));
+                .ForMember(d => d.Meta, o => o.MapFrom(s => s.Meta))
+                .ReverseMap();
 
             CreateMap<WPUser, Common.Models.User>()
                 .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.Email))
                 .ForMember(d => d.NiceName, o => o.MapFrom(s => s.Name))
-                .ForMember(d => d.RegistrationDate, o => o.MapFrom(s => s.RegisteredDate));
+                .ForMember(d => d.RegistrationDate, o => o.MapFrom(s => s.RegisteredDate))
+                .ReverseMap();
         }
     }
 }

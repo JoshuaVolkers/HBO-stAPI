@@ -17,9 +17,9 @@ namespace PoohAPI.Logic.Users.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Common.Models.User>> GetAllUsersAsync()
+        public async Task<IEnumerable<Common.Models.User>> GetAllUsersAsync(int maxCount, int offset)
         {
-            var users = await _userRepository.GetAllUsersAsync();
+            var users = await _userRepository.GetAllUsersAsync(maxCount, offset);
             return _mapper.Map<IEnumerable<Common.Models.User>>(users);
         }
 

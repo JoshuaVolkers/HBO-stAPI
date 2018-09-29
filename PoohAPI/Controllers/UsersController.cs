@@ -71,6 +71,8 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Get's all of the users. (Admin rights are required for this endpoint!)
         /// </summary>
+        /// <param name="maxCount">The max amount of users to return</param>
+        /// <param name="offset">The number of users to skip.</param>
         /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
         /// <param name="educations">A comma seperated list of educations</param>
         /// <param name="city">The city in which the user should be located.</param>
@@ -87,10 +89,10 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetAllUsers([FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
+        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
             [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
         {
-            return Ok(_userReadService.GetAllUsersAsync().Result);
+            return Ok(_userReadService.GetAllUsersAsync(maxCount, offset).Result);
         }
 
         /// <summary>

@@ -64,6 +64,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetCompanyReviews(int id)
         {
+            //TODO: we should be able to return both anonymous and normal reviews based on the choice the student made when posting it.
             return Ok(new List<ReviewAnonymous>());
         }
     }
