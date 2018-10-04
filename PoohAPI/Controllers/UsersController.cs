@@ -92,7 +92,7 @@ namespace PoohAPI.Controllers
         public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
             [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
         {
-            return Ok(_userReadService.GetAllUsersAsync(maxCount, offset).Result);
+            return Ok(_userReadService.GetAllUsers(maxCount, offset));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetUserById(int id)
         {
-            return Ok(_userReadService.GetUserByIdAsync(id).Result);
+            return Ok(_userReadService.GetUserById(id));
         }
 
         /// <summary>

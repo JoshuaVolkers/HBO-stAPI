@@ -17,15 +17,15 @@ namespace PoohAPI.Logic.Users.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Common.Models.User>> GetAllUsersAsync(int maxCount, int offset)
+        public IEnumerable<Common.Models.User> GetAllUsers(int maxCount, int offset)
         {
-            var users = await _userRepository.GetAllUsersAsync(maxCount, offset);
+            var users = _userRepository.GetAllUsers(maxCount, offset);
             return _mapper.Map<IEnumerable<Common.Models.User>>(users);
         }
 
-        public async Task<Common.Models.User> GetUserByIdAsync(int id)
+        public Common.Models.User GetUserById(int id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
+            var user = _userRepository.GetUserById(id);
             return _mapper.Map<Common.Models.User>(user);
         }
     }

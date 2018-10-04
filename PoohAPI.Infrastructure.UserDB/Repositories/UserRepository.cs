@@ -1,45 +1,30 @@
 ﻿using AutoMapper;
+using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using WordPressPCL;
-using WordPressPCL.Models;
-using WordPressPCL.Utility;
 
 namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : MySQLBaseRepository, IUserRepository
     {
-        private WordPressClient _client { get; set; }
         private IMapper _mapper;
+        private IMySQLBaseRepository _mySqlBaseRepository;
 
-        public UserRepository(IMapper mapper)
+        public UserRepository(IMapper mapper, IMySQLBaseRepository mySqlBaseRepository)
         {
-            CreateClientAsync();
             _mapper = mapper;
+            _mySqlBaseRepository = mySqlBaseRepository;
         }
 
-        public async Task<IEnumerable<WPUser>> GetAllUsersAsync(int maxCount, int offset)
+        public IEnumerable<WPUser> GetAllUsers(int maxCount, int offset)
         {
-            CreateClientAsync();
-            var q = new UsersQueryBuilder {PerPage = maxCount, Offset = offset};
-            var list = await _client.Users.Query(q);          
-            return _mapper.Map<IEnumerable<WPUser>>(list);
+            return null;
         }
 
-        public async Task<WPUser> GetUserByIdAsync(int id)
+        public WPUser GetUserById(int id)
         {
-            CreateClientAsync();
-            var user = await _client.Users.GetByID(id);
-            return _mapper.Map<WPUser>(user);
-        }
-
-        private async void CreateClientAsync()
-        {
-            _client = new WordPressClient("http://dev.hbo-stagemarkt.nl/wp-json/");
-            //_client.AuthMethod = AuthMethod.Basic;
-            //await _client.RequestJWToken("", "");
+            return null;
         }
     }
 }
