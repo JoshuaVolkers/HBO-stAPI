@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Logic.Users", "Pooh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Application", "PoohAPI.Application\PoohAPI.Application.csproj", "{996CDDD4-5716-46B4-A30C-D90C01DE637E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Common", "PoohAPI.Common\PoohAPI.Common.csproj", "{7B051E95-5173-4783-80C3-D6D849A67BE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{996CDDD4-5716-46B4-A30C-D90C01DE637E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B051E95-5173-4783-80C3-D6D849A67BE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B051E95-5173-4783-80C3-D6D849A67BE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B051E95-5173-4783-80C3-D6D849A67BE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B051E95-5173-4783-80C3-D6D849A67BE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD} = {FD5961F4-562D-4BBA-A132-86D2F13F68A7}
 		{17B6AB1F-27E4-4352-9E8C-97348C020511} = {F170E122-B3AE-4DE0-A95C-C2157CF12CC8}
 		{996CDDD4-5716-46B4-A30C-D90C01DE637E} = {D32F242F-E7E8-4B1E-B6D4-59365597597A}
+		{7B051E95-5173-4783-80C3-D6D849A67BE4} = {D32F242F-E7E8-4B1E-B6D4-59365597597A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99FB13CE-5AD2-4D3C-8DCA-B852FE086571}

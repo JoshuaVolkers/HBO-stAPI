@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using PoohAPI.Common;
 using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Models;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Threading.Tasks;
 
 namespace PoohAPI.Infrastructure.UserDB.Repositories
@@ -9,16 +11,15 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
     public class UserRepository : MySQLBaseRepository, IUserRepository
     {
         private IMapper _mapper;
-        private IMySQLBaseRepository _mySqlBaseRepository;
 
-        public UserRepository(IMapper mapper, IMySQLBaseRepository mySqlBaseRepository)
+        public UserRepository(IMapper mapper) : base(mapper)
         {
             _mapper = mapper;
-            _mySqlBaseRepository = mySqlBaseRepository;
         }
 
         public IEnumerable<WPUser> GetAllUsers(int maxCount, int offset)
         {
+            var i = ConfigurationReader.TestValue;          
             return null;
         }
 

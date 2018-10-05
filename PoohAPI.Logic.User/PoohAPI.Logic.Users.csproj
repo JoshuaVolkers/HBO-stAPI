@@ -33,6 +33,9 @@
     <Reference Include="AutoMapper, Version=7.0.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.7.0.1\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.Data.2.0.0\lib\net45\AutoMapper.Data.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper.Extensions.Microsoft.DependencyInjection, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.Extensions.Microsoft.DependencyInjection.5.0.1\lib\netstandard2.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll</HintPath>
     </Reference>
@@ -94,6 +97,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
+      <Project>{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}</Project>
+      <Name>PoohAPI.Infrastructure.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Infrastructure.UserDB\PoohAPI.Infrastructure.UserDB.csproj">
       <Project>{7CC52E86-8A33-462F-902A-5EC61F81C788}</Project>
       <Name>PoohAPI.Infrastructure.UserDB</Name>

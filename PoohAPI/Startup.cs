@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using AutoMapper;
 using Unity;
 using PoohAPI.Application;
+using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Users.Services;
@@ -73,7 +74,7 @@ namespace PoohAPI
             //This cant be the way to go right?! How do you retain loose-coupling with this?!
             services.AddScoped<IUserReadService, UserReadService>();
             services.AddScoped<IUserRepository, UserRepository>();
-            
+
 
             services.AddMvc()
                 .AddJsonOptions(options =>
@@ -85,7 +86,6 @@ namespace PoohAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
