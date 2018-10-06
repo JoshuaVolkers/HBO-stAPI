@@ -8,12 +8,7 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using AutoMapper;
-using Unity;
 using PoohAPI.Application;
-using PoohAPI.Infrastructure.Common.Repositories;
-using PoohAPI.Infrastructure.UserDB.Repositories;
-using PoohAPI.Logic.Common.Interfaces;
-using PoohAPI.Logic.Users.Services;
 
 namespace PoohAPI
 {
@@ -41,11 +36,8 @@ namespace PoohAPI
 
             #endregion
 
-            var container = new UnityContainer();
-
-            UnityConfig.RegisterTypes(container);
-
-            LogicInit.Init(container);
+            //Dependency Injection
+            DependencyInit.Init(services);
 
             #region Swagger configuration
             services.AddSwaggerGen(s =>
@@ -70,11 +62,6 @@ namespace PoohAPI
                 s.DescribeAllEnumsAsStrings();
             });
             #endregion
-
-            //This cant be the way to go right?! How do you retain loose-coupling with this?!
-            services.AddScoped<IUserReadService, UserReadService>();
-            services.AddScoped<IUserRepository, UserRepository>();
-
 
             services.AddMvc()
                 .AddJsonOptions(options =>

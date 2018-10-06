@@ -21,8 +21,8 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
-    <PackageReference Include="Unity" Version="5.8.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PoohAPI.Application\PoohAPI.Application.csproj" />
     <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj" />
-    <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj" />
   </ItemGroup>
 
 </Project>

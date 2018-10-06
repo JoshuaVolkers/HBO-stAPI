@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using PoohAPI.Common;
+using PoohAPI.Infrastructure.Common;
 using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Models;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Threading.Tasks;
 
 namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
@@ -12,20 +11,19 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
     {
         private IMapper _mapper;
 
-        public UserRepository(IMapper mapper) : base(mapper)
+        public UserRepository(IMapper mapper, IMySQLClient client) : base(mapper, client)
         {
             _mapper = mapper;
         }
 
         public IEnumerable<WPUser> GetAllUsers(int maxCount, int offset)
         {
-            var i = ConfigurationReader.TestValue;          
-            return null;
+            return GetAll<WPUser>("test");
         }
 
-        public WPUser GetUserById(int id)
+        public WPUser GetUserById(string q)
         {
-            return null;
+            return GetSingle<WPUser>(q);
         }
     }
 }

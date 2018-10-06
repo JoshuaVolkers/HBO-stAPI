@@ -14,10 +14,12 @@ namespace PoohAPI.Controllers
     public class UsersController : Controller
     {
         private readonly IUserReadService _userReadService;
+        private readonly IUserCommandService _userCommandService;
 
-        public UsersController(IUserReadService userReadService)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService)
         {
             _userReadService = userReadService;
+            _userCommandService = userCommandService;
         }
 
         /// <summary>
