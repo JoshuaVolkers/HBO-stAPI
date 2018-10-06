@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PoohAPI.Models;
-using PoohAPI.Models.BaseModels;
-using PoohAPI.Models.RequestModels;
+﻿using Microsoft.AspNetCore.Mvc;
+using PoohAPI.Logic.Common.Models;
+using PoohAPI.RequestModels;
 
 namespace PoohAPI.Controllers
 {
