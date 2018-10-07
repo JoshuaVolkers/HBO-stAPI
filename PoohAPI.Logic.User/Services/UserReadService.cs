@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PoohAPI.Common;
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using System.Collections.Generic;
@@ -19,13 +20,14 @@ namespace PoohAPI.Logic.Users.Services
 
         public IEnumerable<Common.Models.User> GetAllUsers(int maxCount, int offset)
         {
-            var users = _userRepository.GetAllUsers(maxCount, offset);
+            var query = string.Format("SELECT * FROM wp_dev_users LIMIT {0} OFFSET {1}", maxCount, offset);
+            var users = _userRepository.GetAllUsers(query);
             return _mapper.Map<IEnumerable<Common.Models.User>>(users);
         }
 
         public Common.Models.User GetUserById(int id)
         {
-            var query = string.Format("SELECT * FROM users WHERE user.id = {0}", id);
+            var query = string.Format("SELECT * FROM wp_dev_users WHERE ID = {0}", id);
             var user = _userRepository.GetUserById(query);
             
             return _mapper.Map<Common.Models.User>(user);

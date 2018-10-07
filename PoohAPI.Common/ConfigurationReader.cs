@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PoohAPI.Common
 {
@@ -9,7 +6,7 @@ namespace PoohAPI.Common
     {
         private static string GetConfigurationSetting(string key)
         {
-            return ConfigurationManager.AppSettings[key];
+            return Environment.GetEnvironmentVariable(key);
         }
 
         public static string TestValue => GetConfigurationSetting(nameof(TestValue));

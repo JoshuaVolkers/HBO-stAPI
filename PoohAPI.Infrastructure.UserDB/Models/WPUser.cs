@@ -8,7 +8,7 @@ namespace PoohAPI.Infrastructure.UserDB.Models
 {
     public class WPUser
     {
-        public int ID { get; set; }
+        public UInt64 ID { get; set; }
         public string user_login { get; set; }
         public string user_nicename { get; set; }
         public string user_email { get; set; }

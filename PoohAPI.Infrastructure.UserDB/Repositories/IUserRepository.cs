@@ -9,7 +9,7 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
     public interface IUserRepository
     {
-        IEnumerable<WPUser> GetAllUsers(int maxCount, int offset);
-        WPUser GetUserById(string q);
+        IEnumerable<WPUser> GetAllUsers(string query);
+        WPUser GetUserById(string query);
     }
 }
