@@ -19,7 +19,7 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             _mapper = mapper;
             _client = client;
         }
-
+        
         //Add methods for SELECT, INSERT, UPDATE statements that also manage the connectionstate so as to keep the responsability
         //for the connectionstate it in this class.
         public T GetSingle<T>(string query)
@@ -28,11 +28,17 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             {
                 var command = new MySqlCommand(query, _client.Connection());
                 var reader = command.ExecuteReader();
-                _client.CloseConnection();
-                if (reader.HasRows)
-                    return _mapper.Map<IDataReader, T>(reader);
-            }
+                var result = default(T);
 
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    result = _mapper.Map<IDataReader, T>(reader);
+                }                    
+
+                _client.CloseConnection();
+                return result;
+            }
             return default(T);
         }
 

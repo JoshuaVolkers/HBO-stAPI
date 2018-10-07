@@ -29,12 +29,19 @@ namespace PoohAPI.Infrastructure.Common
         private void Init()
         {
             //These values should be retrieved from the appsettings.json and the configurationportal on Azure later on.
-            _server = "test";
-            _database = "test";
-            _uid = "test";
-            _password = "test";
+            
+            _server = "127.0.0.1";
+            _database = "hbostage_dev";
+            _uid = "root";
+            _password = "";
+
+
             var connectionString = string.Format("server={0};database={1};uid={2};password={3};", _server, _database,
                 _uid, _password);
+
+            // SslMode is set to none for local db
+            //var connectionString = string.Format("server={0};database={1};uid={2};password={3};SslMode=none", _server, _database,
+            //    _uid, _password);
             _connection = new MySqlConnection(connectionString);
         }
 
