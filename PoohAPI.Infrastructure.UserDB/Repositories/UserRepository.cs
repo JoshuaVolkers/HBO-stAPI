@@ -16,14 +16,14 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             _mapper = mapper;
         }
 
-        public IEnumerable<WPUser> GetAllUsers(int maxCount, int offset)
+        public IEnumerable<WPUser> GetAllUsers(string query)
         {
-            return GetAll<WPUser>("test");
+            return GetAll<WPUser>(query);
         }
 
-        public WPUser GetUserById(string q)
+        public WPUser GetUserById(string query)
         {
-            return GetSingle<WPUser>(q);
+            return GetSingle<WPUser>(query);
         }
     }
 }

@@ -35,7 +35,6 @@ namespace PoohAPI.Infrastructure.Common
             _uid = "root";
             _password = "";
 
-
             var connectionString = string.Format("server={0};database={1};uid={2};password={3};", _server, _database,
                 _uid, _password);
 

@@ -10,7 +10,7 @@ using MySql.Data.MySqlClient;
 namespace PoohAPI.Infrastructure.Common.Repositories
 {
     public abstract class MySQLBaseRepository : IMySQLBaseRepository
-    {  
+    {
         private readonly IMapper _mapper;
         private readonly IMySQLClient _client;
 
@@ -48,9 +48,13 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             {
                 var command = new MySqlCommand(query, _client.Connection());
                 var reader = command.ExecuteReader();
+                var result = new List<T>();
+
+                while (reader.Read())
+                    result.Add(_mapper.Map<IDataReader, T>(reader)); 
+
                 _client.CloseConnection();
-                if (reader.HasRows)
-                    return _mapper.Map<IDataReader, List<T>>(reader);
+                return result;
             }
             return null;
         }
