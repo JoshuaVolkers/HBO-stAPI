@@ -25,7 +25,7 @@ namespace PoohAPI.Logic.Users.Services
 
         public Common.Models.User GetUserById(int id)
         {
-            var query = string.Format("SELECT * FROM users WHERE user.id = {0}", id);
+            var query = string.Format("SELECT * FROM wp_dev_users u WHERE u.ID = {0}", id);
             var user = _userRepository.GetUserById(query);
             
             return _mapper.Map<Common.Models.User>(user);
