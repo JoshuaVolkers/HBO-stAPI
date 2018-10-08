@@ -21,7 +21,7 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             return GetAll<WPUser>(query);
         }
 
-        public WPUser GetUserById(string query)
+        public WPUser GetUser(string query)
         {
             return GetSingle<WPUser>(query);
         }

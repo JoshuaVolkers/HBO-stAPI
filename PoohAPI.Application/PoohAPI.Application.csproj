@@ -82,6 +82,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj">
+      <Project>{5784f3f3-e383-4da8-ac93-4ebdeba8c05b}</Project>
+      <Name>PoohAPI.Logic.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj">
       <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>
       <Name>PoohAPI.Logic.Users</Name>

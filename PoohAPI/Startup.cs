@@ -8,7 +8,11 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PoohAPI.Application;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
 
 namespace PoohAPI
 {
@@ -55,12 +59,45 @@ namespace PoohAPI
                         }
                     });
 
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }}
+                };
+
+                s.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+
+                s.AddSecurityRequirement(security);
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
 
                 s.DescribeAllEnumsAsStrings();
             });
+            #endregion
+
+            #region JWT validation configuration
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "poohapi",
+                        ValidAudience = "poohapi",
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes("D2n2skmv8xY3ZcSzgc9eMwWjYzXMPXHtWKarHxscXeZN6FbX6qkeBsw88txVPRyHf4j2VkEH4XZLskGgKSJHHybhjVXAHXEYMw8z6gGTG58wT8y49bJ8ezMJNXhFz9Vd"))
+                    };
+                });
             #endregion
 
             services.AddMvc()
@@ -78,6 +115,8 @@ namespace PoohAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
+
             app.UseMvc();
 
             app.UseSwagger();
@@ -87,8 +126,6 @@ namespace PoohAPI
                 s.SwaggerEndpoint("/swagger/v1/swagger.json", "ELBHO/HBO-stagemarkt API");
                 s.RoutePrefix = string.Empty;
             });
-
-            app.UseDeveloperExceptionPage();
         }
     }
 }

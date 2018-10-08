@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PoohAPI.RequestModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
 namespace PoohAPI.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
@@ -28,16 +31,20 @@ namespace PoohAPI.Controllers
         /// <param name="loginRequest">The loginRequest model</param>
         /// <returns>The logged in user</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incorrect credentials</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            return Ok();
+            var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
+            if (user == null)
+                return BadRequest("Username or password was incorrect!");
+            return Ok(TokenHelper.RequestToken(user));
         }
-        
+
         /// <summary>
         /// Starts the register process
         /// </summary>
@@ -84,7 +91,8 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [Authorize(Roles = "administrator")]
         [HttpGet]
         [Route("")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
@@ -107,14 +115,20 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetUserById(int id)
+        public object GetUserById()
         {
-            return Ok(_userReadService.GetUserById(id));
+            //return User.Claims.Select(c =>
+            //    new
+            //    {
+            //        Type = c.Type,
+            //        Value = c.Value
+            //    });
+            return Ok(_userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
@@ -126,7 +140,7 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -134,7 +148,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteUser()
         {
-                return Ok();
+            return Ok();
         }
 
         /// <summary>
@@ -148,12 +162,12 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult UpdateUser(int id, [FromBody]User userData)
+        public IActionResult UpdateUser([FromBody]User userData)
         {
             return Ok(userData);
         }
@@ -168,12 +182,12 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}/favorites")]
+        [Route("me/favorites")]
         [ProducesResponseType(typeof(IEnumerable<BaseVacancy>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetFavoriteVacancies(int id)
+        public IActionResult GetFavoriteVacancies()
         {
             return Ok(new List<BaseVacancy>());
         }
@@ -188,7 +202,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
-        [Route("{id}/favorites/{vacancyId}")]
+        [Route("me/favorites/{vacancyId}")]
         [ProducesResponseType(typeof(BaseVacancy), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -212,7 +226,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpDelete]
-        [Route("{id}/favorites/{vacancyId}")]
+        [Route("me/favorites/{vacancyId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -235,7 +249,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}/reviews")]
+        [Route("me/reviews")]
         [ProducesResponseType(typeof(IEnumerable<Review>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -243,6 +257,11 @@ namespace PoohAPI.Controllers
         public IActionResult GetReviews()
         {
             return Ok(new List<Review>());
+        }
+
+        private int GetCurrentUserId()
+        {
+            return Int32.Parse(User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).SingleOrDefault());
         }
 
     }

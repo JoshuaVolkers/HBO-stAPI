@@ -15,5 +15,6 @@ namespace PoohAPI.Infrastructure.UserDB.Models
         public DateTime user_registered { get; set; }
         public int user_status { get; set; }
         public string display_name { get; set; }
+        public string user_pass { get; set; }
     }
 }

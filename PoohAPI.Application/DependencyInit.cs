@@ -5,8 +5,9 @@ namespace PoohAPI.Application
     public static class DependencyInit
     {
         public static void Init(IServiceCollection services)
-        {          
-            Logic.Users.Init.DIComponentsConfig.RegisterComponents(services);
+        {
+            Logic.Common.Init.DIComponentsConfig.RegisterComponents(services);
+            Logic.Users.Init.DIComponentsConfig.RegisterComponents(services);   
         }
     }
 }
