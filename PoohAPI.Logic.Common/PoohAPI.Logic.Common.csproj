@@ -85,7 +85,6 @@
     <Compile Include="Interfaces\IUserReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
-    <Compile Include="Models\BaseModels\BaseVacany.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Review.cs" />

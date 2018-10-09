@@ -30,7 +30,7 @@ namespace PoohAPI
                 issuer: "poohapi",
                 audience: "poohapi",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1),
+                expires: DateTime.UtcNow.AddMinutes(2),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

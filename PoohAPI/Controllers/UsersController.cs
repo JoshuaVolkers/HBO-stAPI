@@ -11,7 +11,7 @@ using PoohAPI.Logic.Common.Models.BaseModels;
 
 namespace PoohAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
@@ -32,7 +32,7 @@ namespace PoohAPI.Controllers
         /// <returns>The logged in user</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         [Route("login")]
         [ProducesResponseType(typeof(User), 200)]
@@ -42,7 +42,7 @@ namespace PoohAPI.Controllers
             var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
-            return Ok(TokenHelper.RequestToken(user));
+            return Ok(/*TokenHelper.RequestToken(user)*/);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        [Authorize(Roles = "administrator")]
+        //[Authorize(Roles = "administrator")]
         [HttpGet]
         [Route("")]
         [ProducesResponseType(typeof(IEnumerable<User>), 200)]
@@ -183,13 +183,13 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
         [Route("me/favorites")]
-        [ProducesResponseType(typeof(IEnumerable<BaseVacancy>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            return Ok(new List<BaseVacancy>());
+            return Ok(new List<Vacancy>());
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
         [Route("me/favorites/{vacancyId}")]
-        [ProducesResponseType(typeof(BaseVacancy), 200)]
+        [ProducesResponseType(typeof(Vacancy), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
