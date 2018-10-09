@@ -9,7 +9,7 @@ using AutoMapper;
 
 namespace PoohAPI.Logic.Common
 {
-    public class DataReaderTypeConverter<T> : ITypeConverter<IDataReader, T> where T : new()
+    public class DataReaderTypeConverter<T> : ITypeConverter<IDataReader, T> where T : class, new()
     {
         public T Convert(IDataReader source, T destination, ResolutionContext context)
         {

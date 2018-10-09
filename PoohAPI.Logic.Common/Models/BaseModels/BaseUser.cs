@@ -13,5 +13,6 @@ namespace PoohAPI.Logic.Common.Models.BaseModels
         public string Url { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string ActivationKey { get; set; }
+        public string[] Roles { get; set; }
     }
 }

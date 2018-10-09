@@ -80,11 +80,11 @@
     <Compile Include="DataReaderTypeConverter.cs" />
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
+    <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\IUserCommandService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
-    <Compile Include="Models\BaseModels\BaseVacany.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Review.cs" />
@@ -99,6 +99,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
+      <Project>{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}</Project>
+      <Name>PoohAPI.Infrastructure.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

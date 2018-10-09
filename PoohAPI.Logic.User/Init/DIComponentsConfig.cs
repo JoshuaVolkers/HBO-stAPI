@@ -13,7 +13,6 @@ namespace PoohAPI.Logic.Users.Init
             services.AddScoped<IUserReadService, UserReadService>();
             services.AddScoped<IUserCommandService, UserCommandService>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddSingleton<IMySQLClient, MySQLClient>();
         }
     }
 }
