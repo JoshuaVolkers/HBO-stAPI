@@ -81,7 +81,9 @@
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
+    <Compile Include="Interfaces\ICompanyCommandService.cs" />
     <Compile Include="Interfaces\IUserCommandService.cs" />
+    <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />

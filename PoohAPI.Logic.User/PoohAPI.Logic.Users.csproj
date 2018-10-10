@@ -77,7 +77,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Init\UserMappingProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,7 +87,9 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PoohAPI.Common\PoohAPI.Common.csproj">
       <Project>{7B051E95-5173-4783-80C3-D6D849A67BE4}</Project>

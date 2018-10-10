@@ -5,7 +5,6 @@ using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PoohAPI.Logic.Users.Helpers;
 
 namespace PoohAPI.Logic.Users.Services
 {
@@ -37,11 +36,11 @@ namespace PoohAPI.Logic.Users.Services
 
         public User Login(string login, string password)
         {
-            var query = string.Format("SELECT * FROM wp_dev_users WHERE user_login = '{0}'", login);
-            var user = _userRepository.GetUser(query);
-            var encoded = PasswordHasher.Encode(password, user.user_pass);
-            if (encoded.Equals(user.user_pass))
-                return _mapper.Map<User>(user);
+            //var query = string.Format("SELECT * FROM wp_dev_users WHERE user_login = '{0}'", login);
+            //var user = _userRepository.GetUser(query);
+            //var encoded = PasswordHasher.Encode(password, user.user_pass);
+            //if (encoded.Equals(user.user_pass))
+            //    return _mapper.Map<User>(user);
 
             return null;
         }
