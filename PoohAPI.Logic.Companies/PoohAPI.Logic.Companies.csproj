@@ -90,5 +90,23 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Common\PoohAPI.Common.csproj">
+      <Project>{7b051e95-5173-4783-80c3-d6d849a67be4}</Project>
+      <Name>PoohAPI.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
+      <Project>{2b1822dc-9e62-4a4c-9d31-76e2029ce8fd}</Project>
+      <Name>PoohAPI.Infrastructure.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.CompanyDB\PoohAPI.Infrastructure.CompanyDB.csproj">
+      <Project>{8b2a6ecc-1138-45a4-9b76-10921d7b8785}</Project>
+      <Name>PoohAPI.Infrastructure.CompanyDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj">
+      <Project>{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}</Project>
+      <Name>PoohAPI.Logic.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
