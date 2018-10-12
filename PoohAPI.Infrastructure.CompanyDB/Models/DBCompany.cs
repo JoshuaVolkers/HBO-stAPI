@@ -21,8 +21,10 @@ namespace PoohAPI.Infrastructure.CompanyDB.Models
         public string bedrijf_contactpersoon_telefoon { get; set; }
         public string bedrijf_website { get; set; }
         public string bedrijf_logo { get; set; }
+        public string bedrijf_social_linkedin { get; set; }
         public string bedrijf_beschrijving { get; set; }
         public decimal bedrijf_breedtegraad { get; set; }
         public decimal bedrijf_lengtegraad { get; set; }
+        public decimal average_reviews { get; set; }
     }
 }
