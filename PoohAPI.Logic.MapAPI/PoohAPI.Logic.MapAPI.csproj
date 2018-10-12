@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{996CDDD4-5716-46B4-A30C-D90C01DE637E}</ProjectGuid>
+    <ProjectGuid>{88A2193C-920A-4EC7-9CEB-BBD512DCFBF3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PoohAPI.Application</RootNamespace>
-    <AssemblyName>PoohAPI.Application</AssemblyName>
+    <RootNamespace>PoohAPI.Logic.MapAPI</RootNamespace>
+    <AssemblyName>PoohAPI.Logic.MapAPI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,7 +48,6 @@
     </Reference>
     <Reference Include="MySql.Data, Version=8.0.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.12\lib\net452\MySql.Data.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -77,26 +77,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoMapperInit.cs" />
-    <Compile Include="DependencyInit.cs" />
+    <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\MapAPIReadService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Common\PoohAPI.Common.csproj">
+      <Project>{7b051e95-5173-4783-80c3-d6d849a67be4}</Project>
+      <Name>PoohAPI.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.MapAPI\PoohAPI.Infrastructure.MapAPI.csproj">
+      <Project>{271367a5-f8de-4122-8e68-0e98394e67bd}</Project>
+      <Name>PoohAPI.Infrastructure.MapAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj">
       <Project>{5784f3f3-e383-4da8-ac93-4ebdeba8c05b}</Project>
       <Name>PoohAPI.Logic.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoohAPI.Logic.Companies\PoohAPI.Logic.Companies.csproj">
-      <Project>{2d883c65-93f9-4ea4-8075-833359b30630}</Project>
-      <Name>PoohAPI.Logic.Companies</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoohAPI.Logic.MapAPI\PoohAPI.Logic.MapAPI.csproj">
-      <Project>{88a2193c-920a-4ec7-9ceb-bbd512dcfbf3}</Project>
-      <Name>PoohAPI.Logic.MapAPI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj">
-      <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>
-      <Name>PoohAPI.Logic.Users</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
