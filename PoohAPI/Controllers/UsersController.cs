@@ -115,12 +115,12 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("me")]
+        [Route("{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById()
+        public object GetUserById(int id)
         {
             //return User.Claims.Select(c =>
             //    new
@@ -128,7 +128,19 @@ namespace PoohAPI.Controllers
             //        Type = c.Type,
             //        Value = c.Value
             //    });
-            return Ok(_userReadService.GetUserById(GetCurrentUserId()));
+
+            User user = _userReadService.GetUserById(id);
+
+            if (user is User)
+            {
+                return Ok(user);
+            }
+            else
+            {
+                return NotFound("User not found.");
+            }
+
+            //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
