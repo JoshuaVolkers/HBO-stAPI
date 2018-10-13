@@ -18,12 +18,14 @@ namespace PoohAPI.Logic.Companies.Services
         private readonly ICompanyRepository companyRepository;
         private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
+        private readonly IQueryBuilder queryBuilder;
 
-        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService)
+        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder)
         {
             this.companyRepository = companyRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
+            this.queryBuilder = queryBuilder;
         }
 
         public Company GetCompanyById(int id)
@@ -60,53 +62,25 @@ namespace PoohAPI.Logic.Companies.Services
 
         public IEnumerable<BaseCompany> GetListCompanies(int maxCount, int offset, double? minStars = null,
             double? maxStars = null, string cityName = null, string countryName = null, int? locationRange = null,
-            string additionalLocationSearchTerms = null, int ? major = null, bool detailedCompanies = false)
+            string additionalLocationSearchTerms = null, int? major = null, bool detailedCompanies = false)
         {
-            
+            this.queryBuilder.Clear();
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@limit", maxCount);
-            parameters.Add("@offset", offset);
 
-            string starFilter = AddStarFilter(parameters, minStars, maxStars);
-            string locationFilter = this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
-            string majorFilter = "";
-            string majorJoin = "";
-
-            if (!(major is null))
-            {
-                parameters.Add("@majorId", major);
-                majorFilter = "AND ob.opb_opleiding_id = @majorId ";
-                majorJoin = "INNER JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id ";
-            }
-
-            string extraFields = "";
+            this.AddCompanyBaseQuery(parameters, maxCount, offset);
+            this.AddStarFilter(parameters, minStars, maxStars);
+            this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
+            this.AddMajorFilter(parameters, major);
 
             if (detailedCompanies)
             {
-                extraFields = "b.bedrijf_contactpersoon_email, b.bedrijf_website, b.bedrijf_social_linkedin, b.bedrijf_beschrijving,";
+                this.queryBuilder.AddSelect("b.bedrijf_contactpersoon_email, b.bedrijf_website, b.bedrijf_social_linkedin, b.bedrijf_beschrijving");
             }
 
-            string query = @"
-                SELECT 
-                    b.bedrijf_id, b.bedrijf_handelsnaam, b.bedrijf_vestiging_straat, bedrijf_vestiging_huisnr, 
-                    b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, b.bedrijf_vestiging_plaats, 
-                    b.bedrijf_vestiging_land, l.land_naam, b.bedrijf_logo, b.bedrijf_breedtegraad, 
-                    b.bedrijf_lengtegraad, " + extraFields + @" 
-                    IF(r.review_sterren IS NULL, 0,
-                            CASE WHEN COUNT(r.review_sterren) > 4
-                            THEN AVG(r.review_sterren)
-                            ELSE 0 END
-                       ) as average_reviews
-                FROM reg_bedrijven b
-                INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id
-                " + majorJoin + @"
-                LEFT JOIN reg_reviews r ON b.bedrijf_id = r.review_bedrijf_id
-                WHERE b.bedrijf_actief = 1 
-                " + locationFilter + majorFilter + @" 
-                GROUP BY b.bedrijf_id 
-                " + starFilter + @" 
-                LIMIT @limit OFFSET @offset";
-            
+            string query = this.queryBuilder.BuildQuery();
+            this.queryBuilder.Clear();
+
             IEnumerable<DBCompany> dbCompanies = this.companyRepository.GetListCompanies(query, parameters);
 
             if (detailedCompanies)
@@ -118,47 +92,65 @@ namespace PoohAPI.Logic.Companies.Services
                 return this.mapper.Map<IEnumerable<BaseCompany>>(dbCompanies);
             }
         }
-        
-        private string AddStarFilter(Dictionary<string, object> parameters, double? minStars = null, double? maxStars = null)
+
+        private void AddMajorFilter(Dictionary<string, object> parameters, int? major)
         {
-            string starFilter = "";
-            
-            if (!(minStars is null) || !(maxStars is null))
+            if (!(major is null))
             {
-                starFilter += "HAVING ";
+                this.queryBuilder.AddJoinLine("INNER JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id");
+                this.queryBuilder.AddWhere("ob.opb_opleiding_id = @majorId");
+                parameters.Add("@majorId", major);
+            }
+        }
 
-                if (!(minStars is null))
-                {
-                    starFilter += "average_reviews > @minStars ";
-                    parameters.Add("@minStars", minStars);
-                }
+        private void AddCompanyBaseQuery(Dictionary<string, object> parameters, int maxCount, int offset)
+        {
+            this.queryBuilder.AddSelect(@"b.bedrijf_id, b.bedrijf_handelsnaam, b.bedrijf_vestiging_straat, bedrijf_vestiging_huisnr, 
+                    b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, b.bedrijf_vestiging_plaats,
+                    b.bedrijf_vestiging_land, l.land_naam, b.bedrijf_logo, b.bedrijf_breedtegraad,
+                    b.bedrijf_lengtegraad");
+            this.queryBuilder.AddSelect(@" 
+                    IF(r.review_sterren IS NULL, 0,
+                            CASE WHEN COUNT(r.review_sterren) > 4
+                            THEN AVG(r.review_sterren)
+                            ELSE 0 END
+                       ) as average_reviews");
+            this.queryBuilder.SetFrom("reg_bedrijven b");
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_reviews r ON b.bedrijf_id = r.review_bedrijf_id");
+            this.queryBuilder.AddWhere("b.bedrijf_actief = 1");
+            this.queryBuilder.AddGroupBy("b.bedrijf_id");
+            this.queryBuilder.SetLimit("@limit");
+            this.queryBuilder.SetOffset("@offset");
 
-                if (!(minStars is null) && !(maxStars is null))
-                {
-                    starFilter += "AND ";
-                }
+            parameters.Add("@limit", maxCount);
+            parameters.Add("@offset", offset);
+        }
 
-                if (!(maxStars is null))
-                {
-                    starFilter += "average_reviews < @maxStars ";
-                    parameters.Add("@maxStars", maxStars);
-                }
+        private void AddStarFilter(Dictionary<string, object> parameters, double? minStars = null, double? maxStars = null)
+        {
+            if (!(minStars is null))
+            {
+                this.queryBuilder.AddHaving("average_reviews > @minStars");
+                parameters.Add("@minStars", minStars);
             }
 
-            return starFilter;
+            if (!(maxStars is null))
+            {
+                this.queryBuilder.AddHaving("average_reviews < @maxStars");
+                parameters.Add("@maxStars", maxStars);
+            }
         }
 
-        private string AddMajorFilter(Dictionary<string, object> parameters, int major)
+        private void AddMajorFilter(Dictionary<string, object> parameters, int major)
         {
+            this.queryBuilder.AddWhere("ob.opb_opleiding_id = @majorId");
             parameters.Add("@majorId", major);
-            return "AND ob.opb_opleiding_id = @majorId ";
         }
 
-        private string AddLocationFilter(Dictionary<string, object> parameters, string countryName = null, 
+        private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null, 
             string municipalityName = null, string cityName = null, int? locationRange = null)
         {
-            string locationFilter = "";
-
             if (!(cityName is null) && !(locationRange is null))
             {
                 // Use Map API
@@ -170,42 +162,42 @@ namespace PoohAPI.Logic.Companies.Services
                     parameters.Add("@longitude", coordinates.Longitude);
                     parameters.Add("@rangeKm", locationRange);
 
-                    return @"AND (
+                    this.queryBuilder.AddSelect(@"(
                         6371 * acos(
                           cos(radians(@latitude))
                           * cos(radians(b.bedrijf_breedtegraad))
                           * cos(radians(b.bedrijf_lengtegraad) - radians(@longitude))
                           + sin(radians(@latitude))
                           * sin(radians(b.bedrijf_breedtegraad))
-                        )
-				      ) < @rangeKm";
+                        )) as distance");
+                    this.queryBuilder.AddHaving("distance < @rangeKm");
                 }
             }
-
-            // Find matches in database
-            if (!(cityName is null))
+            else
             {
-                locationFilter += AddCityFilter(parameters, cityName);
-            }
+                // Find matches in database
+                if (!(cityName is null))
+                {
+                    AddCityFilter(parameters, cityName);
+                }
 
-            if (!(countryName is null))
-            {
-                locationFilter += AddCountryFilter(parameters, countryName);
+                if (!(countryName is null))
+                {
+                    AddCountryFilter(parameters, countryName);
+                }
             }
-
-            return locationFilter;
         }
 
-        private string AddCountryFilter(Dictionary<string, object> parameters, string countryName)
+        private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
         {
+            this.queryBuilder.AddWhere("l.land_naam = @countryName");
             parameters.Add("@countryName", countryName);
-            return "AND l.land_naam = @countryName ";
         }
 
-        private string AddCityFilter(Dictionary<string, object> parameters, string cityName)
+        private void AddCityFilter(Dictionary<string, object> parameters, string cityName)
         {
+            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = @cityName");
             parameters.Add("@cityName", cityName);
-            return "AND b.bedrijf_vestiging_plaats = @cityName ";
         }
 
     }
