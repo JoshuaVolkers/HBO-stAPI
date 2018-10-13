@@ -26,6 +26,7 @@ namespace PoohAPI.Logic.Companies.Init
                 .ForMember(d => d.HouseNumberAdditions, o => o.MapFrom(s => s.bedrijf_vestiging_toev))
                 .ForMember(d => d.Latitude, o => o.MapFrom(s => (double)s.bedrijf_breedtegraad))
                 .ForMember(d => d.Longitude, o => o.MapFrom(s => (double)s.bedrijf_lengtegraad))
+                .ForMember(d => d.Range, o => o.MapFrom(s => s.distance))
                 .ReverseMap();
 
             CreateMap<DBCompany, Company>()

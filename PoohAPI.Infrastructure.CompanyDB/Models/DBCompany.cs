@@ -26,5 +26,6 @@ namespace PoohAPI.Infrastructure.CompanyDB.Models
         public decimal bedrijf_breedtegraad { get; set; }
         public decimal bedrijf_lengtegraad { get; set; }
         public decimal average_reviews { get; set; }
+        public double distance { get; set; }
     }
 }
