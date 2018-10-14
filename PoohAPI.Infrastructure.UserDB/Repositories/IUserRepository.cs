@@ -12,5 +12,7 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         IEnumerable<WPUser> GetAllUsers(string query);
         WPUser GetUser(string query);
         DBUser GetUser(string query, Dictionary<string, object> parameters);
+        void UpdateUser(string query, Dictionary<string, object> parameters);
+        void DeleteUser(string query, Dictionary<string, object> parameters);
     }
 }

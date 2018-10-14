@@ -16,11 +16,13 @@ namespace PoohAPI.Logic.Common.Classes
         private string from;
         private string limit;
         private string offset;
+        private string update;
         private List<string> selectEntries;
         private List<string> joinEntries;
         private List<string> whereEntries;
         private List<string> groupByEntries;
         private List<string> havingEntries;
+        private List<string> updateSetEntries;
 
         public QueryBuilder()
         {
@@ -32,11 +34,13 @@ namespace PoohAPI.Logic.Common.Classes
             this.from = "";
             this.limit = "";
             this.offset = "";
+            this.update = "";
             this.selectEntries = new List<string>();
             this.joinEntries = new List<string>();
             this.whereEntries = new List<string>();
             this.groupByEntries = new List<string>();
             this.havingEntries = new List<string>();
+            this.updateSetEntries = new List<string>();
         }
         
         public void AddGroupBy(string groupBy)
@@ -208,6 +212,48 @@ namespace PoohAPI.Logic.Common.Classes
             return query;
         }
 
-        
+        public void SetUpdate(string update)
+        {
+            this.update = update;
+        }
+
+        public string BuildUpdate()
+        {
+            string query = "UPDATE " + this.update + " ";
+
+            query = this.BuildUpdateSet(query);
+            query = this.BuildWhere(query);
+
+            return query;
+        }
+
+        private string BuildUpdateSet(string query)
+        {
+            if (this.updateSetEntries.Count > 0)
+            {
+                query += "SET ";
+
+                for (int i = 0; i < this.updateSetEntries.Count; i++)
+                {
+                    query += this.updateSetEntries[i];
+
+                    if (i != (this.updateSetEntries.Count - 1))
+                    {
+                        query += ", ";
+                    }
+                    else
+                    {
+                        query += " ";
+                    }
+                }
+            }
+
+            return query;
+        }
+
+        public void AddUpdateSet(string updateSet)
+        {
+            this.updateSetEntries.Add(updateSet);
+        }
     }
 }
