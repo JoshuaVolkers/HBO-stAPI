@@ -25,5 +25,10 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             return GetSingle<WPUser>(query);
         }
+
+        public DBUser GetUser(string query, Dictionary<string, object> parameters)
+        {
+            return GetSingle<DBUser>(query, parameters);
+        }
     }
 }
