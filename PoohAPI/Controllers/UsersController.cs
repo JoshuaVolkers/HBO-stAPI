@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
@@ -152,14 +153,15 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("me")]
+        [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser()
+        public IActionResult DeleteUser(int id)
         {
+            _userCommandService.DeleteUser(id);
             return Ok();
         }
 
@@ -179,9 +181,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult UpdateUser([FromBody]User userData)
+        public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            return Ok(userData);
+            if (ModelState.IsValid)
+            {
+                return Ok(_userCommandService.UpdateUser(userData));
+            }
+            else
+            {
+                return BadRequest("Informatie involledig.");
+            }
         }
 
         /// <summary>

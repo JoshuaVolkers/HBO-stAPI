@@ -30,5 +30,15 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             return GetSingle<DBUser>(query, parameters);
         }
+
+        public void UpdateUser(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
+
+        public void DeleteUser(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
     }
 }

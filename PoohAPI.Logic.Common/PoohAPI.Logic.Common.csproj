@@ -92,6 +92,7 @@
     <Compile Include="Models\BaseModels\BaseUser.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Coordinates.cs" />
+    <Compile Include="Models\InputModels\UserUpdateInput.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewAnonymous.cs" />

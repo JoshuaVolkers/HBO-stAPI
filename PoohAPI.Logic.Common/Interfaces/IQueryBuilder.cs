@@ -8,6 +8,7 @@ namespace PoohAPI.Logic.Common.Interfaces
 {
     public interface IQueryBuilder
     {
+        void SetUpdate(string update);
         void SetFrom(string from);
         void SetLimit(string limit);
         void SetOffset(string offset);
@@ -16,7 +17,9 @@ namespace PoohAPI.Logic.Common.Interfaces
         void AddWhere(string where);
         void AddGroupBy(string groupBy);
         void AddHaving(string having);
+        void AddUpdateSet(string updateSet);
         string BuildQuery();
+        string BuildUpdate();
         void Clear();
     }
 }
