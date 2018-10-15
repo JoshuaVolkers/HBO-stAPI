@@ -8,11 +8,11 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using AutoMapper;
-using Unity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PoohAPI.Application;
-using PoohAPI.Infrastructure.UserDB.Repositories;
-using PoohAPI.Logic.Common.Interfaces;
-using PoohAPI.Logic.Users.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
 
 namespace PoohAPI
 {
@@ -40,11 +40,8 @@ namespace PoohAPI
 
             #endregion
 
-            var container = new UnityContainer();
-
-            UnityConfig.RegisterTypes(container);
-
-            LogicInit.Init(container);
+            //Dependency Injection
+            DependencyInit.Init(services);
 
             #region Swagger configuration
             services.AddSwaggerGen(s =>
@@ -62,6 +59,21 @@ namespace PoohAPI
                         }
                     });
 
+                //var security = new Dictionary<string, IEnumerable<string>>
+                //{
+                //    {"Bearer", new string[] { }}
+                //};
+
+                //s.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                //{
+                //    Description = "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}",
+                //    Name = "Authorization",
+                //    In = "header",
+                //    Type = "apiKey"
+                //});
+
+                //s.AddSecurityRequirement(security);
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
@@ -70,10 +82,25 @@ namespace PoohAPI
             });
             #endregion
 
-            //This cant be the way to go right?! How do you retain loose-coupling with this?!
-            services.AddScoped<IUserReadService, UserReadService>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            
+            #region JWT validation configuration
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            ClockSkew = TimeSpan.FromMinutes(5),
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ValidateIssuerSigningKey = true,
+            //            ValidIssuer = "poohapi",
+            //            ValidAudience = "poohapi",
+            //            RequireExpirationTime = true,
+            //            IssuerSigningKey = new SymmetricSecurityKey(
+            //                Encoding.UTF8.GetBytes("D2n2skmv8xY3ZcSzgc9eMwWjYzXMPXHtWKarHxscXeZN6FbX6qkeBsw88txVPRyHf4j2VkEH4XZLskGgKSJHHybhjVXAHXEYMw8z6gGTG58wT8y49bJ8ezMJNXhFz9Vd"))
+            //        };
+            //    });
+            #endregion
 
             services.AddMvc()
                 .AddJsonOptions(options =>
@@ -85,11 +112,12 @@ namespace PoohAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //app.UseAuthentication();
 
             app.UseMvc();
 
@@ -100,8 +128,6 @@ namespace PoohAPI
                 s.SwaggerEndpoint("/swagger/v1/swagger.json", "ELBHO/HBO-stagemarkt API");
                 s.RoutePrefix = string.Empty;
             });
-
-            app.UseDeveloperExceptionPage();
         }
     }
 }

@@ -1,55 +1,137 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using MySql.Data.MySqlClient;
 
 namespace PoohAPI.Infrastructure.Common.Repositories
 {
     public abstract class MySQLBaseRepository : IMySQLBaseRepository
     {
-        private MySqlConnection _connection;
-        private string _server;
-        private string _database;
-        private string _uid;
-        private string _password;
+        private readonly IMapper _mapper;
+        private readonly IMySQLClient _client;
 
-        public MySQLBaseRepository()
+        public MySQLBaseRepository(IMapper mapper, IMySQLClient client)
         {
-            Init();
+            _mapper = mapper;
+            _client = client;
         }
-
+        
         //Add methods for SELECT, INSERT, UPDATE statements that also manage the connectionstate so as to keep the responsability
         //for the connectionstate it in this class.
-
-        private void Init()
+        public T GetSingle<T>(string query)
         {
-            _server = "test";
-            _database = "test";
-            _uid = "test";
-            _password = "test";
-            var connectionString = string.Format("server={0};database={1};uid={2}password={4}", _server, _database,
-                _uid, _password);
-            _connection = new MySqlConnection(connectionString);
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+                var reader = command.ExecuteReader();
+                var result = default(T);
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    result = _mapper.Map<IDataReader, T>(reader);
+                }                    
+
+                _client.CloseConnection();
+                return result;
+            }
+            return default(T);
         }
 
-        private bool OpenConnection()
+        public T GetSingle<T>(string query, Dictionary<string,object> parameters)
         {
-            if (_connection.State == System.Data.ConnectionState.Open)
-                return true;
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
 
-            _connection.Open();
-            return true;
+                foreach(KeyValuePair<string,object> parameter in parameters)
+                {
+                    command.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                }
+
+                var reader = command.ExecuteReader();
+                var result = default(T);
+
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    result = _mapper.Map<IDataReader, T>(reader);
+                }
+
+                _client.CloseConnection();
+                return result;
+            }
+            return default(T);
         }
 
-        private bool CloseConnection()
+        public IEnumerable<T> GetAll<T>(string query)
         {
-            if (_connection.State == System.Data.ConnectionState.Closed)
-                return true;
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+                var reader = command.ExecuteReader();
+                var result = new List<T>();
 
-            _connection.Close();
-            return true;
+                while (reader.Read())
+                    result.Add(_mapper.Map<IDataReader, T>(reader)); 
+
+                _client.CloseConnection();
+                return result;
+            }
+            return null;
+        }
+
+        public IEnumerable<T> GetAll<T>(string query, Dictionary<string, object> parameters)
+        {
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+
+                foreach (KeyValuePair<string, object> parameter in parameters)
+                {
+                    command.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                }
+
+                var reader = command.ExecuteReader();
+                var result = new List<T>();
+
+                while (reader.Read())
+                    result.Add(_mapper.Map<IDataReader, T>(reader));
+
+                _client.CloseConnection();
+                return result;
+            }
+            return null;
+        }
+
+        public void NonQuery(string query)
+        {
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+                command.ExecuteNonQuery();
+                _client.CloseConnection();
+            }
+        }
+
+        public void NonQuery(string query, Dictionary<string, object> parameters)
+        {
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+
+                foreach (KeyValuePair<string, object> parameter in parameters)
+                {
+                    command.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                }
+
+                command.ExecuteNonQuery();
+                _client.CloseConnection();
+            }
         }
     }
 }

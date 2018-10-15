@@ -22,19 +22,16 @@ namespace PoohAPI.Controllers
         /// <param name="educationalAttainment">The level of the education (HBO, WO, Univerity, etc.)</param>
         /// <param name="intershipType">The type of intership</param>
         /// <param name="languages">A comma seperated list of the languages to get vacancies for</param>
-        /// <param name="detailedVacancy">Boolean to specify if a vacancy should contain all its information (true) or a summary (false)</param>
         /// <returns>A list of all vacancies</returns>
         /// <response code="200">Returns the list of vacancies</response>
         /// <response code="404">If no vacancies are found</response>   
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string searchWords = null, [FromQuery]double distanceInKM = 10.0, 
-            [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]string languages = null, [FromQuery]bool detailedVacancy = false)
+        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string searchWords = null, [FromQuery]double distanceInKM = 10.0,
+            [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]string languages = null)
         {
-            if (detailedVacancy)
-                return Ok(new List<Vacancy>());
-            return Ok(new List<BaseVacancy>());
+            return Ok(new List<Vacancy>());
         }
 
         /// <summary>
