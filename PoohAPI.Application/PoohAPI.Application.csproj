@@ -98,6 +98,10 @@
       <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>
       <Name>PoohAPI.Logic.Users</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Vacancies\PoohAPI.Logic.Vacancies.csproj">
+      <Project>{1758a16a-7182-4328-a4e8-03dd5f4405c7}</Project>
+      <Name>PoohAPI.Logic.Vacancies</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
