@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Logic.Common.Interfaces
 {
-    interface IVacancyReadService
+    public interface IVacancyReadService
     {
     }
 }

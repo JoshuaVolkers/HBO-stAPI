@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Infrastructure.VacancyDB.Models
 {
-    class DBVacancy
+    public class DBVacancy
     {
     }
 }

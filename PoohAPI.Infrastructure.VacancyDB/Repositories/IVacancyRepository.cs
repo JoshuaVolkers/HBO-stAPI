@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Infrastructure.VacancyDB.Repositories
 {
-    interface IVacancyRepository
+    public interface IVacancyRepository
     {
     }
 }

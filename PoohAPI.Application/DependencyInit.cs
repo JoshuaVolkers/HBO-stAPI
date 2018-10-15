@@ -10,6 +10,7 @@ namespace PoohAPI.Application
             Logic.Users.Init.DIComponentsConfig.RegisterComponents(services);
             Logic.Companies.Init.DIComponentsConfig.RegisterComponents(services);
             Logic.MapAPI.Init.DIComponentsConfig.RegisterComponents(services);
+            Logic.Vacancies.Init.DIComponentsConfig.RegisterComponents(services);
         }
     }
 }

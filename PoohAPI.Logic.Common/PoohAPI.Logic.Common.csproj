@@ -88,6 +88,8 @@
     <Compile Include="Interfaces\IUserCommandService.cs" />
     <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
+    <Compile Include="Interfaces\IVacancyCommandService.cs" />
+    <Compile Include="Interfaces\IVacancyReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
     <Compile Include="Models\Company.cs" />

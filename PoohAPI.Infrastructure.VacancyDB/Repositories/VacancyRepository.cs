@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Infrastructure.VacancyDB.Repositories
 {
-    class VacancyRepository
+    public class VacancyRepository : IVacancyRepository
     {
     }
 }
