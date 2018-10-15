@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PoohAPI.Infrastructure.Common;
-using PoohAPI.Logic.Common.Interfaces;
-using PoohAPI.Logic.Common.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PoohAPI.Logic.Common.Interfaces;
+using PoohAPI.Infrastructure.MapAPI.APIClients;
+using PoohAPI.Logic.MapAPI.Services;
 
-namespace PoohAPI.Logic.Common.Init
+namespace PoohAPI.Logic.MapAPI.Init
 {
     public static class DIComponentsConfig
     {
         public static void RegisterComponents(IServiceCollection services)
         {
-            services.AddSingleton<IMySQLClient, MySQLClient>();
-            services.AddScoped<IQueryBuilder, QueryBuilder>();
+            services.AddScoped<IMapAPIClient, AzureMapsAPIClient>();
+            services.AddScoped<IMapAPIReadService, MapAPIReadService>();
         }
     }
 }

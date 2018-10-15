@@ -77,17 +77,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\QueryBuilder.cs" />
     <Compile Include="DataReaderTypeConverter.cs" />
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
+    <Compile Include="Interfaces\IMapAPIReadService.cs" />
+    <Compile Include="Interfaces\IQueryBuilder.cs" />
     <Compile Include="Interfaces\IUserCommandService.cs" />
     <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Coordinates.cs" />
+    <Compile Include="Models\InputModels\UserUpdateInput.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewAnonymous.cs" />

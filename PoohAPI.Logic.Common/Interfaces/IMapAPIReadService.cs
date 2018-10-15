@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Logic.Common.Interfaces
 {
-    public interface IUserCommandService
+    public interface IMapAPIReadService
     {
-        User UpdateUser(UserUpdateInput userInput);
-        void DeleteUser(int id);
+        Coordinates GetMapCoordinates(string cityName, string countryName = null, string municipalityName = null);
     }
 }
