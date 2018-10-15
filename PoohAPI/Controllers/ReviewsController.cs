@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.RequestModels;
 
 namespace PoohAPI.Controllers
@@ -8,6 +9,13 @@ namespace PoohAPI.Controllers
     [Route("reviews")]
     public class ReviewsController : Controller
     {
+        private readonly IReviewReadService reviewReadService;
+
+        public ReviewsController(IReviewReadService reviewReadService)
+        {
+            this.reviewReadService = reviewReadService;
+        }
+
         /// <summary>
         /// Gets review by id for editing purposes. The user must be authorized.
         /// </summary>
@@ -19,8 +27,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response> 
         /// <response code="404">If the review was not found</response> 
-        [HttpGet]
-        [Route("{reviewId}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -28,7 +35,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviewById(int id)
         {
-            return Ok(new Review { Id = id });
+            Review review = this.reviewReadService.GetReview(id);
+
+            if (review is Review)
+            {
+                return Ok(this.reviewReadService.GetReview(id));
+            }
+            else
+            {
+                return NotFound("Review not found.");
+            }
         }
 
         /// <summary>
