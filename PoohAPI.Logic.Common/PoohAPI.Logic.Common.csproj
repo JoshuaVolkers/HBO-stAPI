@@ -85,6 +85,8 @@
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
     <Compile Include="Interfaces\IMapAPIReadService.cs" />
     <Compile Include="Interfaces\IQueryBuilder.cs" />
+    <Compile Include="Interfaces\IReviewCommandService.cs" />
+    <Compile Include="Interfaces\IReviewReadService.cs" />
     <Compile Include="Interfaces\IUserCommandService.cs" />
     <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
