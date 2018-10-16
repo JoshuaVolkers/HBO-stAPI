@@ -9,8 +9,8 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
 {
     public interface IUserRepository
     {
-        IEnumerable<WPUser> GetAllUsers(string query);
-        WPUser GetUser(string query);
+        IEnumerable<WPUser> GetAllUsers(string query, Dictionary<string, object> parameters);
+        WPUser GetUser(string query, Dictionary<string, object> parameters);
         int RegisterUser(string query, Dictionary<string, object> parameters);
     }
 }

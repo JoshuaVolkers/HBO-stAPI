@@ -40,7 +40,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
+            var user = _userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 

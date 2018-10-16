@@ -9,6 +9,6 @@ namespace PoohAPI.Logic.Common.Interfaces
         IEnumerable<User> GetAllUsers(int maxCount, int offset);
         User GetUserById(int id);
         User GetUserByEmail(string email);
-        User Login(string login, string password);
+        User Login(string email, string password);
     }
 }
