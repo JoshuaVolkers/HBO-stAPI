@@ -8,15 +8,15 @@ namespace PoohAPI.Infrastructure.ReviewDB.Models
 {
     public class DBReview
     {
-        public int review_id;
-        public int review_bedrijf_id;
-        public int review_student_id;
-        public int review_sterren;
-        public string review_geschreven;
-        public int review_anoniem;
-        public DateTime review_datum;
-        public int review_status;
-        public int review_status_bevestigd_door;
+        public int review_id { get; set; }
+        public int review_bedrijf_id { get; set; }
+        public int review_student_id { get; set; }
+        public int review_sterren { get; set; }
+        public string review_geschreven { get; set; }
+        public int review_anoniem { get; set; }
+        public DateTime review_datum { get; set; }
+        public int review_status { get; set; }
+        public int review_status_bevestigd_door { get; set; }
         //public string blob;
     }
 }

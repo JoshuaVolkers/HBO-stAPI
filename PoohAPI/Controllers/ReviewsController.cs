@@ -9,11 +9,11 @@ namespace PoohAPI.Controllers
     [Route("reviews")]
     public class ReviewsController : Controller
     {
-        private readonly IReviewReadService reviewReadService;
+        private readonly IReviewReadService _reviewReadService;
 
         public ReviewsController(IReviewReadService reviewReadService)
         {
-            this.reviewReadService = reviewReadService;
+            _reviewReadService = reviewReadService;
         }
 
         /// <summary>
@@ -35,15 +35,15 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviewById(int id)
         {
-            Review review = this.reviewReadService.GetReview(id);
+            Review review = _reviewReadService.GetReview(id);
 
-            if (review is Review)
+            if (review == null)
             {
-                return Ok(this.reviewReadService.GetReview(id));
+                return NotFound("Review not found.");
             }
             else
             {
-                return NotFound("Review not found.");
+                return Ok(_reviewReadService.GetReview(id));
             }
         }
 
@@ -87,7 +87,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
         {
-            //Check of review niet locked is.
+            Review review = _reviewReadService.GetReview(reviewId);
             if (reviewId == 1)
                 return Ok(new Review() { Id = reviewId });
             else
@@ -108,8 +108,8 @@ namespace PoohAPI.Controllers
         [Route("{reviewId}")]
         public IActionResult DeleteReview(int reviewId)
         {
-            //Check of review niet locked is.
-            if (reviewId == 1)
+            Review review = _reviewReadService.GetReview(reviewId);
+            if (review.Locked == true)
                 return Ok();
             else
                 return BadRequest("Review has been locked");
