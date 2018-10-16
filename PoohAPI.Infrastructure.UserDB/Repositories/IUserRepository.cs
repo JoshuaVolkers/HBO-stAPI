@@ -11,5 +11,6 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
     {
         IEnumerable<WPUser> GetAllUsers(string query);
         WPUser GetUser(string query);
+        int RegisterUser(string query, Dictionary<string, object> parameters);
     }
 }

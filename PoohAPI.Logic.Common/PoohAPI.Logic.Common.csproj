@@ -77,9 +77,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataReaderTypeConverter.cs" />
+    <Compile Include="Helpers\DataReaderTypeConverter.cs" />
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
     <Compile Include="Interfaces\IUserCommandService.cs" />

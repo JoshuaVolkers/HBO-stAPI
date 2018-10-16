@@ -12,10 +12,11 @@ namespace PoohAPI.Logic.Users.Init
         {
             CreateMap<WPUser, User>()
                 .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.user_email))
-                .ForMember(d => d.NiceName, o => o.MapFrom(s => s.display_name))
-                .ForMember(d => d.RegistrationDate, o => o.MapFrom(s => s.user_registered))
+                .ForMember(d => d.NiceName, o => o.MapFrom(s => s.user_name))
+                .ForMember(d => d.RegistrationDate, o => o.Ignore())
+                .ForMember(d => d.Roles, o => o.MapFrom(s => s.user_role.ToString()))
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.user_id))
                 .ReverseMap();
-
 
             CreateMap<IDataReader, WPUser>().ConvertUsing<DataReaderTypeConverter<WPUser>>();
         }

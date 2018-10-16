@@ -12,7 +12,6 @@ namespace PoohAPI.Infrastructure.Common.Repositories
         T GetSingle<T>(string query, Dictionary<string, object> parameters);
         IEnumerable<T> GetAll<T>(string query);
         IEnumerable<T> GetAll<T>(string query, Dictionary<string, object> parameters);
-        void NonQuery(string query);
-        void NonQuery(string query, Dictionary<string, object> parameters);
+        int NonQuery(string query);
     }
 }

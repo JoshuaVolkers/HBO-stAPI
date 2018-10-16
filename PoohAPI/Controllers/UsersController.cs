@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Models;
 
 namespace PoohAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
@@ -29,20 +30,23 @@ namespace PoohAPI.Controllers
         /// Starts the login process
         /// </summary>
         /// <param name="loginRequest">The loginRequest model</param>
-        /// <returns>The logged in user</returns>
+        /// <returns>A JWTToken used for authentication</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(JWTToken), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
             var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
-            return Ok(/*TokenHelper.RequestToken(user)*/);
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            return Ok(TokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -51,13 +55,23 @@ namespace PoohAPI.Controllers
         /// <param name="registerRequest">The registerRequest model</param>
         /// <returns>The registered user</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>  
+        /// <response code="401">If the login failed due to incomplete personal information</response>
+        [AllowAnonymous]
         [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(401)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Not all values were filled in correctly!");
+            if (!registerRequest.AcceptTermsAndConditions)
+                return BadRequest("You need to accept the terms and conditions before creating your account!");
+            if (_userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
+                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
+                    registerRequest.EmailAddress));
+
+            var user = _userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, registerRequest.EmailAddress);
             return Ok();
         }
 
@@ -261,7 +275,7 @@ namespace PoohAPI.Controllers
 
         private int GetCurrentUserId()
         {
-            return Int32.Parse(User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).SingleOrDefault());
+            return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
         }
 
     }

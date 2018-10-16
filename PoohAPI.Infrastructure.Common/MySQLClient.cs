@@ -31,9 +31,9 @@ namespace PoohAPI.Infrastructure.Common
             //These values should be retrieved from the appsettings.json and the configurationportal on Azure later on.
             
             _server = "127.0.0.1";
-            _database = "elbho_register";
+            _database = "elbho_dev";
             _uid = "root";
-            _password = "";
+            _password = "develop";
 
             //var connectionString = string.Format("server={0};database={1};uid={2};password={3};", _server, _database,
             //    _uid, _password);

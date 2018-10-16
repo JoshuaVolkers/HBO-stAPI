@@ -21,26 +21,38 @@ namespace PoohAPI.Logic.Users.Services
 
         public IEnumerable<User> GetAllUsers(int maxCount, int offset)
         {
-            var query = string.Format("SELECT * FROM wp_dev_users LIMIT {0} OFFSET {1}", maxCount, offset);
+            var query = string.Format("SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+                                      " FROM reg_users LIMIT {0} OFFSET {1}", maxCount, offset);
             var users = _userRepository.GetAllUsers(query);
             return _mapper.Map<IEnumerable<User>>(users);
         }
 
-        public Common.Models.User GetUserById(int id)
+        public User GetUserById(int id)
         {
-            var query = string.Format("SELECT * FROM wp_dev_users WHERE ID = {0}", id);
+            var query = string.Format("SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+                                      " FROM reg_users WHERE user_id = {0}", id);
             var user = _userRepository.GetUser(query);
-            
+
+            return _mapper.Map<User>(user);
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            var query = string.Format("SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+                                      " FROM reg_users WHERE user_email = {0}", email);
+            var user = _userRepository.GetUser(query);
+
             return _mapper.Map<User>(user);
         }
 
         public User Login(string login, string password)
         {
-            //var query = string.Format("SELECT * FROM wp_dev_users WHERE user_login = '{0}'", login);
-            //var user = _userRepository.GetUser(query);
             //var encoded = PasswordHasher.Encode(password, user.user_pass);
-            //if (encoded.Equals(user.user_pass))
-            //    return _mapper.Map<User>(user);
+
+            var query = string.Format("SELECT * FROM reg_users WHERE user_name = '{0}'", login);
+            var user = _userRepository.GetUser(query);
+            if (user != null && user.user_password.Equals(password))
+                return _mapper.Map<User>(user);
 
             return null;
         }
