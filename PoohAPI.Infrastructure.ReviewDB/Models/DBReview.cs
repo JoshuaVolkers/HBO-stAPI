@@ -17,6 +17,6 @@ namespace PoohAPI.Infrastructure.ReviewDB.Models
         public DateTime review_datum;
         public int review_status;
         public int review_status_bevestigd_door;
-        public byte?[] blob;
+        //public string blob;
     }
 }
