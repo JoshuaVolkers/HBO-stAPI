@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
@@ -10,28 +11,57 @@ namespace PoohAPI.Controllers
     [Route("vacancies")]
     public class VacanciesController : Controller
     {
+        private readonly IVacancyReadService vacancyReadService;
+        private readonly IVacancyCommandService vacancyCommandService;
+
+        public VacanciesController(IVacancyReadService vacancyReadService, IVacancyCommandService vacancyCommandService)
+        {
+            this.vacancyReadService = vacancyReadService;
+            this.vacancyCommandService = vacancyCommandService;
+        }
+
         /// <summary>
         /// Gets a list of all vacancies
         /// </summary>
         /// <remarks>Returns Vacancies or BaseVacancies. The model used is determined by detailedVacancy.</remarks>
         /// <param name="maxCount">The max amount of vacancies to return, defaults to 5</param>
         /// <param name="offset">The number of vacancies to skip</param>
-        /// <param name="searchWords">Searchwords to narrow the resultsets, comma seperated list</param>
-        /// <param name="distanceInKM">Distance to the company's location, calculated from the location in the user's profile</param>
+        /// <param name="additionalLocationSearchTerms">Searchwords to narrow the resultsets, comma seperated list</param>
         /// <param name="education">The name of the education</param>
         /// <param name="educationalAttainment">The level of the education (HBO, WO, Univerity, etc.)</param>
         /// <param name="intershipType">The type of intership</param>
         /// <param name="languages">A comma seperated list of the languages to get vacancies for</param>
+        /// <param name="cityname">The city name where the vacancy is located in</param>
+        /// <param name="countryname">The coutry name where the vacancy is located in</param>
+        /// <param name="locationrange">The range where the vacancies must be retrieved within</param>
         /// <returns>A list of all vacancies</returns>
         /// <response code="200">Returns the list of vacancies</response>
         /// <response code="404">If no vacancies are found</response>   
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string searchWords = null, [FromQuery]double distanceInKM = 10.0,
-            [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]string languages = null)
+        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]string education = null, [FromQuery]string educationalAttainment = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]string languages = null, [FromQuery]string cityname = null, [FromQuery]string countryname = null, [FromQuery]int? locationrange = null)
         {
-            return Ok(new List<Vacancy>());
+            if (maxCount < 0 || maxCount > 100)
+            {
+                return BadRequest("MaxCount should be between 1 and 100");
+            }
+
+            if (offset < 0)
+            {
+                return BadRequest("Offset should be 0 or larger");
+            }
+
+            IEnumerable<Vacancy> vacancies = this.vacancyReadService.GetListVacancies(maxCount, offset, additionalLocationSearchTerms, education, educationalAttainment, intershipType, languages, cityname, countryname, locationrange);
+
+            if (!(vacancies is null))
+            {
+                return Ok(vacancies);
+            }
+            else
+            {
+                return NotFound("No vacancies were found");
+            }
         }
 
         /// <summary>
