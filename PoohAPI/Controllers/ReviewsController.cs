@@ -10,10 +10,12 @@ namespace PoohAPI.Controllers
     public class ReviewsController : Controller
     {
         private readonly IReviewReadService _reviewReadService;
+        private readonly IReviewCommandService _reviewCommandService;
 
-        public ReviewsController(IReviewReadService reviewReadService)
+        public ReviewsController(IReviewReadService reviewReadService, IReviewCommandService reviewCommandService)
         {
             _reviewReadService = reviewReadService;
+            _reviewCommandService = reviewCommandService;
         }
 
         /// <summary>
@@ -109,8 +111,11 @@ namespace PoohAPI.Controllers
         public IActionResult DeleteReview(int reviewId)
         {
             Review review = _reviewReadService.GetReview(reviewId);
-            if (review.Locked == true)
-                return Ok();
+            if (review.Locked == false)
+            {
+                _reviewCommandService.DeleteReview(reviewId);
+                return Ok("Review has been deleted");
+            }                
             else
                 return BadRequest("Review has been locked");
         }

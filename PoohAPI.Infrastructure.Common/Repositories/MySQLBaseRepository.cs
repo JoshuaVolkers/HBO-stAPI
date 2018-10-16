@@ -68,6 +68,22 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             return default(T);
         }
 
+        public void Delete(string query, Dictionary<string, object> parameters)
+        {
+            if (_client.OpenConnection())
+            {
+                var command = new MySqlCommand(query, _client.Connection());
+
+                foreach (KeyValuePair<string, object> parameter in parameters)
+                {
+                    command.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                }
+
+                command.ExecuteReader();
+                _client.CloseConnection();
+            }
+        }
+
         public IEnumerable<T> GetAll<T>(string query)
         {
             if (_client.OpenConnection())

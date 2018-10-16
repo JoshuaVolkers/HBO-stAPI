@@ -15,14 +15,14 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
             _mapper = mapper;
         }
 
+        public void DeleteReview(string query, Dictionary<string, object> parameters)
+        {
+            Delete(query, parameters);
+        }
+
         public IEnumerable<DBReview> GetAllReviews(int maxCount, int offset)
         {
             return GetAll<DBReview>("test");
-        }
-
-        public DBReview GetReview(string q)
-        {
-            return GetSingle<DBReview>(q);
         }
 
         public DBReview GetReview(string query, Dictionary<string, object> parameters)
