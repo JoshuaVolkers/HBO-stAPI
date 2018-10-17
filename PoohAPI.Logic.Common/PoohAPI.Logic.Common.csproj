@@ -115,6 +115,10 @@
       <Project>{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}</Project>
       <Name>PoohAPI.Infrastructure.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Infrastructure.ReviewDB\PoohAPI.Infrastructure.ReviewDB.csproj">
+      <Project>{7C1E0BCD-22B2-450C-BC44-513591528BA7}</Project>
+      <Name>PoohAPI.Infrastructure.ReviewDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
