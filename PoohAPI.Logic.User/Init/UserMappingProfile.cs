@@ -29,7 +29,7 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.PreferredLanguage, o => o.MapFrom(s => s.talen_naam))
                 .ReverseMap();
 
-            CreateMap<DBUser, Location>()
+            CreateMap<DBUser, BaseLocation>()
                 .ForMember(d => d.CountryId, o => o.MapFrom(s => s.user_land))
                 .ForMember(d => d.CountryName, o => o.MapFrom(s => s.land_naam))
                 .ForMember(d => d.City, o => o.MapFrom(s => s.user_woonplaats))

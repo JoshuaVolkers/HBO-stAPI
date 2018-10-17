@@ -44,29 +44,19 @@ namespace PoohAPI.Controllers
             [FromQuery]int? locationRange = null, [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? major = null, [FromQuery]bool detailedCompanies = false )
         {
             if (maxCount < 1 || maxCount > 100)
-            {
                 return BadRequest("MaxCount should be between 1 and 100");
-            }
             if (offset < 0)
-            {
                 return BadRequest("Offset should be 0 or larger");
-            }
             if (minStars < 1 || minStars > 5 || maxStars < 1 || maxStars > 5)
-            {
                 return BadRequest("Number of stars should be between 1 and 5");
-            }
 
             IEnumerable<BaseCompany> companies = this.companyReadService.GetListCompanies(maxCount, offset, minStars, maxStars,
                 cityName, countryName, locationRange, additionalLocationSearchTerms, major, detailedCompanies);
 
-            if (!(companies is null))
-            {
-                return Ok(companies);
-            }
-            else
-            {
+            if (companies is null)
                 return NotFound("No companies were found");
-            }
+
+            return Ok(companies);
         }
 
         /// <summary>
