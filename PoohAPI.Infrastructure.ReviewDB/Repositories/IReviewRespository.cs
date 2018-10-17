@@ -11,6 +11,7 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
     {
         IEnumerable<DBReview> GetAllReviews(int maxCount, int offset);
         DBReview GetReview(string query, Dictionary<string, object> parameters);
+        void UpdateReview(string query, Dictionary<string, object> parameters);
         void DeleteReview(string query, Dictionary<string,object> parameters);
     }
 }

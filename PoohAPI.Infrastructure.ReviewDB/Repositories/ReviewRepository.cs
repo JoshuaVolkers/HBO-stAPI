@@ -17,7 +17,7 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
 
         public void DeleteReview(string query, Dictionary<string, object> parameters)
         {
-            Delete(query, parameters);
+            NonQuery(query, parameters);
         }
 
         public IEnumerable<DBReview> GetAllReviews(int maxCount, int offset)
@@ -28,6 +28,11 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
         public DBReview GetReview(string query, Dictionary<string, object> parameters)
         {
             return GetSingle<DBReview>(query, parameters);
+        }
+
+        public void UpdateReview(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
         }
     }
 }

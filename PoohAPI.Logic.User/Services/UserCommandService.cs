@@ -72,7 +72,6 @@ namespace PoohAPI.Logic.Users.Services
 
             _userRepository.UpdateUser(query, parameters);
             
-
             return this.userReadService.GetUserById(userInput.Id);
         }
     }

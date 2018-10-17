@@ -10,7 +10,6 @@ namespace PoohAPI.Infrastructure.Common.Repositories
     {
         T GetSingle<T>(string query);
         T GetSingle<T>(string query, Dictionary<string, object> parameters);
-        void Delete(string query, Dictionary<string, object> parameters);
         IEnumerable<T> GetAll<T>(string query);
         IEnumerable<T> GetAll<T>(string query, Dictionary<string, object> parameters);
         void NonQuery(string query);

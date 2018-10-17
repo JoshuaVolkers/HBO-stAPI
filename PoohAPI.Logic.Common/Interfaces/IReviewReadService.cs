@@ -7,6 +7,6 @@ namespace PoohAPI.Logic.Common.Interfaces
     public interface IReviewReadService
     {
         IEnumerable<Review> GetAllReviews(int maxCount, int offset);
-        Review GetReview(int id);
+        Review GetReviewById(int id);
     }
 }

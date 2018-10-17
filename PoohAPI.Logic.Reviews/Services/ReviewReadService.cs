@@ -24,9 +24,11 @@ namespace PoohAPI.Logic.Reviews.Services
             return _mapper.Map<IEnumerable<Common.Models.Review>>(reviews);
         }
 
-        public Common.Models.Review GetReview(int id)
+        public Common.Models.Review GetReviewById(int id)
         {
-            var query = "SELECT review_id, review_bedrijf_id, review_student_id, review_sterren, review_geschreven, review_anoniem, review_datum, review_status, review_status_bevestigd_door " +
+            var query = "SELECT review_id, review_bedrijf_id, review_student_id, review_sterren" +
+            ", review_geschreven, review_anoniem, review_datum, review_status" +
+            ", review_status_bevestigd_door " +
             "FROM reg_reviews " +
             "WHERE review_id = @id";
 

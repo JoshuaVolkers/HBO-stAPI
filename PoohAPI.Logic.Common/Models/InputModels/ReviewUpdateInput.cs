@@ -12,19 +12,20 @@ namespace PoohAPI.Logic.Common.Models.InputModels
         [Required]
         public int Id { get; set; }
         [Required]
-        public int EducationalAttainmentId { get; set; }
+        public int CompanyId { get; set; }
         [Required]
-        public int EducationId { get; set; }
+        public int UserId { get; set; }
         [Required]
-        public int PreferredLanguageId { get; set; }
+        public int Stars { get; set; }
         [Required]
-        public int CountryId { get; set; }
-        public string City { get; set; }
-        /// <summary>
-        /// Municipality, province or state.
-        /// This is required to find the correct coordinates of the city if there are multiple cities with the same name.
-        /// This value will not be stored in the database.
-        /// </summary>
-        public string AdditionalLocationIdentifier { get; set; }
+        public string WrittenReview { get; set; }
+        [Required]
+        public int Anonymous { get; set; }
+        [Required]
+        public DateTime CreationDate { get; set; }
+        [Required]
+        public int VerifiedReview { get; set; }
+        [Required]
+        public int VerifiedBy { get; set; }        
     }
 }

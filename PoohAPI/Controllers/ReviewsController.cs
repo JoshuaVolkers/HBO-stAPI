@@ -2,6 +2,7 @@
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.RequestModels;
+using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
@@ -37,7 +38,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviewById(int id)
         {
-            Review review = _reviewReadService.GetReview(id);
+            Review review = _reviewReadService.GetReviewById(id);
 
             if (review == null)
             {
@@ -45,7 +46,7 @@ namespace PoohAPI.Controllers
             }
             else
             {
-                return Ok(_reviewReadService.GetReview(id));
+                return Ok(_reviewReadService.GetReviewById(id));
             }
         }
 
@@ -74,7 +75,6 @@ namespace PoohAPI.Controllers
         /// Updates the specified review.
         /// </summary>
         /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to update</param>
         /// <param name="reviewData">The updated review model</param>
         /// <returns>A list of Review objects</returns>
         /// <response code="200">If the request was a success</response>
@@ -87,13 +87,26 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
+        public IActionResult UpdateReview([FromBody]ReviewUpdateInput reviewData)
         {
-            Review review = _reviewReadService.GetReview(reviewId);
-            if (reviewId == 1)
-                return Ok(new Review() { Id = reviewId });
+            if (ModelState.IsValid)
+            {
+                Review review = _reviewReadService.GetReviewById(reviewData.Id);
+                if (review == null)
+                {
+                    return BadRequest("Review not found.");
+                }
+                else if (review.Locked == true)
+                {
+                    return BadRequest("Review has been locked.");                    
+                }
+                else
+                    return Ok(_reviewCommandService.UpdateReview(reviewData));
+            }
             else
-                return BadRequest("Review has been locked");
+            {
+                return BadRequest("Informatie involledig.");
+            }            
         }
 
         /// <summary>
@@ -110,14 +123,18 @@ namespace PoohAPI.Controllers
         [Route("{reviewId}")]
         public IActionResult DeleteReview(int reviewId)
         {
-            Review review = _reviewReadService.GetReview(reviewId);
-            if (review.Locked == false)
+            Review review = _reviewReadService.GetReviewById(reviewId);
+            if(review == null)
+            {
+                return BadRequest("Review not found.");
+            }
+            else if (review.Locked == false)
             {
                 _reviewCommandService.DeleteReview(reviewId);
-                return Ok("Review has been deleted");
+                return Ok("Review has been deleted.");
             }                
             else
-                return BadRequest("Review has been locked");
+                return BadRequest("Review has been locked.");
         }
     }
 }
