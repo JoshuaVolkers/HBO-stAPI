@@ -2,6 +2,7 @@
 using PoohAPI.Infrastructure.ReviewDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Models.PresentationModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -44,6 +45,36 @@ namespace PoohAPI.Logic.Reviews.Services
             //var review = _reviewRepository.GetReviewById(query);
 
             //return _mapper.Map<Common.Models.Review>(review);
+        }
+
+        public IEnumerable<int> GetListReviewIdsForUser(int userId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", userId);
+
+            string query = "SELECT review_id FROM reg_reviews WHERE review_student_id = @id";
+
+            return _reviewRepository.GetListReviewIds(query, parameters);
+        }
+
+        public IEnumerable<ReviewPublicPresentation> GetListReviewsForCompany(int companyId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", companyId);
+
+            string query = @"SELECT review_id, review_bedrijf_id, review_sterren, review_geschreven, 
+                IF(u.user_name IS NULL, 'Anoniem',
+                        CASE WHEN r.review_anoniem = 1 
+                        THEN u.user_name 
+                        ELSE 'Anoniem' END 
+                    ) as review_student_name 
+            FROM reg_reviews r 
+            LEFT JOIN reg_users u ON r.review_student_id = u.user_id 
+            WHERE review_bedrijf_id = @id";
+
+            var dbReviews = _reviewRepository.GetListReviews(query, parameters);
+
+            return _mapper.Map<IEnumerable<ReviewPublicPresentation>>(dbReviews);
         }
     }
 }

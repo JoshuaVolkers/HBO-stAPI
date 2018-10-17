@@ -11,6 +11,7 @@ namespace PoohAPI.Infrastructure.ReviewDB.Models
         public int review_id { get; set; }
         public int review_bedrijf_id { get; set; }
         public int review_student_id { get; set; }
+        public string review_student_name { get; set; }
         public int review_sterren { get; set; }
         public string review_geschreven { get; set; }
         public int review_anoniem { get; set; }

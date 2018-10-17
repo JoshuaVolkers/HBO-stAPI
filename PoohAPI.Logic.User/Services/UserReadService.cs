@@ -17,13 +17,15 @@ namespace PoohAPI.Logic.Users.Services
         private readonly IMapper _mapper;
         private readonly IQueryBuilder queryBuilder;
         private readonly IMapAPIReadService mapAPIReadService;
+        private readonly IReviewReadService reviewReadService;
 
-        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder, IMapAPIReadService mapAPIReadService)
+        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder, IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             this.queryBuilder = queryBuilder;
             this.mapAPIReadService = mapAPIReadService;
+            this.reviewReadService = reviewReadService;
         }
 
         public IEnumerable<BaseUser> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
@@ -76,9 +78,15 @@ namespace PoohAPI.Logic.Users.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
 
-            var user = _userRepository.GetUser(query, parameters);
-            
-            return _mapper.Map<User>(user);
+            var dbUser = _userRepository.GetUser(query, parameters);
+            User user = _mapper.Map<User>(dbUser);
+
+            if (user is null)
+                return user;
+
+            user.Reviews = this.reviewReadService.GetListReviewIdsForUser(user.Id);
+
+            return user;
         }
 
         public User Login(string login, string password)
