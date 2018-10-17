@@ -35,17 +35,35 @@ namespace PoohAPI.Logic.Vacancies.Services
 
             this.AddVacancyBaseQuery(parameters, maxCount, offset);
             this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
+            this.AddEducationFilter(parameters, education, educationalAttainment, intershipType);
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
 
-            IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
+            IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query);
+            for (int i = 0; i < dbVacancies.Count(); i++)
+            {
+                dbVacancies.ToList()[i] = this.convertToEnumLists(dbVacancies.ToList()[i]);
+            }
 
             return this.mapper.Map<IEnumerable<Vacancy>>(dbVacancies);
         }
 
         public Vacancy GetVacancyById(int id)
         {
-            throw new NotImplementedException();
+            this.queryBuilder.Clear();
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            this.AddVacancyBaseQuery(parameters, 1, 0);
+            this.AddVacancyFilter(parameters, id);
+            string query = this.queryBuilder.BuildQuery();
+
+            this.queryBuilder.Clear();
+
+            DBVacancy dBVacancy = this.vacancyRepository.GetVacancy(query);
+            dBVacancy = this.convertToEnumLists(dBVacancy);
+
+            return this.mapper.Map<Vacancy>(dBVacancy);
         }
 
         private void AddVacancyBaseQuery(Dictionary<string, object> parameters, int maxCount, int offset)
@@ -53,21 +71,26 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
                                         v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
                                         v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
-                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, l.land_naam");                         
+                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, GROUP_CONCAT(DISTINCT s.stagesoort) as stagesoort");                         
             this.queryBuilder.SetFrom("reg_vacatures v");
+
             this.queryBuilder.AddJoinLine("INNER JOIN reg_talen t ON v.vacature_taal = t.talen_id");
+
             this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingsniveau n ON v.vacature_op_niveau = n.opn_id");
+
             this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_opleidingen r ON v.vacature_id = r.rvo_vacature_id");
             this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingen o ON r.rvo_opleiding_id = o.opl_id");
+
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_stagesoort z ON v.vacature_id = z.rvs_vacature_id");
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_stagesoort s ON z.rvs_stagesoort_id = s.stage_id");
+
             this.queryBuilder.AddJoinLine("INNER JOIN reg_bedrijven b ON v.vacature_bedrijf_id = b.bedrijf_id");
             this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
+
             this.queryBuilder.AddWhere("v.vacature_actief = 1");
             this.queryBuilder.AddGroupBy("v.vacature_id");
-            this.queryBuilder.SetLimit("@limit");
-            this.queryBuilder.SetOffset("@offset");
-
-            parameters.Add("@limit", maxCount);
-            parameters.Add("@offset", offset);
+            this.queryBuilder.SetLimit(maxCount.ToString());
+            this.queryBuilder.SetOffset(offset.ToString());
         }
 
         private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null,
@@ -112,22 +135,57 @@ namespace PoohAPI.Logic.Vacancies.Services
 
         private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
         {
-            this.queryBuilder.AddWhere("l.land_naam = @countryName");
-            parameters.Add("@countryName", countryName);
+            this.queryBuilder.AddWhere("l.land_naam = " + countryName);
         }
 
         private void AddCityFilter(Dictionary<string, object> parameters, string cityName)
         {
-            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = @cityName");
-            parameters.Add("@cityName", cityName);
+            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = " + cityName);
+        }
+
+        private void AddVacancyFilter(Dictionary<string, object> parameters, int id)
+        {
+            this.queryBuilder.AddWhere("v.vacature_id = " + id);
         }
 
         private void AddEducationFilter(Dictionary<string, object> parameters, string education = null, string educationalAttainment = null, IntershipType? intershipType = null)
         {
+            if(educationalAttainment != null)
+            {
+                this.queryBuilder.AddLike("n.opn_naam " + educationalAttainment);
+            }
+
+            if(education != null)
+            {
+                this.queryBuilder.AddLike("o.opl_naam " + education);
+            }
+
+            if(intershipType != null)
+            {
+                this.queryBuilder.AddLike("stagesoort " + intershipType.Value.ToString());
+            }
         }
 
         private void AddLanguageFilter(Dictionary<string, object> parameters, string language)
         {
+        }
+
+        public DBVacancy convertToEnumLists(DBVacancy dbvacancy)
+        {
+            List<string> stageSoortenstring = new List<string>();
+            List<IntershipType> stageSoortenenumlist = new List<IntershipType>();
+            stageSoortenstring = dbvacancy.stagesoort.Split(',').ToList();
+
+            foreach (string s in stageSoortenstring)
+            {
+                if (Enum.TryParse(s, out IntershipType stagesoort))
+                {
+                    stageSoortenenumlist.Add(stagesoort);
+                }
+            }
+
+            dbvacancy.stagesoortenumlist = stageSoortenenumlist;
+            return dbvacancy;
         }
     }
 }

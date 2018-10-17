@@ -76,7 +76,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetById(int id)
         {
-            return Ok(new Vacancy() { Id = id });
+            Vacancy vacancy = this.vacancyReadService.GetVacancyById(id);
+
+            if (vacancy is Vacancy)
+            {
+                return Ok(vacancy);
+            }
+            else
+            {
+                return NotFound("vacancy not found.");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoohAPI.Logic.Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,13 @@ namespace PoohAPI.Infrastructure.VacancyDB.Models
         public string opleidingen { get; set; }
         public int bedrijf_vestiging_land { get; set; }
         public string bedrijf_vestiging_plaats { get; set; }
+        public string bedrijf_vestiging_straat { get; set; }
+        public string bedrijf_vestiging_huisnr { get; set; }
+        public string bedrijf_vestiging_toev { get; set; }
+        public string bedrijf_vestiging_postcode { get; set; }
         public string land_naam { get; set; }
+        public double distance { get; set; }
+        public string stagesoort { get; set; }
+        public IEnumerable<IntershipType> stagesoortenumlist { get; set; }
     }
 }

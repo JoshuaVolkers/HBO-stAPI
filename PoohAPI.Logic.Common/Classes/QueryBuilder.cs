@@ -20,6 +20,7 @@ namespace PoohAPI.Logic.Common.Classes
         private List<string> selectEntries;
         private List<string> joinEntries;
         private List<string> whereEntries;
+        private List<string> likeEntries;
         private List<string> groupByEntries;
         private List<string> havingEntries;
         private List<string> updateSetEntries;
@@ -38,6 +39,7 @@ namespace PoohAPI.Logic.Common.Classes
             this.selectEntries = new List<string>();
             this.joinEntries = new List<string>();
             this.whereEntries = new List<string>();
+            this.likeEntries = new List<string>();
             this.groupByEntries = new List<string>();
             this.havingEntries = new List<string>();
             this.updateSetEntries = new List<string>();
@@ -95,6 +97,7 @@ namespace PoohAPI.Logic.Common.Classes
             query += "FROM " + this.from + " ";
             query = this.BuildJoin(query);
             query = this.BuildWhere(query);
+            query = this.BuildLike(query);
             query = this.BuildGroupBy(query);
             query = this.BuildHaving(query);
             
@@ -166,6 +169,30 @@ namespace PoohAPI.Logic.Common.Classes
                     query += this.whereEntries[i] + " ";
 
                     if (i != (this.whereEntries.Count - 1))
+                    {
+                        query += "AND ";
+                    }
+                }
+            }
+
+            return query;
+        }
+
+        private string BuildLike(string query)
+        {
+            if (this.likeEntries.Count > 0)
+            {
+                query += "AND ";
+
+                for (int i = 0; i < this.likeEntries.Count; i++)
+                {
+                    string like = likeEntries[i];
+                    List<string> likestring = new List<string>();
+                    likestring = like.Split(' ').ToList();
+
+                    query = query + " " + likestring[0] + " LIKE " + String.Format("'%{0}%'", likestring[1]) + " ";
+
+                    if (i != (this.likeEntries.Count - 1))
                     {
                         query += "AND ";
                     }
@@ -254,6 +281,11 @@ namespace PoohAPI.Logic.Common.Classes
         public void AddUpdateSet(string updateSet)
         {
             this.updateSetEntries.Add(updateSet);
+        }
+
+        public void AddLike(string like)
+        {
+            this.likeEntries.Add(like);
         }
     }
 }

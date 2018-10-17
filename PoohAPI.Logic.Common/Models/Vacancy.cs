@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
@@ -18,12 +20,12 @@ namespace PoohAPI.Logic.Common.Models
         public int CompanyId { get; set; }
         public string Language { get; set; }
         public DateTime ClosingDate { get; set; }
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
-        public string City { get; set; }
         public string Link { get; set; }
         public string EducationalAttainment { get; set; }
-        public IntershipType IntershipType { get; set; }
-        public Company Company { get; set; }
+
+        [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
+        public IEnumerable<IntershipType> IntershipType { get; set; }
+
+        public Location Location { get; set; }
     }
 }
