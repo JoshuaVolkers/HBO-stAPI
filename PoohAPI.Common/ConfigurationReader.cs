@@ -2,8 +2,9 @@
 
 namespace PoohAPI.Common
 {
-    public static class ConfigurationReader
+    public sealed class ConfigurationReader
     {
+
         private static string GetConfigurationSetting(string key)
         {
             return Environment.GetEnvironmentVariable(key);

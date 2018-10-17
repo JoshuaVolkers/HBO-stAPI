@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using PoohAPI.Common;
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 using System;
 using System.Collections.Generic;
+using PoohAPI.Logic.Common.Enums;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,6 +32,18 @@ namespace PoohAPI.Logic.Users.Services
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
+            //var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+            //                          " FROM reg_users LIMIT @maxCount OFFSET @offset";
+
+            //var parameters = new Dictionary<string, object>
+            //{
+            //    { "@maxCount", maxCount },
+            //    { "@offset", offset }
+            //};
+
+            //var users = _userRepository.GetAllUsers(query, parameters);
+            //return _mapper.Map<IEnumerable<User>>(users);
+
             this.queryBuilder.Clear();
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -52,9 +64,23 @@ namespace PoohAPI.Logic.Users.Services
 
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
-            
+
             var users = _userRepository.GetAllUsers(query, parameters);
             return _mapper.Map<IEnumerable<BaseUser>>(users);
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+                        " FROM reg_users WHERE user_email = @email";
+            var parameters = new Dictionary<string, object>
+            {
+                {"@email", email}
+            };
+
+            var user = _userRepository.GetUser(query, parameters);
+
+            return _mapper.Map<User>(user);
         }
 
         public User GetUserById(int id)
@@ -89,13 +115,19 @@ namespace PoohAPI.Logic.Users.Services
             return user;
         }
 
-        public User Login(string login, string password)
+        public User Login(string email, string password)
         {
-            //var query = string.Format("SELECT * FROM wp_dev_users WHERE user_login = '{0}'", login);
-            //var user = _userRepository.GetUser(query);
-            //var encoded = PasswordHasher.Encode(password, user.user_pass);
-            //if (encoded.Equals(user.user_pass))
-            //    return _mapper.Map<User>(user);
+            var query = "SELECT * FROM reg_users WHERE user_email = @email AND user_account_type = @type";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@email", email },
+                { "@type", (int)UserAccountType.ApiUser}
+            };
+
+            var user = _userRepository.GetUser(query, parameters);
+
+            if (user != null && BCrypt.Net.BCrypt.EnhancedVerify(password, user.user_password))
+                return _mapper.Map<User>(user);
 
             return null;
         }
@@ -104,13 +136,13 @@ namespace PoohAPI.Logic.Users.Services
         {
             if (educationsIds is null)
                 return;
-            
+
             List<string> splitIds = educationsIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
 
             if (ids.Count <= 0)
                 return;
-            
+
             string educationOr = "(";
 
             for (int i = 0; i < ids.Count; i++)

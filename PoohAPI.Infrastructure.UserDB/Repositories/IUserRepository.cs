@@ -15,5 +15,6 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         DBUser GetUser(string query, Dictionary<string, object> parameters);
         void UpdateUser(string query, Dictionary<string, object> parameters);
         void DeleteUser(string query, Dictionary<string, object> parameters);
+        int RegisterUser(string query, Dictionary<string, object> parameters);
     }
 }

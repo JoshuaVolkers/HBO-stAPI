@@ -8,42 +8,131 @@ using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Models.AuthenticationModels;
 using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
-    //[Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
     {
-        private readonly IUserReadService _userReadService;
-        private readonly IUserCommandService _userCommandService;
+        private readonly IUserReadService userReadService;
+        private readonly IUserCommandService userCommandService;
 
         public UsersController(IUserReadService userReadService, IUserCommandService userCommandService)
         {
-            _userReadService = userReadService;
-            _userCommandService = userCommandService;
+            this.userReadService = userReadService;
+            this.userCommandService = userCommandService;
         }
 
         /// <summary>
         /// Starts the login process
         /// </summary>
         /// <param name="loginRequest">The loginRequest model</param>
-        /// <returns>The logged in user</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(JWTToken), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
+            var user = this.userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
-            return Ok(/*TokenHelper.RequestToken(user)*/);
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            return Ok(TokenHelper.GenerateJWT(identity));
+        }
+
+        /// <summary>
+        /// Login using Facebook AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from Facebook</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("facebook")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> FacebookAsync([FromBody] string AccessToken)
+        {
+            var client = new HttpClient();
+            var appAccessTokenResponse = await client.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id=&client_secret=&grant_type=client_credentials");
+            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
+
+            var userAccessTokenValidationResponse = await client.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserTokenData>(userAccessTokenValidationResponse);
+
+            if (!userAccessTokenValidation.IsValid)
+            {
+                client.Dispose();
+                return BadRequest("Facebook access token is invalid!");
+            }
+                
+            var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
+
+            client.Dispose();
+
+            var user = this.userReadService.GetUserByEmail(userInfo.Email);
+
+            if (user == null)
+            {
+                user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
+            }
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            return Ok(TokenHelper.GenerateJWT(identity));
+        }
+
+        /// <summary>
+        /// Login using LinkedIn AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from LinkedIn</param>
+        /// <param name="redirectUri">The redirectUri that was also used when requesting the acces token</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("linkedin")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> LinkedInAsync([FromBody] string AccessToken, [FromBody] string redirectUri)
+        {
+            var client = new HttpClient();
+
+            var appAccessTokenResponse = await client.GetStringAsync($"https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code={AccessToken}&redirect_uri={redirectUri}&client_id=1&client_secret=1");
+            var appAccessToken = JsonConvert.DeserializeObject<LinkedInAppAccessToken>(appAccessTokenResponse);
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", appAccessToken.AccessToken);
+            var userInfoResponse = await client.GetStringAsync($"https://api.linkedin.com/v2/people/me?projection=(id,firstName,lastName,email-address)");
+            var userInfo = JsonConvert.DeserializeObject<LinkedInUserData>(userInfoResponse);
+
+            var user = this.userReadService.GetUserByEmail(userInfo.Email);
+
+            if (user == null)
+            {
+                user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
+            }
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            return Ok(TokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -52,13 +141,23 @@ namespace PoohAPI.Controllers
         /// <param name="registerRequest">The registerRequest model</param>
         /// <returns>The registered user</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>  
+        /// <response code="401">If the login failed due to incomplete personal information</response>
+        [AllowAnonymous]
         [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(401)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Not all values were filled in correctly!");
+            if (!registerRequest.AcceptTermsAndConditions)
+                return BadRequest("You need to accept the terms and conditions before creating your account!");
+            if (this.userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
+                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
+                    registerRequest.EmailAddress));
+
+            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, UserAccountType.ApiUser, registerRequest.EmailAddress);
             return Ok();
         }
 
@@ -112,7 +211,7 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<BaseUser> users = _userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
+            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
                 educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
@@ -146,14 +245,14 @@ namespace PoohAPI.Controllers
             //        Value = c.Value
             //    });
 
-            User user = _userReadService.GetUserById(id);
+            User user = this.userReadService.GetUserById(id);
 
             if (user is null)
                 return NotFound("User not found.");
 
             return Ok(user);
 
-            //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
+            //return Ok(this.userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
@@ -173,7 +272,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteUser(int id)
         {
-            _userCommandService.DeleteUser(id);
+            this.userCommandService.DeleteUser(id);
             return Ok();
         }
 
@@ -195,7 +294,7 @@ namespace PoohAPI.Controllers
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
             if (ModelState.IsValid)
-                return Ok(_userCommandService.UpdateUser(userData));
+                return Ok(this.userCommandService.UpdateUser(userData));
             else
                 return BadRequest("Informatie involledig.");
         }
@@ -203,7 +302,6 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Get's the users favorite vacancies.
         /// </summary>
-        /// <param name="id">The id of the user whose favorite vacancies should be retrieved</param>
         /// <returns>A list of vacancies</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user has no favorites</response>   
@@ -289,7 +387,7 @@ namespace PoohAPI.Controllers
 
         private int GetCurrentUserId()
         {
-            return Int32.Parse(User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).SingleOrDefault());
+            return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
         }
 
     }
