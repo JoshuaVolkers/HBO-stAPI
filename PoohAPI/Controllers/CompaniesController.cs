@@ -43,7 +43,7 @@ namespace PoohAPI.Controllers
             [FromQuery]double? maxStars = null, [FromQuery]string cityName = null, [FromQuery]string countryName = null,
             [FromQuery]int? locationRange = null, [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? major = null, [FromQuery]bool detailedCompanies = false )
         {
-            if (maxCount < 0 || maxCount > 100)
+            if (maxCount < 1 || maxCount > 100)
             {
                 return BadRequest("MaxCount should be between 1 and 100");
             }
