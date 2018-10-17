@@ -83,11 +83,13 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
-        /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
-        /// <param name="educations">A comma seperated list of educations</param>
-        /// <param name="city">The city in which the user should be located.</param>
+        /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
+        /// <param name="educations">A comma seperated list of education Ids</param>
+        /// <param name="cityName">The city in which the user should be located.</param>
+        /// <param name="countryName"></param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
-        /// <param name="preferredLanguages">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
+        /// <param name="additionalLocationSearchTerms"></param>
+        /// <param name="preferredLanguage">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
         /// <returns>A list of users</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If no users were found for the specified filters</response>   
@@ -96,14 +98,28 @@ namespace PoohAPI.Controllers
         //[Authorize(Roles = "administrator")]
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
-            [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
+        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, 
+            [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
+            [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null, 
+            [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
-            return Ok(_userReadService.GetAllUsers(maxCount, offset));
+            if (maxCount < 1 || maxCount > 100)
+                return BadRequest("MaxCount should be between 1 and 100");
+            if (offset < 0)
+                return BadRequest("Offset should be 0 or larger");
+
+            IEnumerable<BaseUser> users = _userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
+                educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
+
+            if (users is null)
+                return NotFound("No users found");
+
+
+            return Ok(users);
         }
 
         /// <summary>

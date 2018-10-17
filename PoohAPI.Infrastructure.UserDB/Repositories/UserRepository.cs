@@ -40,5 +40,10 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             NonQuery(query, parameters);
         }
+
+        public IEnumerable<DBUser> GetAllUsers(string query, Dictionary<string, object> parameters)
+        {
+            return GetAll<DBUser>(query, parameters);
+        }
     }
 }
