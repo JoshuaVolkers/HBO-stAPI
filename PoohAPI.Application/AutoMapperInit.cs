@@ -2,6 +2,7 @@
 using AutoMapper.Data;
 using PoohAPI.Logic.Users.Init;
 using PoohAPI.Logic.Companies.Init;
+using PoohAPI.Logic.Reviews.Init;
 
 namespace PoohAPI.Application
 {
@@ -14,6 +15,7 @@ namespace PoohAPI.Application
                 mc.AddDataReaderMapping();
                 mc.AddProfile(new UserMappingProfile());
                 mc.AddProfile(new CompanyMappingProfile());
+                mc.AddProfile(new ReviewMappingProfile());
             });
         }
     }

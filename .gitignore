@@ -329,3 +329,4 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 PoohAPI_YAML_Spec.yml
+PoohAPI.Infrastructure.Common/MySQLClient.cs

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace PoohAPI.RequestModels
 {
@@ -11,12 +12,10 @@ namespace PoohAPI.RequestModels
         public int CompanyId { get; set; }
         [Required]
         public int UserId { get; set; }
-        [Range(1.0, 5.0)]
         [Required]
-        public double Stars { get; set; }
+        public int Stars { get; set; }        
         public string WrittenReview { get; set; }
-        public bool Anonymous { get; set; }
         [Required]
-        public byte[] EmploymentContractPDF { get; set; }
+        public int Anonymous { get; set; }
     }
 }

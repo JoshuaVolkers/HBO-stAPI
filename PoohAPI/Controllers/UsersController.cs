@@ -14,10 +14,10 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Models.AuthenticationModels;
+using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
@@ -182,11 +182,13 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
-        /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
-        /// <param name="educations">A comma seperated list of educations</param>
-        /// <param name="city">The city in which the user should be located.</param>
+        /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
+        /// <param name="educations">A comma seperated list of education Ids</param>
+        /// <param name="cityName">The city in which the user should be located.</param>
+        /// <param name="countryName">The name of the country where the student should live. Country names can be found in the country endpoint.</param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
-        /// <param name="preferredLanguages">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
+        /// <param name="additionalLocationSearchTerms">Municipality,province or state seperated by spaces. This is required to identify the correct city if there are multiple cities with the same name within a country. This parameter is only useful when used with range.</param>
+        /// <param name="preferredLanguage">The preferred language of the user</param>
         /// <returns>A list of users</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If no users were found for the specified filters</response>   
@@ -195,14 +197,28 @@ namespace PoohAPI.Controllers
         //[Authorize(Roles = "administrator")]
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
-            [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
+        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, 
+            [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
+            [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null, 
+            [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
-            return Ok(_userReadService.GetAllUsers(maxCount, offset));
+            if (maxCount < 1 || maxCount > 100)
+                return BadRequest("MaxCount should be between 1 and 100");
+            if (offset < 0)
+                return BadRequest("Offset should be 0 or larger");
+
+            IEnumerable<BaseUser> users = _userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
+                educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
+
+            if (users is null)
+                return NotFound("No users found");
+
+
+            return Ok(users);
         }
 
         /// <summary>
@@ -215,12 +231,12 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("me")]
+        [Route("{id}")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById()
+        public object GetUserById(int id)
         {
             //return User.Claims.Select(c =>
             //    new
@@ -228,7 +244,15 @@ namespace PoohAPI.Controllers
             //        Type = c.Type,
             //        Value = c.Value
             //    });
-            return Ok(_userReadService.GetUserById(GetCurrentUserId()));
+
+            User user = _userReadService.GetUserById(id);
+
+            if (user is null)
+                return NotFound("User not found.");
+
+            return Ok(user);
+
+            //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
@@ -240,21 +264,21 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("me")]
+        [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser()
+        public IActionResult DeleteUser(int id)
         {
+            _userCommandService.DeleteUser(id);
             return Ok();
         }
 
         /// <summary>
         /// Updates the userdata for the specified user.
         /// </summary>
-        /// <param name="id">The id of the user to update</param>
         /// <param name="userData">The user model containing the updated data</param>
         /// <returns>The updated user model</returns>
         /// <response code="200">If the request was a success</response>
@@ -267,9 +291,12 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult UpdateUser([FromBody]User userData)
+        public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            return Ok(userData);
+            if (ModelState.IsValid)
+                return Ok(_userCommandService.UpdateUser(userData));
+            else
+                return BadRequest("Informatie involledig.");
         }
 
         /// <summary>

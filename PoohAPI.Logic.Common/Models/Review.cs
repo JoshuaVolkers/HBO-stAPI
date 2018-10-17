@@ -10,22 +10,18 @@ namespace PoohAPI.Logic.Common.Models
     {
 
         public int Id { get; set; }
-
         public int CompanyId { get; set; }
-
         public int UserId { get; set; }
-
-        public double Stars { get; set; }
+        public int Stars { get; set; }
         public string WrittenReview { get; set; }
-        public bool Anonymous { get; set; }
-
-        public byte[] EmploymentContractPDF { get; set; }
-        /// <summary>
-        /// This property denotes if a review has been verified by the company/internship coordinator.
-        /// </summary>
-        public ReviewVerificationStatus VerifiedReview { get; set; }
-        public DateTime VerificationDate { get; set; }
+        public int Anonymous { get; set; }
         public DateTime CreationDate { get; set; }
+        public int VerifiedReview { get; set; }
+        public int VerifiedBy { get; set; }
+        //public string EmploymentContractPDF { get; set; }
+        
+        public DateTime VerificationDate { get; set; }
+        
         /// <summary>
         /// Denotes whether or not the review has been Locked. Locked reviews can no longer be deleted or edited throught the API.
         /// </summary>

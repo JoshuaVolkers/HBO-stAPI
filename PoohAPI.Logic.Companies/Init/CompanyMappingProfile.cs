@@ -2,6 +2,7 @@
 using PoohAPI.Infrastructure.CompanyDB.Models;
 using PoohAPI.Logic.Common;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,18 +26,25 @@ namespace PoohAPI.Logic.Companies.Init
                 .ForMember(d => d.HouseNumberAdditions, o => o.MapFrom(s => s.bedrijf_vestiging_toev))
                 .ForMember(d => d.Latitude, o => o.MapFrom(s => (double)s.bedrijf_breedtegraad))
                 .ForMember(d => d.Longitude, o => o.MapFrom(s => (double)s.bedrijf_lengtegraad))
+                .ForMember(d => d.Range, o => o.MapFrom(s => s.distance))
                 .ReverseMap();
 
             CreateMap<DBCompany, Company>()
-                .ForMember(d => d.Id, o => o.MapFrom(s => s.bedrijf_id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.bedrijf_handelsnaam))
-                .ForMember(d => d.Location, o => o.MapFrom(s => s))
-                .ForMember(d => d.LogoPath, o => o.MapFrom(s => s.bedrijf_logo))
+                .IncludeBase<DBCompany, BaseCompany>()
+                .ForMember(d => d.SocialLinkLinkedin, o => o.MapFrom(s => s.bedrijf_social_linkedin))
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.bedrijf_beschrijving))
                 .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.bedrijf_contactpersoon_email))
                 .ForMember(d => d.Website, o => o.MapFrom(s => s.bedrijf_website))
                 .ReverseMap();
-            
+
+            CreateMap<DBCompany, BaseCompany>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.bedrijf_id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.bedrijf_handelsnaam))
+                .ForMember(d => d.Location, o => o.MapFrom(s => s))
+                .ForMember(d => d.LogoPath, o => o.MapFrom(s => s.bedrijf_logo))
+                .ForMember(d => d.AverageReviewStars, o => o.MapFrom(s => (double)s.average_reviews))
+                .ReverseMap();
+
             CreateMap<IDataReader, DBCompany>().ConvertUsing<DataReaderTypeConverter<DBCompany>>();
         }
     }
