@@ -98,6 +98,7 @@
     <Compile Include="Models\InputModels\ReviewUpdateInput.cs" />
     <Compile Include="Models\InputModels\UserUpdateInput.cs" />
     <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\PresentationModels\ReviewPublicPresentation.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewAnonymous.cs" />
     <Compile Include="Models\Tag.cs" />

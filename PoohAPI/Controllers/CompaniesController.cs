@@ -2,6 +2,7 @@
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Logic.Common.Models.PresentationModels;
 using System.Collections.Generic;
 
 namespace PoohAPI.Controllers
@@ -12,11 +13,14 @@ namespace PoohAPI.Controllers
     {
         private readonly ICompanyReadService companyReadService;
         private readonly ICompanyCommandService companyCommandService;
+        private readonly IReviewReadService reviewReadService;
 
-        public CompaniesController(ICompanyReadService companyReadService, ICompanyCommandService companyCommandService)
+        public CompaniesController(ICompanyReadService companyReadService, ICompanyCommandService companyCommandService,
+            IReviewReadService reviewReadService)
         {
             this.companyReadService = companyReadService;
             this.companyCommandService = companyCommandService;
+            this.reviewReadService = reviewReadService;
         }
 
         /// <summary>
@@ -91,12 +95,17 @@ namespace PoohAPI.Controllers
         /// <response code="200">Returns the anonymous reviews of the company</response>
         /// <response code="404">If the specified company was not found</response>   
         [HttpGet("{id}/reviews")]
-        [ProducesResponseType(typeof(IEnumerable<ReviewAnonymous>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ReviewPublicPresentation>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetCompanyReviews(int id)
         {
             //TODO: we should be able to return both anonymous and normal reviews based on the choice the student made when posting it.
-            return Ok(new List<ReviewAnonymous>());
+            IEnumerable<ReviewPublicPresentation> reviews = this.reviewReadService.GetListReviewsForCompany(id);
+
+            if (reviews is null)
+                return NotFound("No reviews found for this company.");
+
+            return Ok(reviews);
         }
     }
 }
