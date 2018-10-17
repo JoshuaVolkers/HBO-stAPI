@@ -34,5 +34,10 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
         {
             NonQuery(query, parameters);
         }
+
+        public void PostReview(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
     }
 }

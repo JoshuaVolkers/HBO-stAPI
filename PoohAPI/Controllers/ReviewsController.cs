@@ -68,7 +68,14 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult PostReview([FromBody]ReviewPost reviewData)
         {
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, reviewData.UserId, reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));                
+            }
+            else
+            {
+                return BadRequest("Review information is incomplete");
+            }
         }
 
         /// <summary>
@@ -105,7 +112,7 @@ namespace PoohAPI.Controllers
             }
             else
             {
-                return BadRequest("Informatie involledig.");
+                return BadRequest("Review information is incomplete");
             }            
         }
 
