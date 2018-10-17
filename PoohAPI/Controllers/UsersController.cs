@@ -86,10 +86,10 @@ namespace PoohAPI.Controllers
         /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
         /// <param name="educations">A comma seperated list of education Ids</param>
         /// <param name="cityName">The city in which the user should be located.</param>
-        /// <param name="countryName"></param>
+        /// <param name="countryName">The name of the country where the student should live. Country names can be found in the country endpoint.</param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
-        /// <param name="additionalLocationSearchTerms"></param>
-        /// <param name="preferredLanguage">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
+        /// <param name="additionalLocationSearchTerms">Municipality,province or state seperated by spaces. This is required to identify the correct city if there are multiple cities with the same name within a country. This parameter is only useful when used with range.</param>
+        /// <param name="preferredLanguage">The preferred language of the user</param>
         /// <returns>A list of users</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If no users were found for the specified filters</response>   
@@ -148,14 +148,10 @@ namespace PoohAPI.Controllers
 
             User user = _userReadService.GetUserById(id);
 
-            if (user is User)
-            {
-                return Ok(user);
-            }
-            else
-            {
+            if (user is null)
                 return NotFound("User not found.");
-            }
+
+            return Ok(user);
 
             //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
         }
@@ -184,7 +180,6 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Updates the userdata for the specified user.
         /// </summary>
-        /// <param name="id">The id of the user to update</param>
         /// <param name="userData">The user model containing the updated data</param>
         /// <returns>The updated user model</returns>
         /// <response code="200">If the request was a success</response>
@@ -200,13 +195,9 @@ namespace PoohAPI.Controllers
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
             if (ModelState.IsValid)
-            {
                 return Ok(_userCommandService.UpdateUser(userData));
-            }
             else
-            {
                 return BadRequest("Informatie involledig.");
-            }
         }
 
         /// <summary>

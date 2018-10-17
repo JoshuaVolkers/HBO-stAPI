@@ -91,6 +91,7 @@
     <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
+    <Compile Include="Models\BaseModels\BaseLocation.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Coordinates.cs" />

@@ -28,19 +28,14 @@ namespace PoohAPI.Logic.Companies.Services
             this.queryBuilder = queryBuilder;
         }
 
+        /// <summary>
+        /// Get a single company by id. Only active companies will be returned.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Company GetCompanyById(int id)
         {
-            //var query = string.Format("SELECT b.*, l.land_naam " +
-            //    "FROM reg_bedrijven b " +
-            //    "INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id " +
-            //    "WHERE b.bedrijf_id = {0}", id);
-
-            //var query = "SELECT b.*, l.land_naam " +
-            //    "FROM reg_bedrijven b " +
-            //    "INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id " +
-            //    "WHERE b.bedrijf_id = @id";
-
-            var query = @"SELECT b.*, l.land_naam, 
+            string query = @"SELECT b.*, l.land_naam, 
                     IF(r.review_sterren IS NULL, 0,
                             CASE WHEN COUNT(r.review_sterren) > 4
                             THEN AVG(r.review_sterren)
@@ -55,11 +50,25 @@ namespace PoohAPI.Logic.Companies.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
 
-            var dbCompany = this.companyRepository.GetCompany(query, parameters);
+            DBCompany dbCompany = this.companyRepository.GetCompany(query, parameters);
             
             return this.mapper.Map<Company>(dbCompany);
         }
 
+        /// <summary>
+        /// Get a list of companies. Filters can be included. Only active companies will be returned.
+        /// </summary>
+        /// <param name="maxCount"></param>
+        /// <param name="offset"></param>
+        /// <param name="minStars"></param>
+        /// <param name="maxStars"></param>
+        /// <param name="cityName"></param>
+        /// <param name="countryName"></param>
+        /// <param name="locationRange"></param>
+        /// <param name="additionalLocationSearchTerms"></param>
+        /// <param name="major"></param>
+        /// <param name="detailedCompanies"></param>
+        /// <returns></returns>
         public IEnumerable<BaseCompany> GetListCompanies(int maxCount, int offset, double? minStars = null,
             double? maxStars = null, string cityName = null, string countryName = null, int? locationRange = null,
             string additionalLocationSearchTerms = null, int? major = null, bool detailedCompanies = false)
@@ -74,9 +83,7 @@ namespace PoohAPI.Logic.Companies.Services
             this.AddMajorFilter(parameters, major);
 
             if (detailedCompanies)
-            {
                 this.queryBuilder.AddSelect("b.bedrijf_contactpersoon_email, b.bedrijf_website, b.bedrijf_social_linkedin, b.bedrijf_beschrijving");
-            }
 
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
@@ -84,13 +91,9 @@ namespace PoohAPI.Logic.Companies.Services
             IEnumerable<DBCompany> dbCompanies = this.companyRepository.GetListCompanies(query, parameters);
 
             if (detailedCompanies)
-            {
                 return this.mapper.Map<IEnumerable<Company>>(dbCompanies);
-            }
             else
-            {
                 return this.mapper.Map<IEnumerable<BaseCompany>>(dbCompanies);
-            }
         }
 
         private void AddMajorFilter(Dictionary<string, object> parameters, int? major)
@@ -177,14 +180,10 @@ namespace PoohAPI.Logic.Companies.Services
             {
                 // Find matches in database
                 if (!(cityName is null))
-                {
                     AddCityFilter(parameters, cityName);
-                }
 
                 if (!(countryName is null))
-                {
                     AddCountryFilter(parameters, countryName);
-                }
             }
         }
 
