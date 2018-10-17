@@ -1,14 +1,10 @@
 ﻿using PoohAPI.Logic.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PoohAPI.Logic.Common.Enums;
 
 namespace PoohAPI.Logic.Common.Interfaces
 {
     public interface IUserCommandService
     {
-        User RegisterUser(string login, string password, string email);
+        User RegisterUser(string login, string email, UserAccountType accountType, string password = null);
     }
 }

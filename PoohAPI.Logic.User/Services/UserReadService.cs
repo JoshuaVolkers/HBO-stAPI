@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using PoohAPI.Common;
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using PoohAPI.Logic.Common.Helpers;
+using PoohAPI.Logic.Common.Enums;
 
 namespace PoohAPI.Logic.Users.Services
 {
@@ -65,10 +63,11 @@ namespace PoohAPI.Logic.Users.Services
 
         public User Login(string email, string password)
         {
-            var query = "SELECT * FROM reg_users WHERE user_email = @email";
+            var query = "SELECT * FROM reg_users WHERE user_email = @email AND user_account_type = @type";
             var parameters = new Dictionary<string, object>
             {
-                { "@email", email }
+                { "@email", email },
+                { "@type", (int)UserAccountType.ApiUser}
             };
 
             var user = _userRepository.GetUser(query, parameters);

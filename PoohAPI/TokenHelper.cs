@@ -14,7 +14,7 @@ namespace PoohAPI
 {
     public static class TokenHelper
     {
-        public static string RequestToken(ClaimsIdentity user)
+        public static string RequestToken(ClaimsIdentity user, int expiryTimeInSeconds)
         {
             //user.Roles = new[] {"bla", "cs_candidate"};
             var claims = new List<Claim>()
@@ -37,7 +37,7 @@ namespace PoohAPI
                 issuer: "poohapi",
                 audience: "poohapi",
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddMinutes(expiryTimeInSeconds),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -52,13 +52,13 @@ namespace PoohAPI
             });
         }
 
-        public static JWTToken GenerateJWT(ClaimsIdentity user)
+        public static JWTToken GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 3600)
         {
             var response = new JWTToken
             (
                 user.Claims.SingleOrDefault(c => c.Type == "id").Value,
-                RequestToken(user),
-                600
+                RequestToken(user, expiryTimeInSeconds),
+                expiryTimeInSeconds
             );
 
             return response;

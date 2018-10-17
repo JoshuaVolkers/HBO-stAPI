@@ -9,6 +9,11 @@ using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 using PoohAPI.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Models.AuthenticationModels;
 
 namespace PoohAPI.Controllers
 {
@@ -30,7 +35,7 @@ namespace PoohAPI.Controllers
         /// Starts the login process
         /// </summary>
         /// <param name="loginRequest">The loginRequest model</param>
-        /// <returns>A JWTToken used for authentication</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         [AllowAnonymous]
@@ -43,6 +48,87 @@ namespace PoohAPI.Controllers
             var user = _userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            return Ok(TokenHelper.GenerateJWT(identity));
+        }
+
+        /// <summary>
+        /// Login using Facebook AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from Facebook</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("facebook")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> FacebookAsync([FromBody] string AccessToken)
+        {
+            var client = new HttpClient();
+            var appAccessTokenResponse = await client.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id=&client_secret=&grant_type=client_credentials");
+            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
+
+            var userAccessTokenValidationResponse = await client.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserTokenData>(userAccessTokenValidationResponse);
+
+            if (!userAccessTokenValidation.IsValid)
+            {
+                client.Dispose();
+                return BadRequest("Facebook access token is invalid!");
+            }
+                
+            var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
+
+            client.Dispose();
+
+            var user = _userReadService.GetUserByEmail(userInfo.Email);
+
+            if (user == null)
+            {
+                user = _userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
+            }
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            return Ok(TokenHelper.GenerateJWT(identity));
+        }
+
+        /// <summary>
+        /// Login using LinkedIn AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from LinkedIn</param>
+        /// <param name="redirectUri">The redirectUri that was also used when requesting the acces token</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("linkedin")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> LinkedInAsync([FromBody] string AccessToken, [FromBody] string redirectUri)
+        {
+            var client = new HttpClient();
+
+            var appAccessTokenResponse = await client.GetStringAsync($"https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code={AccessToken}&redirect_uri={redirectUri}&client_id=1&client_secret=1");
+            var appAccessToken = JsonConvert.DeserializeObject<LinkedInAppAccessToken>(appAccessTokenResponse);
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", appAccessToken.AccessToken);
+            var userInfoResponse = await client.GetStringAsync($"https://api.linkedin.com/v2/people/me?projection=(id,firstName,lastName,email-address)");
+            var userInfo = JsonConvert.DeserializeObject<LinkedInUserData>(userInfoResponse);
+
+            var user = _userReadService.GetUserByEmail(userInfo.Email);
+
+            if (user == null)
+            {
+                user = _userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
+            }
 
             var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
 
@@ -71,7 +157,7 @@ namespace PoohAPI.Controllers
                 return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
                     registerRequest.EmailAddress));
 
-            var user = _userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, registerRequest.EmailAddress);
+            var user = _userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, UserAccountType.ApiUser, registerRequest.EmailAddress);
             return Ok();
         }
 

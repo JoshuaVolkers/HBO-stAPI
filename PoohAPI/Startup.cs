@@ -13,6 +13,8 @@ using PoohAPI.Application;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 namespace PoohAPI
 {
@@ -102,12 +104,18 @@ namespace PoohAPI
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = tokenOptions;
                     options.SaveToken = true;
                 });
+                //.AddFacebook(facebookOptions =>
+                //{
+                //    facebookOptions.AppId = "";
+                //    facebookOptions.AppSecret = "";
+                //});
             #endregion
 
             services.AddMvc()
