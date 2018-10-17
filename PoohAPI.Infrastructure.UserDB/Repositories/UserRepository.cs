@@ -16,16 +16,6 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             _mapper = mapper;
         }
 
-        public IEnumerable<WPUser> GetAllUsers(string query, Dictionary<string, object> parameters)
-        {
-            return GetAll<WPUser>(query, parameters);
-        }
-
-        public WPUser GetUser(string query, Dictionary<string, object> parameters)
-        {
-            return GetSingle<WPUser>(query, parameters);
-        }
-
         public int RegisterUser(string query, Dictionary<string, object> parameters)
         {
             return NonQuery(query, parameters);
@@ -49,6 +39,16 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         public IEnumerable<DBUser> GetAllUsers(string query, Dictionary<string, object> parameters)
         {
             return GetAll<DBUser>(query, parameters);
+        }
+
+        public IEnumerable<WPUser> GetAllUsers(string query)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public WPUser GetUser(string query)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

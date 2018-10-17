@@ -22,13 +22,13 @@ namespace PoohAPI.Controllers
     [Route("users")]
     public class UsersController : Controller
     {
-        private readonly IUserReadService _userReadService;
-        private readonly IUserCommandService _userCommandService;
+        private readonly IUserReadService userReadService;
+        private readonly IUserCommandService userCommandService;
 
         public UsersController(IUserReadService userReadService, IUserCommandService userCommandService)
         {
-            _userReadService = userReadService;
-            _userCommandService = userCommandService;
+            this.userReadService = userReadService;
+            this.userCommandService = userCommandService;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            var user = _userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
+            var user = this.userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 
@@ -87,11 +87,11 @@ namespace PoohAPI.Controllers
 
             client.Dispose();
 
-            var user = _userReadService.GetUserByEmail(userInfo.Email);
+            var user = this.userReadService.GetUserByEmail(userInfo.Email);
 
             if (user == null)
             {
-                user = _userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
+                user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
             var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
@@ -123,11 +123,11 @@ namespace PoohAPI.Controllers
             var userInfoResponse = await client.GetStringAsync($"https://api.linkedin.com/v2/people/me?projection=(id,firstName,lastName,email-address)");
             var userInfo = JsonConvert.DeserializeObject<LinkedInUserData>(userInfoResponse);
 
-            var user = _userReadService.GetUserByEmail(userInfo.Email);
+            var user = this.userReadService.GetUserByEmail(userInfo.Email);
 
             if (user == null)
             {
-                user = _userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
+                user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
             var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
@@ -153,11 +153,11 @@ namespace PoohAPI.Controllers
                 return BadRequest("Not all values were filled in correctly!");
             if (!registerRequest.AcceptTermsAndConditions)
                 return BadRequest("You need to accept the terms and conditions before creating your account!");
-            if (_userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
+            if (this.userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
                 return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
                     registerRequest.EmailAddress));
 
-            var user = _userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, UserAccountType.ApiUser, registerRequest.EmailAddress);
+            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, UserAccountType.ApiUser, registerRequest.EmailAddress);
             return Ok();
         }
 
@@ -211,7 +211,7 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<BaseUser> users = _userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
+            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
                 educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
@@ -245,14 +245,14 @@ namespace PoohAPI.Controllers
             //        Value = c.Value
             //    });
 
-            User user = _userReadService.GetUserById(id);
+            User user = this.userReadService.GetUserById(id);
 
             if (user is null)
                 return NotFound("User not found.");
 
             return Ok(user);
 
-            //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
+            //return Ok(this.userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteUser(int id)
         {
-            _userCommandService.DeleteUser(id);
+            this.userCommandService.DeleteUser(id);
             return Ok();
         }
 
@@ -294,7 +294,7 @@ namespace PoohAPI.Controllers
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
             if (ModelState.IsValid)
-                return Ok(_userCommandService.UpdateUser(userData));
+                return Ok(this.userCommandService.UpdateUser(userData));
             else
                 return BadRequest("Informatie involledig.");
         }
@@ -302,7 +302,6 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Get's the users favorite vacancies.
         /// </summary>
-        /// <param name="id">The id of the user whose favorite vacancies should be retrieved</param>
         /// <returns>A list of vacancies</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user has no favorites</response>   

@@ -32,31 +32,18 @@ namespace PoohAPI.Logic.Users.Services
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
-            var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
-                                      " FROM reg_users LIMIT @maxCount OFFSET @offset";
+            //var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+            //                          " FROM reg_users LIMIT @maxCount OFFSET @offset";
 
-            var parameters = new Dictionary<string, object>
-            {
-                { "@maxCount", maxCount },
-                { "@offset", offset }
-            };
+            //var parameters = new Dictionary<string, object>
+            //{
+            //    { "@maxCount", maxCount },
+            //    { "@offset", offset }
+            //};
 
-            var users = _userRepository.GetAllUsers(query, parameters);
-            return _mapper.Map<IEnumerable<User>>(users);
-        }
+            //var users = _userRepository.GetAllUsers(query, parameters);
+            //return _mapper.Map<IEnumerable<User>>(users);
 
-        public User GetUserByEmail(string email)
-        {
-            var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
-                                      " FROM reg_users WHERE user_email = @email";
-            var parameters = new Dictionary<string, object>
-            {
-                { "@email", email }
-            };
-
-            var user = _userRepository.GetUser(query, parameters);
-
-            return _mapper.Map<User>(user);
             this.queryBuilder.Clear();
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -77,9 +64,23 @@ namespace PoohAPI.Logic.Users.Services
 
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
-            
+
             var users = _userRepository.GetAllUsers(query, parameters);
             return _mapper.Map<IEnumerable<BaseUser>>(users);
+        }
+
+        public User GetUserByEmail(string email)
+        {
+            var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
+                        " FROM reg_users WHERE user_email = @email";
+            var parameters = new Dictionary<string, object>
+            {
+                {"@email", email}
+            };
+
+            var user = _userRepository.GetUser(query, parameters);
+
+            return _mapper.Map<User>(user);
         }
 
         public User GetUserById(int id)
@@ -135,13 +136,13 @@ namespace PoohAPI.Logic.Users.Services
         {
             if (educationsIds is null)
                 return;
-            
+
             List<string> splitIds = educationsIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
 
             if (ids.Count <= 0)
                 return;
-            
+
             string educationOr = "(";
 
             for (int i = 0; i < ids.Count; i++)

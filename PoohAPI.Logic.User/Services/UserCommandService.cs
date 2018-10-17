@@ -5,24 +5,22 @@ using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.InputModels;
-using System.Collections.Generic;
 
 namespace PoohAPI.Logic.Users.Services
 {
     public class UserCommandService : IUserCommandService
     {
-        private readonly IUserRepository _userRepository;       
-        private readonly IMapper _mapper;
+        private readonly IUserRepository userRepository;       
+        private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IQueryBuilder queryBuilder;
         private readonly IUserReadService userReadService;
-        private readonly IUserReadService _userReadService;
 
         public UserCommandService(IUserRepository userRepository, IMapper mapper, 
             IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IUserReadService userReadService)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            this.userRepository = userRepository;
+            this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
             this.queryBuilder = queryBuilder;
             this.userReadService = userReadService;
@@ -52,12 +50,11 @@ namespace PoohAPI.Logic.Users.Services
                 parameters.Add("@user_password", null);
             }
                 
-            var createdUserId = _userRepository.RegisterUser(query, parameters);
+            var createdUserId = this.userRepository.RegisterUser(query, parameters);
 
-            return _mapper.Map<User>(_userReadService.GetUserById(createdUserId));
+            return this.mapper.Map<User>(this.userReadService.GetUserById(createdUserId));
         }
-        
-
+       
         
 
         public void DeleteUser(int id)
@@ -72,7 +69,7 @@ namespace PoohAPI.Logic.Users.Services
                              DELETE FROM reg_users WHERE user_id = @id;
                             ";
 
-            _userRepository.DeleteUser(query, parameters);
+            this.userRepository.DeleteUser(query, parameters);
         }
 
         public User UpdateUser(UserUpdateInput userInput)
@@ -105,7 +102,7 @@ namespace PoohAPI.Logic.Users.Services
             string query = this.queryBuilder.BuildUpdate();
             this.queryBuilder.Clear();
 
-            _userRepository.UpdateUser(query, parameters);
+            this.userRepository.UpdateUser(query, parameters);
             
             return this.userReadService.GetUserById(userInput.Id);
         }

@@ -83,7 +83,6 @@
     <Compile Include="Enums\UserAccountType.cs" />
     <Compile Include="Helpers\DataReaderTypeConverter.cs" />
     <Compile Include="Classes\QueryBuilder.cs" />
-    <Compile Include="DataReaderTypeConverter.cs" />
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
