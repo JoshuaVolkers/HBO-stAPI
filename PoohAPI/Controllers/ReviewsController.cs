@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.RequestModels;
+using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
@@ -8,6 +10,15 @@ namespace PoohAPI.Controllers
     [Route("reviews")]
     public class ReviewsController : Controller
     {
+        private readonly IReviewReadService _reviewReadService;
+        private readonly IReviewCommandService _reviewCommandService;
+
+        public ReviewsController(IReviewReadService reviewReadService, IReviewCommandService reviewCommandService)
+        {
+            _reviewReadService = reviewReadService;
+            _reviewCommandService = reviewCommandService;
+        }
+
         /// <summary>
         /// Gets review by id for editing purposes. The user must be authorized.
         /// </summary>
@@ -19,8 +30,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response> 
         /// <response code="404">If the review was not found</response> 
-        [HttpGet]
-        [Route("{reviewId}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -28,7 +38,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviewById(int id)
         {
-            return Ok(new Review { Id = id });
+            Review review = _reviewReadService.GetReviewById(id);
+
+            if (review == null)
+            {
+                return NotFound("Review not found.");
+            }
+            else
+            {
+                return Ok(_reviewReadService.GetReviewById(id));
+            }
         }
 
         /// <summary>
@@ -49,14 +68,20 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult PostReview([FromBody]ReviewPost reviewData)
         {
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, reviewData.UserId, reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));                
+            }
+            else
+            {
+                return BadRequest("Review information is incomplete");
+            }
         }
 
         /// <summary>
         /// Updates the specified review.
         /// </summary>
         /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to update</param>
         /// <param name="reviewData">The updated review model</param>
         /// <returns>A list of Review objects</returns>
         /// <response code="200">If the request was a success</response>
@@ -69,13 +94,26 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult UpdateReview(int reviewId, [FromBody]Review reviewData)
+        public IActionResult UpdateReview([FromBody]ReviewUpdateInput reviewData)
         {
-            //Check of review niet locked is.
-            if (reviewId == 1)
-                return Ok(new Review() { Id = reviewId });
+            if (ModelState.IsValid)
+            {
+                Review review = _reviewReadService.GetReviewById(reviewData.Id);
+                if (review == null)
+                {
+                    return BadRequest("Review not found.");
+                }
+                else if (review.Locked == true)
+                {
+                    return BadRequest("Review has been locked.");                    
+                }
+                else
+                    return Ok(_reviewCommandService.UpdateReview(reviewData));
+            }
             else
-                return BadRequest("Review has been locked");
+            {
+                return BadRequest("Review information is incomplete");
+            }            
         }
 
         /// <summary>
@@ -92,11 +130,18 @@ namespace PoohAPI.Controllers
         [Route("{reviewId}")]
         public IActionResult DeleteReview(int reviewId)
         {
-            //Check of review niet locked is.
-            if (reviewId == 1)
-                return Ok();
+            Review review = _reviewReadService.GetReviewById(reviewId);
+            if(review == null)
+            {
+                return BadRequest("Review not found.");
+            }
+            else if (review.Locked == false)
+            {
+                _reviewCommandService.DeleteReview(reviewId);
+                return Ok("Review has been deleted.");
+            }                
             else
-                return BadRequest("Review has been locked");
+                return BadRequest("Review has been locked.");
         }
     }
 }

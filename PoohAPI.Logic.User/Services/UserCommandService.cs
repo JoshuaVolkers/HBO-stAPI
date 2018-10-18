@@ -1,16 +1,18 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
+using PoohAPI.Infrastructure.UserDB.Models;
 using PoohAPI.Infrastructure.UserDB.Repositories;
+using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.InputModels;
-using System.Collections.Generic;
 
 namespace PoohAPI.Logic.Users.Services
 {
     public class UserCommandService : IUserCommandService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
+        private readonly IUserRepository userRepository;       
+        private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IQueryBuilder queryBuilder;
         private readonly IUserReadService userReadService;
@@ -18,12 +20,46 @@ namespace PoohAPI.Logic.Users.Services
         public UserCommandService(IUserRepository userRepository, IMapper mapper, 
             IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IUserReadService userReadService)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            this.userRepository = userRepository;
+            this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
             this.queryBuilder = queryBuilder;
             this.userReadService = userReadService;
         }
+
+        public User RegisterUser(string login, string email, UserAccountType accountType, string password = null)
+        {
+            //SELECT LAST_INSERT_ID() returns the primary key of the created record.
+            var query = string.Format("INSERT INTO reg_users (user_email, user_password, user_name,  user_role, user_role_id, user_account_type) " +
+                                      " VALUES(@user_email, @user_password, @user_name, @user_role, @user_role_id, @user_account_type);" +
+                                      "SELECT LAST_INSERT_ID()");
+            var parameters = new Dictionary<string, object>();
+            parameters.Add("@user_email", email);          
+            parameters.Add("@user_name", login);
+            parameters.Add("@user_role", 0);
+            parameters.Add("@user_role_id", 0);
+            parameters.Add("@user_account_type", (int)accountType);
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                var hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(password, 10);
+                parameters.Add("@user_password", hashedPassword);
+            }
+            else
+            {
+                parameters.Add("@user_password", null);
+            }
+
+            //TODO: TEST IF THE ABOVE IF ELSE WORKS!
+            //Implement email address check, retrieve from fake optionsservice for now.
+            //Implement a "foreignStudent" boolean for the register request. Also add a field for the required legal document (school pas o.i.d.).
+                
+            var createdUserId = this.userRepository.RegisterUser(query, parameters);
+
+            return this.mapper.Map<User>(this.userReadService.GetUserById(createdUserId));
+        }
+       
+        
 
         public void DeleteUser(int id)
         {
@@ -37,11 +73,13 @@ namespace PoohAPI.Logic.Users.Services
                              DELETE FROM reg_users WHERE user_id = @id;
                             ";
 
-            _userRepository.DeleteUser(query, parameters);
+            this.userRepository.DeleteUser(query, parameters);
         }
 
         public User UpdateUser(UserUpdateInput userInput)
         {
+            this.InsertStudentDataIfNotExist(userInput.Id);
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             this.queryBuilder.Clear();
@@ -70,10 +108,30 @@ namespace PoohAPI.Logic.Users.Services
             string query = this.queryBuilder.BuildUpdate();
             this.queryBuilder.Clear();
 
-            _userRepository.UpdateUser(query, parameters);
+            this.userRepository.UpdateUser(query, parameters);
             
-
             return this.userReadService.GetUserById(userInput.Id);
+        }
+
+        private void InsertStudentDataIfNotExist(int id)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            string query = "SELECT * FROM reg_user_studenten WHERE user_id = @id";
+
+            parameters.Add("@id", id);
+
+            DBUser dbUser = this.userRepository.GetUser(query, parameters);
+
+            if (dbUser != null)
+                return;
+
+            parameters.Clear();
+            parameters.Add("@id", id);
+
+            string command = @"INSERT INTO reg_user_studenten
+                               VALUES (@id, 0, '', 0, 0, 0, 0, 0, 0)";
+
+            this.userRepository.UpdateUser(command, parameters);
         }
     }
 }

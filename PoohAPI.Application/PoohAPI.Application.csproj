@@ -39,6 +39,9 @@
     <Reference Include="AutoMapper.Extensions.Microsoft.DependencyInjection, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.Extensions.Microsoft.DependencyInjection.5.0.1\lib\netstandard2.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll</HintPath>
     </Reference>
+    <Reference Include="BCrypt.Net-Next, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.3.1.0\lib\net452\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -93,6 +96,10 @@
     <ProjectReference Include="..\PoohAPI.Logic.MapAPI\PoohAPI.Logic.MapAPI.csproj">
       <Project>{88a2193c-920a-4ec7-9ceb-bbd512dcfbf3}</Project>
       <Name>PoohAPI.Logic.MapAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Reviews\PoohAPI.Logic.Reviews.csproj">
+      <Project>{06234d95-eb1e-4702-ac6b-1c135369035f}</Project>
+      <Name>PoohAPI.Logic.Reviews</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj">
       <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>

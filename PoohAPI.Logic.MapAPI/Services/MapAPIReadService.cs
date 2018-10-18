@@ -19,6 +19,13 @@ namespace PoohAPI.Logic.MapAPI.Services
             this.mapApi = mapApi;
         }
 
+        /// <summary>
+        /// Get the coordinates of a location on the world map.
+        /// </summary>
+        /// <param name="cityName"></param>
+        /// <param name="countryName"></param>
+        /// <param name="municipalityName"></param>
+        /// <returns></returns>
         public Coordinates GetMapCoordinates(string cityName, string countryName = null, string municipalityName = null)
         {
             MapCoordinates mapCoordindates;
@@ -27,26 +34,16 @@ namespace PoohAPI.Logic.MapAPI.Services
             {
                 // Use Map API
                 if (!(countryName is null) && !(municipalityName is null))
-                {
                     mapCoordindates = this.mapApi.GetCoordinatesLocation(cityName, municipalityName, countryName);
-                }
                 else if (!(countryName is null))
-                {
                     mapCoordindates = this.mapApi.GetCoordinatesLocation(cityName, countryName);
-                }
                 else if (!(municipalityName is null))
-                {
                     mapCoordindates = this.mapApi.GetCoordinatesLocation(cityName, municipalityName);
-                }
                 else
-                {
                     mapCoordindates = this.mapApi.GetCoordinatesLocation(cityName);
-                }
             }
             else
-            {
                 return null;
-            }
 
             if (mapCoordindates.ResponseSucceeded)
             {
