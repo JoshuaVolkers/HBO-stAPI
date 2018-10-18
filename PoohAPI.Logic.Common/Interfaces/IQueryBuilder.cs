@@ -15,7 +15,6 @@ namespace PoohAPI.Logic.Common.Interfaces
         void AddSelect(string select);
         void AddJoinLine(string join);
         void AddWhere(string where);
-        void AddLike(string like);
         void AddGroupBy(string groupBy);
         void AddHaving(string having);
         void AddUpdateSet(string updateSet);

@@ -36,10 +36,11 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.AddVacancyBaseQuery(parameters, maxCount, offset);
             this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
             this.AddEducationFilter(parameters, education, educationalAttainment, intershipType);
+            this.AddLanguageFilter(parameters, languages);
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
 
-            IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query);
+            IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
             for (int i = 0; i < dbVacancies.Count(); i++)
             {
                 dbVacancies.ToList()[i] = this.convertToEnumLists(dbVacancies.ToList()[i]);
@@ -60,7 +61,7 @@ namespace PoohAPI.Logic.Vacancies.Services
 
             this.queryBuilder.Clear();
 
-            DBVacancy dBVacancy = this.vacancyRepository.GetVacancy(query);
+            DBVacancy dBVacancy = this.vacancyRepository.GetVacancy(query, parameters);
             dBVacancy = this.convertToEnumLists(dBVacancy);
 
             return this.mapper.Map<Vacancy>(dBVacancy);
@@ -135,39 +136,50 @@ namespace PoohAPI.Logic.Vacancies.Services
 
         private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
         {
-            this.queryBuilder.AddWhere("l.land_naam = " + countryName);
+            this.queryBuilder.AddWhere("l.land_naam = @countryName");
+            parameters.Add("@countryName", countryName);
         }
 
         private void AddCityFilter(Dictionary<string, object> parameters, string cityName)
         {
-            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = " + cityName);
+            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = @cityName");
+            parameters.Add("@cityName", cityName);
         }
 
         private void AddVacancyFilter(Dictionary<string, object> parameters, int id)
         {
-            this.queryBuilder.AddWhere("v.vacature_id = " + id);
+            this.queryBuilder.AddWhere("v.vacature_id = @id");
+            parameters.Add("@id", id);
         }
 
         private void AddEducationFilter(Dictionary<string, object> parameters, string education = null, string educationalAttainment = null, IntershipType? intershipType = null)
         {
             if(educationalAttainment != null)
             {
-                this.queryBuilder.AddLike("n.opn_naam " + educationalAttainment);
+                this.queryBuilder.AddWhere("n.opn_naam = @educationalAttainment");
+                parameters.Add("@educationalAttainment", educationalAttainment);
             }
 
             if(education != null)
             {
-                this.queryBuilder.AddLike("o.opl_naam " + education);
+                this.queryBuilder.AddWhere("o.opl_naam = @education");
+                parameters.Add("@education", education);
             }
 
             if(intershipType != null)
             {
-                this.queryBuilder.AddLike("stagesoort " + intershipType.Value.ToString());
+                this.queryBuilder.AddWhere("stagesoort = @intershipType");
+                parameters.Add("@intershipType", intershipType.Value.ToString());
             }
         }
 
         private void AddLanguageFilter(Dictionary<string, object> parameters, string language)
         {
+            if(language != null)
+            {
+                this.queryBuilder.AddWhere("t.talen_naam = @language");
+                parameters.Add("@language", language);
+            }
         }
 
         public DBVacancy convertToEnumLists(DBVacancy dbvacancy)
