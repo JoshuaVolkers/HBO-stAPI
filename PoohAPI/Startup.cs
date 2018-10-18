@@ -61,20 +61,20 @@ namespace PoohAPI
                         }
                     });
 
-                //var security = new Dictionary<string, IEnumerable<string>>
-                //{
-                //    {"Bearer", new string[] { }}
-                //};
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }}
+                };
 
-                //s.AddSecurityDefinition("Bearer", new ApiKeyScheme()
-                //{
-                //    Description = "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}",
-                //    Name = "Authorization",
-                //    In = "header",
-                //    Type = "apiKey"
-                //});
+                s.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
 
-                //s.AddSecurityRequirement(security);
+                s.AddSecurityRequirement(security);
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -104,18 +104,12 @@ namespace PoohAPI
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = tokenOptions;
                     options.SaveToken = true;
                 });
-                //.AddFacebook(facebookOptions =>
-                //{
-                //    facebookOptions.AppId = "";
-                //    facebookOptions.AppSecret = "";
-                //});
             #endregion
 
             services.AddMvc()

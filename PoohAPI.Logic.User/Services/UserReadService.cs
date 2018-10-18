@@ -32,18 +32,6 @@ namespace PoohAPI.Logic.Users.Services
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
-            //var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
-            //                          " FROM reg_users LIMIT @maxCount OFFSET @offset";
-
-            //var parameters = new Dictionary<string, object>
-            //{
-            //    { "@maxCount", maxCount },
-            //    { "@offset", offset }
-            //};
-
-            //var users = _userRepository.GetAllUsers(query, parameters);
-            //return _mapper.Map<IEnumerable<User>>(users);
-
             this.queryBuilder.Clear();
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -93,7 +81,7 @@ namespace PoohAPI.Logic.Users.Services
                     IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
                     IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam 
                 FROM reg_users u 
-                INNER JOIN reg_user_studenten s ON u.user_id = s.user_id
+                LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id
                 LEFT JOIN reg_landen l ON s.user_land = l.land_id
                 LEFT JOIN reg_talen t ON s.user_taal = t.talen_id
                 LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id

@@ -18,6 +18,7 @@ using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
@@ -81,7 +82,7 @@ namespace PoohAPI.Controllers
                 client.Dispose();
                 return BadRequest("Facebook access token is invalid!");
             }
-                
+
             var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
             var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
 
@@ -139,13 +140,13 @@ namespace PoohAPI.Controllers
         /// Starts the register process
         /// </summary>
         /// <param name="registerRequest">The registerRequest model</param>
-        /// <returns>The registered user</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incomplete personal information</response>
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(JWTToken), 200)]
         [ProducesResponseType(401)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
@@ -156,9 +157,13 @@ namespace PoohAPI.Controllers
             if (this.userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
                 return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
                     registerRequest.EmailAddress));
+            if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
+                return BadRequest("The filled in emailaddress is not allowed!");
 
-            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.Password, UserAccountType.ApiUser, registerRequest.EmailAddress);
-            return Ok();
+            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            return Ok(TokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -195,15 +200,16 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
         //[Authorize(Roles = "administrator")]
+        [AllowAnonymous]
         [HttpGet]
         [Route("")]
         [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, 
+        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
             [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
-            [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null, 
+            [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
             [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
             if (maxCount < 1 || maxCount > 100)
@@ -211,7 +217,7 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments, 
+            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
                 educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
@@ -224,35 +230,24 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Get's the userdata for the specified user
         /// </summary>
-        /// <param name="id">The id of the user to retrieve</param>
         /// <returns>A user model</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById(int id)
+        public object GetUserById()
         {
-            //return User.Claims.Select(c =>
-            //    new
-            //    {
-            //        Type = c.Type,
-            //        Value = c.Value
-            //    });
-
-            User user = this.userReadService.GetUserById(id);
-
-            if (user is null)
+            var user = this.userReadService.GetUserById(GetCurrentUserId());
+            if (user == null)
                 return NotFound("User not found.");
 
             return Ok(user);
-
-            //return Ok(this.userReadService.GetUserById(GetCurrentUserId()));
         }
 
         /// <summary>
@@ -293,7 +288,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && GetCurrentUserId().Equals(userData.Id))
                 return Ok(this.userCommandService.UpdateUser(userData));
             else
                 return BadRequest("Informatie involledig.");
@@ -390,5 +385,11 @@ namespace PoohAPI.Controllers
             return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
         }
 
+        private bool CheckIfEmailAddressIsAllowed(string emailAddress)
+        {
+            var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
+            var domain = emailAddress.Substring(emailAddress.LastIndexOf("@") + 1);
+            return allowedEmails.Any(d => d.Contains(domain));
+        }
     }
 }
