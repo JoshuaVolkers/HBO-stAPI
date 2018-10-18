@@ -27,15 +27,14 @@ namespace PoohAPI.Logic.Users.Services
         }
 
         public User RegisterUser(string login, string email, UserAccountType accountType, string password = null)
-        {           
+        {
             //SELECT LAST_INSERT_ID() returns the primary key of the created record.
-            var query = string.Format("INSERT INTO reg_users (user_email, user_password, user_name, user_salt, user_role, user_role_id, user_account_type) " +
-                                      " VALUES(@user_email, @user_password, @user_name, @user_salt, @user_role, @user_role_id, @user_account_type);" +
+            var query = string.Format("INSERT INTO reg_users (user_email, user_password, user_name,  user_role, user_role_id, user_account_type) " +
+                                      " VALUES(@user_email, @user_password, @user_name, @user_role, @user_role_id, @user_account_type);" +
                                       "SELECT LAST_INSERT_ID()");
             var parameters = new Dictionary<string, object>();
             parameters.Add("@user_email", email);          
             parameters.Add("@user_name", login);
-            parameters.Add("@user_salt", "salt");
             parameters.Add("@user_role", 0);
             parameters.Add("@user_role_id", 0);
             parameters.Add("@user_account_type", (int)accountType);
@@ -49,6 +48,10 @@ namespace PoohAPI.Logic.Users.Services
             {
                 parameters.Add("@user_password", null);
             }
+
+            //TODO: TEST IF THE ABOVE IF ELSE WORKS!
+            //Implement email address check, retrieve from fake optionsservice for now.
+            //Implement a "foreignStudent" boolean for the register request. Also add a field for the required legal document (school pas o.i.d.).
                 
             var createdUserId = this.userRepository.RegisterUser(query, parameters);
 
