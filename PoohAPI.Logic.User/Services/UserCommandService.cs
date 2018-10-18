@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
+using PoohAPI.Infrastructure.UserDB.Models;
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
@@ -77,6 +78,8 @@ namespace PoohAPI.Logic.Users.Services
 
         public User UpdateUser(UserUpdateInput userInput)
         {
+            this.InsertStudentDataIfNotExist(userInput.Id);
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             this.queryBuilder.Clear();
@@ -108,6 +111,27 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateUser(query, parameters);
             
             return this.userReadService.GetUserById(userInput.Id);
+        }
+
+        private void InsertStudentDataIfNotExist(int id)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            string query = "SELECT * FROM reg_user_studenten WHERE user_id = @id";
+
+            parameters.Add("@id", id);
+
+            DBUser dbUser = this.userRepository.GetUser(query, parameters);
+
+            if (dbUser != null)
+                return;
+
+            parameters.Clear();
+            parameters.Add("@id", id);
+
+            string command = @"INSERT INTO reg_user_studenten
+                               VALUES (@id, 0, '', 0, 0, 0, 0, 0, 0)";
+
+            this.userRepository.UpdateUser(command, parameters);
         }
     }
 }
