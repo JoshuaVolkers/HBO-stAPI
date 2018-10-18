@@ -24,7 +24,7 @@ namespace PoohAPI.Infrastructure.UserDB.Models
         public string opn_naam { get; set; }
         public int user_taal { get; set; }
         public string talen_naam { get; set; }
-        public bool user_social_account { get; set; }
+        public int user_social_account { get; set; }
         public decimal user_breedtegraad { get; set; }
         public decimal user_lengtegraad { get; set; }
     }

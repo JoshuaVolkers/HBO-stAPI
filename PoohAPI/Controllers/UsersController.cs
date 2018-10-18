@@ -259,15 +259,15 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser(int id)
+        public IActionResult DeleteUser()
         {
-            this.userCommandService.DeleteUser(id);
+            this.userCommandService.DeleteUser(GetCurrentUserId());
             return Ok();
         }
 
