@@ -217,7 +217,7 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
+            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
                 educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
