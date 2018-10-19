@@ -28,7 +28,7 @@ namespace PoohAPI.Logic.Users.Services
             this.reviewReadService = reviewReadService;
         }
 
-        public IEnumerable<BaseUser> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
+        public IEnumerable<User> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
@@ -36,11 +36,19 @@ namespace PoohAPI.Logic.Users.Services
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
-            this.queryBuilder.AddSelect("u.user_id, u.user_email, u.user_name, u.user_role");
+            this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
+                    s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad,
+                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
             this.queryBuilder.SetFrom("reg_users u");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_user_studenten s ON u.user_id = s.user_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_talen t ON s.user_taal = t.talen_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id");
+            this.queryBuilder.AddWhere("u.user_role = 0");
+            this.queryBuilder.AddWhere("u.user_active = 1");
             this.queryBuilder.SetLimit("@limit");
-            this.queryBuilder.SetOffset("@offset");
+            this.queryBuilder.SetOffset("@offset");            
 
             parameters.Add("@limit", maxCount);
             parameters.Add("@offset", offset);
@@ -54,7 +62,7 @@ namespace PoohAPI.Logic.Users.Services
             this.queryBuilder.Clear();
 
             var users = _userRepository.GetAllUsers(query, parameters);
-            return _mapper.Map<IEnumerable<BaseUser>>(users);
+            return _mapper.Map<IEnumerable<User>>(users);
         }
 
         public User GetUserByEmail(string email)
@@ -246,7 +254,6 @@ namespace PoohAPI.Logic.Users.Services
         private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
         {
             this.queryBuilder.AddWhere("l.land_naam = @countryName");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON s.user_land = l.land_id");
             parameters.Add("@countryName", countryName);
         }
 

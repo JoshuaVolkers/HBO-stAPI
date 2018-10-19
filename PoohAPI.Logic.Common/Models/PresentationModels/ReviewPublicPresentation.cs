@@ -13,5 +13,6 @@ namespace PoohAPI.Logic.Common.Models.PresentationModels
         public int Stars { get; set; }
         public string WrittenReview { get; set; }
         public string NameReviewer { get; set; }
+        public string ReviewDate { get; set; }
     }
 }

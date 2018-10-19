@@ -100,7 +100,6 @@ namespace PoohAPI.Logic.Companies.Services
         {
             if (!(major is null))
             {
-                this.queryBuilder.AddJoinLine("INNER JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id");
                 this.queryBuilder.AddWhere("ob.opb_opleiding_id = @majorId");
                 parameters.Add("@majorId", major);
             }
@@ -111,7 +110,7 @@ namespace PoohAPI.Logic.Companies.Services
             this.queryBuilder.AddSelect(@"b.bedrijf_id, b.bedrijf_handelsnaam, b.bedrijf_vestiging_straat, bedrijf_vestiging_huisnr, 
                     b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, b.bedrijf_vestiging_plaats,
                     b.bedrijf_vestiging_land, l.land_naam, b.bedrijf_logo, b.bedrijf_breedtegraad,
-                    b.bedrijf_lengtegraad");
+                    b.bedrijf_lengtegraad, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen");
             this.queryBuilder.AddSelect(@" 
                     IF(r.review_sterren IS NULL, 0,
                             CASE WHEN COUNT(r.review_sterren) > 4
@@ -121,6 +120,8 @@ namespace PoohAPI.Logic.Companies.Services
             this.queryBuilder.SetFrom("reg_bedrijven b");
             this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_reviews r ON b.bedrijf_id = r.review_bedrijf_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingen o ON ob.opb_opleiding_id = o.opl_id");
             this.queryBuilder.AddWhere("b.bedrijf_actief = 1");
             this.queryBuilder.AddGroupBy("b.bedrijf_id");
             this.queryBuilder.SetLimit("@limit");
