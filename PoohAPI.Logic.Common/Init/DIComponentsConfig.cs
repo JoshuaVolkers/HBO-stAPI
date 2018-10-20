@@ -16,6 +16,7 @@ namespace PoohAPI.Logic.Common.Init
         {
             services.AddSingleton<IMySQLClient, MySQLClient>();
             services.AddScoped<IQueryBuilder, QueryBuilder>();
+            services.AddScoped<IMailClient, MailClient>();
         }
     }
 }

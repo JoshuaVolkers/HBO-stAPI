@@ -50,5 +50,20 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+        public DBUserEmailVerification GetUserVerification(string query, Dictionary<string, object> parameters)
+        {
+            return GetSingle<DBUserEmailVerification>(query, parameters);
+        }
+
+        public void DeleteUserVerification(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
+
+        public void InsertUserVerification(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
     }
 }

@@ -161,9 +161,36 @@ namespace PoohAPI.Controllers
                 return BadRequest("The filled in emailaddress is not allowed!");
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            //var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
 
-            return Ok(TokenHelper.GenerateJWT(identity));
+            //return Ok(TokenHelper.GenerateJWT(identity));
+            return Ok("Verification email has been sent.");
+        }
+
+        /// <summary>
+        /// Verifies email address of newly registered users and activates their accounts.
+        /// </summary>
+        /// <param name="token">Token that is send to the users' email address.</param>
+        /// <returns></returns>
+        /// <response code="200"></response>
+        /// <response code="400"></response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verify")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult VerifyEmail([FromQuery]string token)
+        {
+            User user = this.userCommandService.VerifyUserEmail(token);
+
+            if (user is null)
+                return BadRequest("Token is invalid or expired.");
+
+            //var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            //return Ok(TokenHelper.GenerateJWT(identity));
+
+            return Ok("Your email address has been verified. Please, log into your account with your application.");
         }
 
         /// <summary>
