@@ -14,5 +14,9 @@ namespace PoohAPI.Logic.Common.Interfaces
         User RegisterUser(string login, string email, UserAccountType accountType, string password = null);
         User UpdateUser(UserUpdateInput userInput);
         void DeleteUser(int id);
+        string CreateEmailVerificationToken(int userId);
+        void DeleteEmailVerificationToken(int userId);
+        void CreateEmailVerification(int userId, string token, DateTime expirationDate);
+        User VerifyUserEmail(string token);
     }
 }

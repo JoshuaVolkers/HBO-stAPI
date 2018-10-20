@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using PoohAPI.Logic.Common.Enums;
 using System.Linq;
 using System.Threading.Tasks;
+using PoohAPI.Infrastructure.UserDB.Models;
 
 namespace PoohAPI.Logic.Users.Services
 {
@@ -79,23 +80,44 @@ namespace PoohAPI.Logic.Users.Services
             return _mapper.Map<User>(user);
         }
 
-        public User GetUserById(int id)
+        public User GetUserById(int id, bool isActive = true)
         {
             //var query = string.Format("SELECT * FROM wp_dev_users WHERE ID = {0}", id);
 
-            string query = @"
-                SELECT u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
+            this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
                     s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
                     IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
-                    IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam 
-                FROM reg_users u 
-                LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id
-                LEFT JOIN reg_landen l ON s.user_land = l.land_id
-                LEFT JOIN reg_talen t ON s.user_taal = t.talen_id
-                LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id
-                LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id
-                WHERE u.user_role = 0 AND u.user_active = 1 AND u.user_id = @id
-                ";
+                    IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam");
+
+            this.queryBuilder.SetFrom("reg_users u");
+
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_talen t ON s.user_taal = t.talen_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id");
+
+            this.queryBuilder.AddWhere("u.user_role = 0");
+            this.queryBuilder.AddWhere("u.user_id = @id");
+
+            if (isActive == true)
+                this.queryBuilder.AddWhere("u.user_active = 1");
+
+            string query = this.queryBuilder.BuildQuery();
+
+            //string query = @"
+            //    SELECT u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
+            //        s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
+            //        IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
+            //        IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam 
+            //    FROM reg_users u 
+            //    LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id
+            //    LEFT JOIN reg_landen l ON s.user_land = l.land_id
+            //    LEFT JOIN reg_talen t ON s.user_taal = t.talen_id
+            //    LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id
+            //    LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id
+            //    WHERE u.user_role = 0 AND u.user_active = 1 AND u.user_id = @id
+            //    ";
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
@@ -261,6 +283,24 @@ namespace PoohAPI.Logic.Users.Services
         {
             this.queryBuilder.AddWhere("s.user_woonplaats = @cityName");
             parameters.Add("@cityName", cityName);
+        }
+
+        public UserEmailVerification GetUserEmailVerificationByUserId(int userId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", userId);
+            string query = "SELECT * FROM reg_user_verification WHERE ver_user_id = @id";
+
+            return _mapper.Map<UserEmailVerification>(_userRepository.GetUserVerification(query, parameters));
+        }
+
+        public UserEmailVerification GetUserEmailVerificationByToken(string token)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@token", token);
+            string query = "SELECT * FROM reg_user_verification WHERE ver_token = @token";
+
+            return _mapper.Map<UserEmailVerification>(_userRepository.GetUserVerification(query, parameters));
         }
     }
 }
