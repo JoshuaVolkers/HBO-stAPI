@@ -56,6 +56,7 @@ namespace PoohAPI.Logic.Reviews.Init
                 .ForMember(d => d.NameReviewer, o => o.MapFrom(s => s.review_student_name))
                 .ForMember(d => d.Stars, o => o.MapFrom(s => s.review_sterren))
                 .ForMember(d => d.WrittenReview, o => o.MapFrom(s => s.review_geschreven))
+                .ForMember(d =>d.ReviewDate, o => o.MapFrom(s => s.review_datum))
                 .ReverseMap();
         }
     }
