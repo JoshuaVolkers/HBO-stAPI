@@ -39,8 +39,17 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.Longitude, o => o.MapFrom(s => s.user_lengtegraad))
                 .ReverseMap();
 
+            CreateMap<DBUserEmailVerification, UserEmailVerification>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.ver_id))
+                .ForMember(d => d.UserId, o => o.MapFrom(s => s.ver_user_id))
+                .ForMember(d => d.Token, o => o.MapFrom(s => s.ver_token))
+                .ForMember(d => d.ExpirationDate, o => o.MapFrom(s => s.ver_expiration))
+                .ReverseMap();
+
 
             CreateMap<IDataReader, DBUser>().ConvertUsing<DataReaderTypeConverter<DBUser>>();
+
+            CreateMap<IDataReader, DBUserEmailVerification>().ConvertUsing<DataReaderTypeConverter<DBUserEmailVerification>>();
         }
     }
 }

@@ -67,14 +67,25 @@ namespace PoohAPI.Logic.Reviews.Services
                         CASE WHEN r.review_anoniem = 1 
                         THEN u.user_name 
                         ELSE 'Anoniem' END 
-                    ) as review_student_name 
+                    ) AS review_student_name, 
+                CASE WHEN r.review_anoniem = 0 
+                THEN r.review_datum 
+                ELSE NULL END AS review_datum 
             FROM reg_reviews r 
             LEFT JOIN reg_users u ON r.review_student_id = u.user_id 
             WHERE review_bedrijf_id = @id";
 
             var dbReviews = _reviewRepository.GetListReviews(query, parameters);
 
-            return _mapper.Map<IEnumerable<ReviewPublicPresentation>>(dbReviews);
+            int count = 0;
+            foreach (var item in dbReviews)
+            {
+                count++;
+                if (count > 4)
+                    return _mapper.Map<IEnumerable<ReviewPublicPresentation>>(dbReviews);
+            }
+
+            return null;
         }
     }
 }

@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\MailClient.cs" />
     <Compile Include="Enums\UserAccountType.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\DataReaderTypeConverter.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
+    <Compile Include="Interfaces\IMailClient.cs" />
     <Compile Include="Interfaces\IMapAPIReadService.cs" />
     <Compile Include="Interfaces\IQueryBuilder.cs" />
     <Compile Include="Interfaces\IReviewCommandService.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Token.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserEmailValidation.cs" />
     <Compile Include="Models\Vacancy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

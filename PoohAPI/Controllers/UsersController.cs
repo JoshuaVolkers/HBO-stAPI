@@ -161,9 +161,34 @@ namespace PoohAPI.Controllers
                 return BadRequest("The filled in emailaddress is not allowed!");
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
 
-            return Ok(TokenHelper.GenerateJWT(identity));
+            return Ok("Verification email has been sent.");
+        }
+
+        /// <summary>
+        /// Verifies email address of newly registered users and activates their accounts.
+        /// </summary>
+        /// <param name="token">Token that is send to the users' email address.</param>
+        /// <returns></returns>
+        /// <response code="200"></response>
+        /// <response code="400"></response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verify")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult VerifyEmail([FromQuery]string token)
+        {
+            User user = this.userCommandService.VerifyUserEmail(token);
+
+            if (user is null)
+                return BadRequest("Token is invalid or expired.");
+
+            //var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+
+            //return Ok(TokenHelper.GenerateJWT(identity));
+
+            return Ok("Your email address has been verified. Please, log into your account with your application.");
         }
 
         /// <summary>
@@ -201,7 +226,7 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<BaseUser> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
+            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
                 educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
@@ -243,15 +268,15 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser(int id)
+        public IActionResult DeleteUser()
         {
-            this.userCommandService.DeleteUser(id);
+            this.userCommandService.DeleteUser(GetCurrentUserId());
             return Ok();
         }
 
