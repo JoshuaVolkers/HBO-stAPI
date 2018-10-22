@@ -40,15 +40,5 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             return GetAll<DBUser>(query, parameters);
         }
-
-        public IEnumerable<WPUser> GetAllUsers(string query)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public WPUser GetUser(string query)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

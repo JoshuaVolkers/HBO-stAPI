@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\UserAccountType.cs" />
+    <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\DataReaderTypeConverter.cs" />
     <Compile Include="Classes\QueryBuilder.cs" />
     <Compile Include="Enums\IntershipType.cs" />

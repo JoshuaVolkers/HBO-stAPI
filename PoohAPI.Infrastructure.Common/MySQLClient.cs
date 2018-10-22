@@ -31,7 +31,7 @@ namespace PoohAPI.Infrastructure.Common
             //These values should be retrieved from the appsettings.json and the configurationportal on Azure later on.
             
             _server = "localhost";
-            _database = "elbho_demo";
+            _database = "elbho_dev";
             _uid = "root";
             _password = "develop";
 

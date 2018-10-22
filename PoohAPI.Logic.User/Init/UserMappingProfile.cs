@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using AutoMapper;
 using PoohAPI.Infrastructure.UserDB.Models;
 using PoohAPI.Logic.Common;
+using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
@@ -15,7 +17,7 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.user_id))
                 .ForMember(d => d.NiceName, o => o.MapFrom(s => s.user_name))
                 .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.user_email))
-                .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role))
+                .ForMember(d => d.Role, o => o.MapFrom(s => Enum.GetName(typeof(UserRole), s.user_role)))
                 .ReverseMap();
 
             CreateMap<DBUser, User>()

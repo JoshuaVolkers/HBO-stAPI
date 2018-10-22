@@ -50,7 +50,7 @@ namespace PoohAPI.Controllers
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
 
             return Ok(TokenHelper.GenerateJWT(identity));
         }
@@ -95,7 +95,7 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
             return Ok(TokenHelper.GenerateJWT(identity));
         }
 
@@ -131,7 +131,7 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
 
             return Ok(TokenHelper.GenerateJWT(identity));
         }
@@ -161,25 +161,9 @@ namespace PoohAPI.Controllers
                 return BadRequest("The filled in emailaddress is not allowed!");
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
+            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
 
             return Ok(TokenHelper.GenerateJWT(identity));
-        }
-
-        /// <summary>
-        /// Checks if token is still valid
-        /// </summary>
-        /// <param name="token">The token to be checked</param>
-        /// <returns>A boolean that says if the token if valid</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If no token was given as parameter</response>
-        [HttpPost]
-        [Route("checktoken")]
-        [ProducesResponseType(typeof(Boolean), 200)]
-        [ProducesResponseType(400)]
-        public IActionResult CheckToken([FromBody]Token token)
-        {
-            return Ok(new Boolean());
         }
 
         /// <summary>
@@ -199,7 +183,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        //[Authorize(Roles = "administrator")]
+        [Authorize(Roles = "Validator, Elbho_medewerker")]
         [AllowAnonymous]
         [HttpGet]
         [Route("")]
@@ -279,7 +263,8 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [AllowAnonymous]
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
@@ -288,7 +273,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid && GetCurrentUserId().Equals(userData.Id))
+            if (ModelState.IsValid /*&& GetCurrentUserId().Equals(userData.Id)*/)
                 return Ok(this.userCommandService.UpdateUser(userData));
             else
                 return BadRequest("Informatie involledig.");
