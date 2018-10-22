@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="Classes\MailClient.cs" />
     <Compile Include="Enums\UserAccountType.cs" />
+    <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\DataReaderTypeConverter.cs" />
     <Compile Include="Classes\QueryBuilder.cs" />
     <Compile Include="Enums\IntershipType.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Models\Coordinates.cs" />
     <Compile Include="Models\InputModels\ReviewUpdateInput.cs" />
     <Compile Include="Models\InputModels\UserUpdateInput.cs" />
+    <Compile Include="Models\JwtUser.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PresentationModels\ReviewPublicPresentation.cs" />
     <Compile Include="Models\Review.cs" />
@@ -123,10 +125,6 @@
     <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
       <Project>{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}</Project>
       <Name>PoohAPI.Infrastructure.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoohAPI.Infrastructure.ReviewDB\PoohAPI.Infrastructure.ReviewDB.csproj">
-      <Project>{7C1E0BCD-22B2-450C-BC44-513591528BA7}</Project>
-      <Name>PoohAPI.Infrastructure.ReviewDB</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

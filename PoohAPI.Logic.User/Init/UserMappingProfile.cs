@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using AutoMapper;
 using PoohAPI.Infrastructure.UserDB.Models;
 using PoohAPI.Logic.Common;
+using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
@@ -28,6 +30,16 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.PreferredLanguageId, o => o.MapFrom(s => s.user_taal))
                 .ForMember(d => d.PreferredLanguage, o => o.MapFrom(s => s.talen_naam))
                 .ReverseMap();
+
+            CreateMap<User, JwtUser>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.NiceName))
+                .ForMember(d => d.Role, o => o.MapFrom(s => s.Role));
+
+            CreateMap<DBUser, JwtUser>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.user_id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.user_name))
+                .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role));
 
             CreateMap<DBUser, BaseLocation>()
                 .ForMember(d => d.CountryId, o => o.MapFrom(s => s.user_land))

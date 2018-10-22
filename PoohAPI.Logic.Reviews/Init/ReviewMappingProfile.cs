@@ -24,27 +24,6 @@ namespace PoohAPI.Logic.Reviews.Init
                 //.ForMember(d => d.EmploymentContractPDF, o => o.MapFrom(s => s.blob))
                 .ReverseMap();
 
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_id, o => o.MapFrom(s => s["review_id"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_bedrijf_id, o => o.MapFrom(s => s["review_bedrijf_id"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_student_id, o => o.MapFrom(s => s["review_student_id"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_sterren, o => o.MapFrom(s => s["review_sterren"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_geschreven, o => o.MapFrom(s => s["review_geschreven"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_anoniem, o => o.MapFrom(s => s["review_anoniem"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_datum, o => o.MapFrom(s => s["review_datum"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_status, o => o.MapFrom(s => s["review_datum"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.review_status_bevestigd_door, o => o.MapFrom(s => s["review_status_bevestigd_door"]));
-            //CreateMap<IDataReader, DBReview>()
-            //    .ForMember(d => d.blob, o => o.MapFrom(s => s["blob"]));
-
             CreateMap<IDataReader, DBReview>().ConvertUsing<DataReaderTypeConverter<DBReview>>();
 
             CreateMap<IDataReader, int>()
