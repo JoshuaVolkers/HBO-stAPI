@@ -84,7 +84,7 @@ namespace PoohAPI.Logic.Users.Services
         {
             //var query = string.Format("SELECT * FROM wp_dev_users WHERE ID = {0}", id);
 
-            this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
+            this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, u.user_role, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
                     s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
                     IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
                     IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam");
@@ -97,7 +97,6 @@ namespace PoohAPI.Logic.Users.Services
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id");
 
-            this.queryBuilder.AddWhere("u.user_role = 0");
             this.queryBuilder.AddWhere("u.user_id = @id");
 
             if (isActive == true)

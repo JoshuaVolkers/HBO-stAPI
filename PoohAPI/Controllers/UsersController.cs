@@ -184,15 +184,11 @@ namespace PoohAPI.Controllers
             if (user is null)
                 return BadRequest("Token is invalid or expired.");
 
-            //var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id);
-
-            //return Ok(TokenHelper.GenerateJWT(identity));
-
             return Ok("Your email address has been verified. Please, log into your account with your application.");
         }
 
         /// <summary>
-        /// Get's all of the users. (Admin rights are required for this endpoint!)
+        /// Get's all of the users. ('Validator' or 'Elbho_medewerker' role is required for this endpoint!)
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
@@ -208,7 +204,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        [Authorize(Roles = "Validator, Elbho_medewerker")]
+        //[Authorize(Roles = "Validator, Elbho_medewerker")]
         [AllowAnonymous]
         [HttpGet]
         [Route("")]
@@ -340,7 +336,6 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult AddVacancyToFavorites(int vacancyId = 1)
         {
-            //Retrieve baseVacancy for ID, if found continue, else badRequest.
             if (vacancyId == 1)
                 return Ok();
             else
@@ -364,7 +359,6 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult RemoveVacancyFromFavorites(int vacancyId = 1)
         {
-            //Retrieve baseVacancy for ID, if found continue, else badRequest.
             if (vacancyId == 1)
                 return Ok();
             else
