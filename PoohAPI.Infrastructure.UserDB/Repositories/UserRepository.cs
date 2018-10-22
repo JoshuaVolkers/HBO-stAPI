@@ -16,24 +16,9 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             _mapper = mapper;
         }
 
-        public int RegisterUser(string query, Dictionary<string, object> parameters)
-        {
-            return NonQuery(query, parameters);
-        }
-
         public DBUser GetUser(string query, Dictionary<string, object> parameters)
         {
             return GetSingle<DBUser>(query, parameters);
-        }
-
-        public void UpdateUser(string query, Dictionary<string, object> parameters)
-        {
-            NonQuery(query, parameters);
-        }
-
-        public void DeleteUser(string query, Dictionary<string, object> parameters)
-        {
-            NonQuery(query, parameters);
         }
 
         public IEnumerable<DBUser> GetAllUsers(string query, Dictionary<string, object> parameters)
@@ -46,14 +31,9 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             return GetSingle<DBUserEmailVerification>(query, parameters);
         }
 
-        public void DeleteUserVerification(string query, Dictionary<string, object> parameters)
+        public int UpdateDelete(string query, Dictionary<string, object> parameters)
         {
-            NonQuery(query, parameters);
-        }
-
-        public void InsertUserVerification(string query, Dictionary<string, object> parameters)
-        {
-            NonQuery(query, parameters);
+            return NonQuery(query, parameters);
         }
     }
 }

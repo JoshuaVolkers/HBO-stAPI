@@ -50,9 +50,11 @@ namespace PoohAPI.Controllers
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
+            var token = this.userCommandService.UpdateRefreshToken(user.Id);
 
-            return Ok(TokenHelper.GenerateJWT(identity));
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+
+            return Ok(TokenHelper.GenerateJWT(identity, token));
         }
 
         /// <summary>
@@ -88,15 +90,15 @@ namespace PoohAPI.Controllers
 
             client.Dispose();
 
-            var user = this.userReadService.GetUserByEmail(userInfo.Email);
+            var user = this.userReadService.GetUserByEmail<JwtUser>(userInfo.Email);
 
             if (user == null)
             {
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
-            return Ok(TokenHelper.GenerateJWT(identity));
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
         /// <summary>
@@ -124,16 +126,16 @@ namespace PoohAPI.Controllers
             var userInfoResponse = await client.GetStringAsync($"https://api.linkedin.com/v2/people/me?projection=(id,firstName,lastName,email-address)");
             var userInfo = JsonConvert.DeserializeObject<LinkedInUserData>(userInfoResponse);
 
-            var user = this.userReadService.GetUserByEmail(userInfo.Email);
+            var user = this.userReadService.GetUserByEmail<JwtUser>(userInfo.Email);
 
             if (user == null)
             {
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.NiceName, user.Id, user.Role.ToString());
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
 
-            return Ok(TokenHelper.GenerateJWT(identity));
+            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
         /// <summary>
@@ -154,15 +156,63 @@ namespace PoohAPI.Controllers
                 return BadRequest("Not all values were filled in correctly!");
             if (!registerRequest.AcceptTermsAndConditions)
                 return BadRequest("You need to accept the terms and conditions before creating your account!");
-            if (this.userReadService.GetUserByEmail(registerRequest.EmailAddress) != null)
-                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
-                    registerRequest.EmailAddress));
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
+            if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
+                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
+                    registerRequest.EmailAddress));      
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 
             return Ok("Verification email has been sent.");
+        }
+
+        /// <summary>
+        /// Request a new acces token by using the refreshtoken.
+        /// </summary>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the refreshtoken does not exist</response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("token/{refreshToken}/refresh")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult RefreshAccesToken(string refreshToken)
+        {
+            if (Guid.TryParse(refreshToken, out Guid parsedGuid))
+            {
+                var user = this.userReadService.GetUserByRefreshToken(parsedGuid.ToString("N"));
+                if (user == null)
+                    return BadRequest("Specified token does not exist!");
+
+                var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+
+                return Ok(TokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
+            }
+
+            return BadRequest("Refresh token is not a valid GUID!");
+        }
+
+        /// <summary>
+        /// Revokes the refresh token, invalidating it for future use.
+        /// </summary>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the refreshtoken does not exist</response>
+        [AllowAnonymous]
+        [HttpDelete]
+        [Route("token/{refreshToken}/revoke")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult RevokeRefreshToken(string refreshToken)
+        {
+            if (Guid.TryParse(refreshToken, out Guid parsedGuid))
+            {
+                this.userCommandService.DeleteRefreshToken(parsedGuid.ToString("N"));
+                return Ok();
+            }
+            return BadRequest("Refresh token is not a valid GUID!");
         }
 
         /// <summary>

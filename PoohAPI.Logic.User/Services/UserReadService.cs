@@ -20,7 +20,8 @@ namespace PoohAPI.Logic.Users.Services
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IReviewReadService reviewReadService;
 
-        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder, IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService)
+        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder,
+            IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -49,7 +50,7 @@ namespace PoohAPI.Logic.Users.Services
             this.queryBuilder.AddWhere("u.user_role = 0");
             this.queryBuilder.AddWhere("u.user_active = 1");
             this.queryBuilder.SetLimit("@limit");
-            this.queryBuilder.SetOffset("@offset");            
+            this.queryBuilder.SetOffset("@offset");
 
             parameters.Add("@limit", maxCount);
             parameters.Add("@offset", offset);
@@ -66,10 +67,20 @@ namespace PoohAPI.Logic.Users.Services
             return _mapper.Map<IEnumerable<User>>(users);
         }
 
-        public User GetUserByEmail(string email)
-        {
-            var query = "SELECT user_id, user_email, user_name, user_role, user_role_id, user_active" +
-                        " FROM reg_users WHERE user_email = @email";
+        public T GetUserByEmail<T>(string email)
+        {     
+            var type = typeof(T);
+            if (type == typeof(JwtUser))
+                this.queryBuilder.AddSelect(@"user_id, user_name, user_role, user_refresh_token");               
+            else if (type == typeof(User))
+                this.queryBuilder.AddSelect(@"user_id, user_email, user_name, user_role, user_role_id, user_active");
+            else
+                throw new ArgumentException("Type can only be of types 'JwtUser' or 'User'!");
+
+            this.queryBuilder.SetFrom("reg_users");
+            this.queryBuilder.AddWhere("user_email = @email");
+            var query = this.queryBuilder.BuildQuery();
+
             var parameters = new Dictionary<string, object>
             {
                 {"@email", email}
@@ -77,13 +88,11 @@ namespace PoohAPI.Logic.Users.Services
 
             var user = _userRepository.GetUser(query, parameters);
 
-            return _mapper.Map<User>(user);
+            return _mapper.Map<T>(user);
         }
 
         public User GetUserById(int id, bool isActive = true)
         {
-            //var query = string.Format("SELECT * FROM wp_dev_users WHERE ID = {0}", id);
-
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, u.user_role, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
                     s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
                     IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
@@ -99,24 +108,10 @@ namespace PoohAPI.Logic.Users.Services
 
             this.queryBuilder.AddWhere("u.user_id = @id");
 
-            if (isActive == true)
+            if (isActive)
                 this.queryBuilder.AddWhere("u.user_active = 1");
 
             string query = this.queryBuilder.BuildQuery();
-
-            //string query = @"
-            //    SELECT u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
-            //        s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
-            //        IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
-            //        IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam 
-            //    FROM reg_users u 
-            //    LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id
-            //    LEFT JOIN reg_landen l ON s.user_land = l.land_id
-            //    LEFT JOIN reg_talen t ON s.user_taal = t.talen_id
-            //    LEFT JOIN reg_opleidingen o ON s.user_opleiding_id = o.opl_id
-            //    LEFT JOIN reg_opleidingsniveau op ON s.user_op_niveau = op.opn_id
-            //    WHERE u.user_role = 0 AND u.user_active = 1 AND u.user_id = @id
-            //    ";
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
@@ -125,16 +120,21 @@ namespace PoohAPI.Logic.Users.Services
             User user = _mapper.Map<User>(dbUser);
 
             if (user is null)
-                return user;
+                return null;
 
             user.Reviews = this.reviewReadService.GetListReviewIdsForUser(user.Id);
 
             return user;
         }
 
-        public User Login(string email, string password)
+        public JwtUser Login(string email, string password)
         {
-            var query = "SELECT * FROM reg_users WHERE user_email = @email AND user_account_type = @type";
+            this.queryBuilder.AddSelect(@"*");
+            this.queryBuilder.SetFrom("reg_users");
+            this.queryBuilder.AddWhere("user_email = @email");
+            this.queryBuilder.AddWhere("user_account_type = @type");
+            var query = this.queryBuilder.BuildQuery();
+
             var parameters = new Dictionary<string, object>
             {
                 { "@email", email },
@@ -144,9 +144,26 @@ namespace PoohAPI.Logic.Users.Services
             var user = _userRepository.GetUser(query, parameters);
 
             if (user != null && BCrypt.Net.BCrypt.EnhancedVerify(password, user.user_password))
-                return _mapper.Map<User>(user);
-
+                return _mapper.Map<JwtUser>(user);
+               
             return null;
+        }
+
+        public JwtUser GetUserByRefreshToken(string refreshToken)
+        {
+            this.queryBuilder.AddSelect(@"user_id, user_name, user_role");
+            this.queryBuilder.SetFrom("reg_users");
+            this.queryBuilder.AddWhere("user_refresh_token = @token");
+            var query = this.queryBuilder.BuildQuery();
+
+            var parameters = new Dictionary<string, object>
+            {
+                {"@token", refreshToken}
+            };
+
+            var user = _userRepository.GetUser(query, parameters);
+
+            return _mapper.Map<JwtUser>(user);
         }
 
         private void AddEducationsFilter(Dictionary<string, object> parameters, string educationsIds)
@@ -215,12 +232,10 @@ namespace PoohAPI.Logic.Users.Services
 
             foreach (string splitId in splitIds)
             {
-                int id;
-                bool success = Int32.TryParse(splitId, out id);
-                if (success)
+                bool success = Int32.TryParse(splitId, out int id);
+                if (success && id > 0)
                 {
-                    if (id > 0)
-                        ids.Add(id);
+                    ids.Add(id);
                 }
             }
 

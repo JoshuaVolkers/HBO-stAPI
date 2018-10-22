@@ -32,7 +32,8 @@ namespace PoohAPI
                 audience: "poohapi",
                 claims: claims,
                 expires: DateTime.UtcNow.AddSeconds(expiryTimeInSeconds),
-                signingCredentials: creds);
+                signingCredentials: creds
+                );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -48,15 +49,15 @@ namespace PoohAPI
             });
         }
 
-        public static JWTToken GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 3600)
+        public static JWTToken GenerateJWT(ClaimsIdentity user, string refreshToken, int expiryTimeInSeconds = 3600)
         {
             var response = new JWTToken
             (
                 user.Claims.SingleOrDefault(c => c.Type == "id").Value,
                 RequestToken(user, expiryTimeInSeconds),
-                expiryTimeInSeconds
+                expiryTimeInSeconds,
+                refreshToken
             );
-
             return response;
         }
     }

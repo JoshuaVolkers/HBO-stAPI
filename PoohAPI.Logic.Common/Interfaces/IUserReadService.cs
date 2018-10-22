@@ -11,8 +11,9 @@ namespace PoohAPI.Logic.Common.Interfaces
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null);
         User GetUserById(int id, bool isActive = true);
-        User GetUserByEmail(string email);
-        User Login(string email, string password);
+        T GetUserByEmail<T>(string email);
+        JwtUser Login(string email, string password);
+        JwtUser GetUserByRefreshToken(string refreshToken);
         UserEmailVerification GetUserEmailVerificationByUserId(int userId);
         UserEmailVerification GetUserEmailVerificationByToken(string token);
     }
