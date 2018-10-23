@@ -181,8 +181,7 @@ namespace PoohAPI.Logic.Users.Services
             this.InsertStudentDataIfNotExist(userInput.Id);
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-
-            this.queryBuilder.Clear();
+            
             this.queryBuilder.SetUpdate("reg_user_studenten");
             this.queryBuilder.AddUpdateSet(@"user_land = @countryId, user_woonplaats = @cityName, user_opleiding_id = @educationId, 
                                  user_op_niveau = @educationLevelId, user_taal = @languageId");
@@ -206,7 +205,6 @@ namespace PoohAPI.Logic.Users.Services
             }
 
             string query = this.queryBuilder.BuildUpdate();
-            this.queryBuilder.Clear();
 
             this.userRepository.UpdateDelete(query, parameters);
 

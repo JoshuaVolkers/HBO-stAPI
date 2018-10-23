@@ -34,8 +34,6 @@ namespace PoohAPI.Logic.Users.Services
             string educations = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
-            this.queryBuilder.Clear();
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
@@ -61,7 +59,6 @@ namespace PoohAPI.Logic.Users.Services
             this.AddPreferredLanguageFilter(parameters, preferredLanguage);
 
             string query = this.queryBuilder.BuildQuery();
-            this.queryBuilder.Clear();
 
             var users = _userRepository.GetAllUsers(query, parameters);
             return _mapper.Map<IEnumerable<User>>(users);

@@ -75,8 +75,6 @@ namespace PoohAPI.Logic.Companies.Services
             double? maxStars = null, string cityName = null, string countryName = null, int? locationRange = null,
             string additionalLocationSearchTerms = null, int? major = null, bool detailedCompanies = false)
         {
-            this.queryBuilder.Clear();
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             this.AddCompanyBaseQuery(parameters, maxCount, offset);
@@ -88,7 +86,6 @@ namespace PoohAPI.Logic.Companies.Services
                 this.queryBuilder.AddSelect("b.bedrijf_contactpersoon_email, b.bedrijf_website, b.bedrijf_social_linkedin, b.bedrijf_beschrijving");
 
             string query = this.queryBuilder.BuildQuery();
-            this.queryBuilder.Clear();
 
             IEnumerable<DBCompany> dbCompanies = this.companyRepository.GetListCompanies(query, parameters);
 
