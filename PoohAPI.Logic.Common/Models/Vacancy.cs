@@ -23,7 +23,6 @@ namespace PoohAPI.Logic.Common.Models
         public string Link { get; set; }
         public string EducationalAttainment { get; set; }
         public string InternshipType { get; set; }
-
         public Location Location { get; set; }
     }
 }

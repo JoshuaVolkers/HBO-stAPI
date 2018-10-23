@@ -27,7 +27,7 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder = queryBuilder;
         }
 
-        public IEnumerable<Vacancy> GetListVacancies(int maxCount = 5, int offset = 0, string additionalLocationSearchTerms = null, string education = null, string educationalAttainment = null, IntershipType? intershipType = null, string languages = null, string cityName = null, string countryName = null, int? locationRange = null)
+        public IEnumerable<Vacancy> GetListVacancies(int maxCount = 5, int offset = 0, string additionalLocationSearchTerms = null, int? educationid = null, int? educationalAttainmentid = null, IntershipType? intershipType = null, int? languageid = null, string cityName = null, string countryName = null, int? locationRange = null)
         {
             this.queryBuilder.Clear();
 
@@ -35,8 +35,8 @@ namespace PoohAPI.Logic.Vacancies.Services
 
             this.AddVacancyBaseQuery(parameters, maxCount, offset);
             this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
-            this.AddEducationFilter(parameters, education, educationalAttainment, intershipType);
-            this.AddLanguageFilter(parameters, languages);
+            this.AddEducationFilter(parameters, educationid, educationalAttainmentid, intershipType);
+            this.AddLanguageFilter(parameters, languageid);
             string query = this.queryBuilder.BuildQuery();
             this.queryBuilder.Clear();
 
@@ -67,7 +67,8 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
                                         v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
                                         v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
-                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");                         
+                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_id,'-',o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");
+
             this.queryBuilder.SetFrom("reg_vacatures v");
 
             this.queryBuilder.AddJoinLine("INNER JOIN reg_talen t ON v.vacature_taal = t.talen_id");
@@ -146,33 +147,33 @@ namespace PoohAPI.Logic.Vacancies.Services
             parameters.Add("@id", id);
         }
 
-        private void AddEducationFilter(Dictionary<string, object> parameters, string education = null, string educationalAttainment = null, IntershipType? intershipType = null)
+        private void AddEducationFilter(Dictionary<string, object> parameters, int? educationid = null, int? educationalAttainmentid = null, IntershipType? intershipType = null)
         {
-            if(educationalAttainment != null)
+            if(educationalAttainmentid != null)
             {
-                this.queryBuilder.AddHaving("n.opn_naam LIKE @educationalAttainment");
-                parameters.Add("@educationalAttainment", String.Format("%{0}%", educationalAttainment));
+                this.queryBuilder.AddWhere("n.opn_id = @educationalAttainmentid");
+                parameters.Add("@educationalAttainmentid", educationalAttainmentid);
             }
 
-            if(education != null)
+            if(educationid != null)
             {
-                this.queryBuilder.AddHaving("opleidingen LIKE @education");
-                parameters.Add("@education", String.Format("%{0}%", education));
+                this.queryBuilder.AddHaving("opleidingen LIKE @educationid");
+                parameters.Add("@educationid", String.Format("%{0}%", educationid));
             }
 
             if(intershipType != null)
             {
-                this.queryBuilder.AddHaving("stagesoort LIKE @intershipType");
-                parameters.Add("@intershipType", String.Format("%{0}%", intershipType.Value.ToString()));
+                this.queryBuilder.AddWhere("s.stagesoort = @intershipType");
+                parameters.Add("@intershipType", intershipType.Value.ToString());
             }
         }
 
-        private void AddLanguageFilter(Dictionary<string, object> parameters, string language)
+        private void AddLanguageFilter(Dictionary<string, object> parameters, int? languageid = null)
         {
-            if(language != null)
+            if(languageid != null)
             {
-                this.queryBuilder.AddWhere("t.talen_naam LIKE @language");
-                parameters.Add("@language", String.Format("%{0}%", language));
+                this.queryBuilder.AddWhere("t.talen_id = @languageid");
+                parameters.Add("@languageid", languageid);
             }
         }
     }
