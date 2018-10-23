@@ -49,9 +49,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Logic.Reviews", "Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Infrastructure.ReviewDB", "PoohAPI.Infrastructure.ReviewDB\PoohAPI.Infrastructure.ReviewDB.csproj", "{7C1E0BCD-22B2-450C-BC44-513591528BA7}"
 EndProject
+<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoohAPI.Application.Common", "PoohAPI.Application.Common\PoohAPI.Application.Common.csproj", "{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00}"
 >>>>>>> dev
 EndProject
+=======
+>>>>>>> dev
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,10 +123,13 @@ Global
 		{7C1E0BCD-22B2-450C-BC44-513591528BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C1E0BCD-22B2-450C-BC44-513591528BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C1E0BCD-22B2-450C-BC44-513591528BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> dev
+=======
 >>>>>>> dev
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
@@ -146,7 +152,10 @@ Global
 =======
 		{06234D95-EB1E-4702-AC6B-1C135369035F} = {F170E122-B3AE-4DE0-A95C-C2157CF12CC8}
 		{7C1E0BCD-22B2-450C-BC44-513591528BA7} = {FD5961F4-562D-4BBA-A132-86D2F13F68A7}
+<<<<<<< HEAD
 		{F6CED3BF-CF94-4870-82E7-CC33CCE1EE00} = {D32F242F-E7E8-4B1E-B6D4-59365597597A}
+>>>>>>> dev
+=======
 >>>>>>> dev
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

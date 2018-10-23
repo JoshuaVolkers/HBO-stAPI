@@ -14,15 +14,15 @@ namespace PoohAPI.Logic.Users.Services
 {
     public class UserCommandService : IUserCommandService
     {
-        private readonly IUserRepository userRepository;       
+        private readonly IUserRepository userRepository;
         private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IQueryBuilder queryBuilder;
         private readonly IUserReadService userReadService;
         private readonly IMailClient mailClient;
 
-        public UserCommandService(IUserRepository userRepository, IMapper mapper, 
-            IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IUserReadService userReadService, 
+        public UserCommandService(IUserRepository userRepository, IMapper mapper,
+            IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IUserReadService userReadService,
             IMailClient mailClient)
         {
             this.userRepository = userRepository;
@@ -33,19 +33,20 @@ namespace PoohAPI.Logic.Users.Services
             this.mailClient = mailClient;
         }
 
-        public User RegisterUser(string login, string email, UserAccountType accountType, string password = null)
+        public JwtUser RegisterUser(string login, string email, UserAccountType accountType, string password = null)
         {
             //SELECT LAST_INSERT_ID() returns the primary key of the created record.
-            var query = string.Format("INSERT INTO reg_users (user_email, user_password, user_name,  user_role, user_role_id, user_account_type, user_active) " +
-                                      " VALUES(@user_email, @user_password, @user_name, @user_role, @user_role_id, @user_account_type, @user_active);" +
+            var query = string.Format("INSERT INTO reg_users (user_email, user_password, user_name,  user_role, user_role_id, user_account_type, user_active, user_refresh_token) " +
+                                      " VALUES(@user_email, @user_password, @user_name, @user_role, @user_role_id, @user_account_type, @user_active, @user_refresh_token);" +
                                       "SELECT LAST_INSERT_ID()");
             var parameters = new Dictionary<string, object>();
-            parameters.Add("@user_email", email);          
+            parameters.Add("@user_email", email);
             parameters.Add("@user_name", login);
             parameters.Add("@user_role", 0);
             parameters.Add("@user_role_id", 0);
             parameters.Add("@user_account_type", (int)accountType);
             parameters.Add("@user_active", 0);
+            parameters.Add("@user_refresh_token", Guid.NewGuid().ToString("N"));
 
             if (!string.IsNullOrEmpty(password))
             {
@@ -57,21 +58,16 @@ namespace PoohAPI.Logic.Users.Services
                 parameters.Add("@user_password", null);
             }
 
-            //TODO: TEST IF THE ABOVE IF ELSE WORKS!
-            //Implement email address check, retrieve from fake optionsservice for now.
-            //Implement a "foreignStudent" boolean for the register request. Also add a field for the required legal document (school pas o.i.d.).
-
-            
-            var createdUserId = this.userRepository.RegisterUser(query, parameters);
+            var createdUserId = this.userRepository.UpdateDelete(query, parameters);
 
             string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
-            User user = this.mapper.Map<User>(this.userReadService.GetUserById(createdUserId, false));
+            var user = this.userReadService.GetUserById(createdUserId, false);
 
             int minutes = 15;
             this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
             this.SendVerificationEmail(user, emailVerificationToken, minutes);
 
-            return user;
+            return this.mapper.Map<JwtUser>(user);
         }
 
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
@@ -105,6 +101,7 @@ namespace PoohAPI.Logic.Users.Services
 
             string emailValidationToken = "";
 
+            //TODO: maybe refactor this, total number of unique GUIDS is 2^128 (very many), so do-while is overbodig.
             // Create token until it is unique
             do
             {
@@ -114,7 +111,7 @@ namespace PoohAPI.Logic.Users.Services
             while (validation != null);
 
             return emailValidationToken;
-        }      
+        }
 
         public void DeleteEmailVerificationToken(int userId)
         {
@@ -124,7 +121,7 @@ namespace PoohAPI.Logic.Users.Services
 
             string query = "DELETE FROM reg_user_verification WHERE ver_user_id = @ver_user_id";
 
-            this.userRepository.DeleteUserVerification(query, parameters);
+            this.userRepository.UpdateDelete(query, parameters);
         }
 
         public void CreateEmailVerification(int userId, string token, DateTime expirationDate)
@@ -138,7 +135,7 @@ namespace PoohAPI.Logic.Users.Services
             string query = @"INSERT INTO reg_user_verification (ver_user_id, ver_token, ver_expiration) 
                              VALUES (@user_id, @token, @expiration)";
 
-            this.userRepository.InsertUserVerification(query, parameters);
+            this.userRepository.UpdateDelete(query, parameters);
         }
 
         public User VerifyUserEmail(string token)
@@ -158,7 +155,7 @@ namespace PoohAPI.Logic.Users.Services
             parameters.Add("@id", userEmailValidation.UserId);
 
             string query = @"UPDATE reg_users SET user_active = 1 WHERE user_id = @id";
-            this.userRepository.UpdateUser(query, parameters);
+            this.userRepository.UpdateDelete(query, parameters);
             this.DeleteEmailVerificationToken(userEmailValidation.UserId);
 
             return this.mapper.Map<User>(this.userReadService.GetUserById(userEmailValidation.UserId));
@@ -176,7 +173,7 @@ namespace PoohAPI.Logic.Users.Services
                              DELETE FROM reg_users WHERE user_id = @id;
                             ";
 
-            this.userRepository.DeleteUser(query, parameters);
+            this.userRepository.UpdateDelete(query, parameters);
         }
 
         public User UpdateUser(UserUpdateInput userInput)
@@ -184,8 +181,7 @@ namespace PoohAPI.Logic.Users.Services
             this.InsertStudentDataIfNotExist(userInput.Id);
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-
-            this.queryBuilder.Clear();
+            
             this.queryBuilder.SetUpdate("reg_user_studenten");
             this.queryBuilder.AddUpdateSet(@"user_land = @countryId, user_woonplaats = @cityName, user_opleiding_id = @educationId, 
                                  user_op_niveau = @educationLevelId, user_taal = @languageId");
@@ -209,11 +205,36 @@ namespace PoohAPI.Logic.Users.Services
             }
 
             string query = this.queryBuilder.BuildUpdate();
-            this.queryBuilder.Clear();
 
-            this.userRepository.UpdateUser(query, parameters);
-            
+            this.userRepository.UpdateDelete(query, parameters);
+
             return this.userReadService.GetUserById(userInput.Id);
+        }
+
+        public void DeleteRefreshToken(string refreshToken)
+        {
+            //Using "user_id <> 0" is a hacky way of avoiding the "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column" error.
+            string query = @"UPDATE reg_users SET user_refresh_token = NULL WHERE user_refresh_token = @refreshToken AND user_id <> 0";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@refreshToken", refreshToken }
+            };
+
+            this.userRepository.UpdateDelete(query, parameters);
+        }
+
+        public string UpdateRefreshToken(int userId)
+        {
+            var token = Guid.NewGuid().ToString("N");
+            string query = @"UPDATE reg_users SET user_refresh_token = @refreshToken WHERE user_id = @id";
+            var parameters = new Dictionary<string, object>
+            {
+                { "@refreshToken", token },
+                { "@id", userId }
+            };
+
+            userRepository.UpdateDelete(query, parameters);
+            return token;
         }
 
         private void InsertStudentDataIfNotExist(int id)
@@ -234,7 +255,8 @@ namespace PoohAPI.Logic.Users.Services
             string command = @"INSERT INTO reg_user_studenten
                                VALUES (@id, 0, '', 0, 0, 0, 0, 0, 0)";
 
-            this.userRepository.UpdateUser(command, parameters);
+            this.userRepository.UpdateDelete(command, parameters);
         }
+
     }
 }

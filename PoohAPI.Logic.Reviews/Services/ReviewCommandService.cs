@@ -59,7 +59,7 @@ namespace PoohAPI.Logic.Reviews.Services
             return _reviewReadService.GetReviewById(reviewInput.Id);
         }
 
-        public DBReview PostReview(int companyId, int userId, int stars, string writtenReview, int anonymous)
+        public Review PostReview(int companyId, int userId, int stars, string writtenReview, int anonymous)
         {
             Review review = new Review();
             review.CompanyId = companyId;
@@ -90,7 +90,7 @@ namespace PoohAPI.Logic.Reviews.Services
                 "VALUES (@bedrijfId, @studentId, @sterren, @geschreven, @anoniem, @datum, @status, @bevestigdDoor);";
 
             _reviewRepository.PostReview(query, parameters);
-            return dbReview;
+            return _mapper.Map<Review>(dbReview);
         }
     }
 }

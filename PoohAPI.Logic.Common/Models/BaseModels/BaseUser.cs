@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PoohAPI.Logic.Common.Enums;
 
 namespace PoohAPI.Logic.Common.Models.BaseModels
 {
@@ -11,6 +12,6 @@ namespace PoohAPI.Logic.Common.Models.BaseModels
         public int Id { get; set; }
         public string NiceName { get; set; }
         public string EmailAddress { get; set; }
-        public int Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }

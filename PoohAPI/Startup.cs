@@ -108,7 +108,7 @@ namespace PoohAPI
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = tokenOptions;
-                    options.SaveToken = true;
+                    //options.SaveToken = true;
                 });
             #endregion
 
