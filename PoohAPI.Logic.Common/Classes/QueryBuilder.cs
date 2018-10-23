@@ -108,6 +108,8 @@ namespace PoohAPI.Logic.Common.Classes
                 query += "OFFSET " + this.offset + " ";
             }
 
+            this.Clear();
+
             return query;
         }
 
@@ -223,6 +225,8 @@ namespace PoohAPI.Logic.Common.Classes
 
             query = this.BuildUpdateSet(query);
             query = this.BuildWhere(query);
+
+            this.Clear();
 
             return query;
         }
