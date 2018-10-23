@@ -41,10 +41,6 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.Clear();
 
             IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
-            for (int i = 0; i < dbVacancies.Count(); i++)
-            {
-                dbVacancies.ToList()[i] = this.convertToEnumLists(dbVacancies.ToList()[i]);
-            }
 
             return this.mapper.Map<IEnumerable<Vacancy>>(dbVacancies);
         }
@@ -62,7 +58,6 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.Clear();
 
             DBVacancy dBVacancy = this.vacancyRepository.GetVacancy(query, parameters);
-            dBVacancy = this.convertToEnumLists(dBVacancy);
 
             return this.mapper.Map<Vacancy>(dBVacancy);
         }
@@ -72,7 +67,7 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
                                         v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
                                         v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
-                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, GROUP_CONCAT(DISTINCT s.stagesoort) as stagesoort");                         
+                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");                         
             this.queryBuilder.SetFrom("reg_vacatures v");
 
             this.queryBuilder.AddJoinLine("INNER JOIN reg_talen t ON v.vacature_taal = t.talen_id");
@@ -82,8 +77,7 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_opleidingen r ON v.vacature_id = r.rvo_vacature_id");
             this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingen o ON r.rvo_opleiding_id = o.opl_id");
 
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_stagesoort z ON v.vacature_id = z.rvs_vacature_id");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_stagesoort s ON z.rvs_stagesoort_id = s.stage_id");
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_stagesoort s ON v.vacature_stagesoort = s.stage_id");
 
             this.queryBuilder.AddJoinLine("INNER JOIN reg_bedrijven b ON v.vacature_bedrijf_id = b.bedrijf_id");
             this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
@@ -156,20 +150,20 @@ namespace PoohAPI.Logic.Vacancies.Services
         {
             if(educationalAttainment != null)
             {
-                this.queryBuilder.AddWhere("n.opn_naam = @educationalAttainment");
-                parameters.Add("@educationalAttainment", educationalAttainment);
+                this.queryBuilder.AddHaving("n.opn_naam LIKE @educationalAttainment");
+                parameters.Add("@educationalAttainment", String.Format("%{0}%", educationalAttainment));
             }
 
             if(education != null)
             {
-                this.queryBuilder.AddWhere("o.opl_naam = @education");
-                parameters.Add("@education", education);
+                this.queryBuilder.AddHaving("opleidingen LIKE @education");
+                parameters.Add("@education", String.Format("%{0}%", education));
             }
 
             if(intershipType != null)
             {
-                this.queryBuilder.AddWhere("stagesoort = @intershipType");
-                parameters.Add("@intershipType", intershipType.Value.ToString());
+                this.queryBuilder.AddHaving("stagesoort LIKE @intershipType");
+                parameters.Add("@intershipType", String.Format("%{0}%", intershipType.Value.ToString()));
             }
         }
 
@@ -177,27 +171,9 @@ namespace PoohAPI.Logic.Vacancies.Services
         {
             if(language != null)
             {
-                this.queryBuilder.AddWhere("t.talen_naam = @language");
-                parameters.Add("@language", language);
+                this.queryBuilder.AddWhere("t.talen_naam LIKE @language");
+                parameters.Add("@language", String.Format("%{0}%", language));
             }
-        }
-
-        public DBVacancy convertToEnumLists(DBVacancy dbvacancy)
-        {
-            List<string> stageSoortenstring = new List<string>();
-            List<IntershipType> stageSoortenenumlist = new List<IntershipType>();
-            stageSoortenstring = dbvacancy.stagesoort.Split(',').ToList();
-
-            foreach (string s in stageSoortenstring)
-            {
-                if (Enum.TryParse(s, out IntershipType stagesoort))
-                {
-                    stageSoortenenumlist.Add(stagesoort);
-                }
-            }
-
-            dbvacancy.stagesoortenumlist = stageSoortenenumlist;
-            return dbvacancy;
         }
     }
 }

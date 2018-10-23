@@ -22,9 +22,7 @@ namespace PoohAPI.Logic.Common.Models
         public DateTime ClosingDate { get; set; }
         public string Link { get; set; }
         public string EducationalAttainment { get; set; }
-
-        [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
-        public IEnumerable<IntershipType> IntershipType { get; set; }
+        public string InternshipType { get; set; }
 
         public Location Location { get; set; }
     }
