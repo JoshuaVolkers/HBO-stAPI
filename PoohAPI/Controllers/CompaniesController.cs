@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
@@ -14,13 +15,15 @@ namespace PoohAPI.Controllers
         private readonly ICompanyReadService companyReadService;
         private readonly ICompanyCommandService companyCommandService;
         private readonly IReviewReadService reviewReadService;
+        private readonly IConfiguration config;
 
         public CompaniesController(ICompanyReadService companyReadService, ICompanyCommandService companyCommandService,
-            IReviewReadService reviewReadService)
+            IReviewReadService reviewReadService, IConfiguration config)
         {
             this.companyReadService = companyReadService;
             this.companyCommandService = companyCommandService;
             this.reviewReadService = reviewReadService;
+            this.config = config;
         }
 
         /// <summary>
@@ -75,6 +78,9 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult Get(int id)
         {
+            string testValue = this.config.GetValue<string>("TestValue");
+            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
+
             Company company = this.companyReadService.GetCompanyById(id);
             
             if (company is null)

@@ -255,11 +255,10 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        //[Authorize(Roles = "Validator, Elbho_medewerker")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Validator, Elbho_medewerker")]
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
@@ -336,7 +335,6 @@ namespace PoohAPI.Controllers
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        [AllowAnonymous]
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
