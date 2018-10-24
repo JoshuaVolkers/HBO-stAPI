@@ -170,16 +170,26 @@ namespace PoohAPI.Logic.Companies.Services
                         )) as distance");
                     this.queryBuilder.AddHaving("distance < @rangeKm");
                 }
+                else
+                {
+                    // Find matches in database
+                    this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
+                }
             }
             else
             {
                 // Find matches in database
-                if (cityName != null)
-                    AddCityFilter(parameters, cityName);
-
-                if (countryName != null)
-                    AddCountryFilter(parameters, countryName);
+                this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
             }
+        }
+
+        private void AddLocationFilterWithoutCoordinates(Dictionary<string, object> parameters, string countryName, string cityName)
+        {
+            if (cityName != null)
+                AddCityFilter(parameters, cityName);
+
+            if (countryName != null)
+                AddCountryFilter(parameters, countryName);
         }
 
         private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)

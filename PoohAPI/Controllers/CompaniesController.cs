@@ -77,14 +77,10 @@ namespace PoohAPI.Controllers
         {
             Company company = this.companyReadService.GetCompanyById(id);
             
-            if (company is Company)
-            {
-                return Ok(this.companyReadService.GetCompanyById(id));
-            }
-            else
-            {
+            if (company is null)
                 return NotFound("Company not found.");
-            }
+
+            return Ok(company);
         }
 
         /// <summary>
