@@ -62,6 +62,25 @@ namespace PoohAPI.Logic.Vacancies.Services
             return this.mapper.Map<Vacancy>(dBVacancy);
         }
 
+        public IEnumerable<Vacancy> GetFavoriteVacancies(int userid, int maxcount, int offset)
+        {
+            this.queryBuilder.Clear();
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            this.AddVacancyBaseQuery(parameters, maxcount, offset);
+
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_favoriet f ON v.vacature_id = f.vf_vacature_id");
+            this.queryBuilder.AddWhere("f.vf_user_id = " + userid);
+
+            string query = this.queryBuilder.BuildQuery();
+            this.queryBuilder.Clear();
+
+            IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
+
+            return this.mapper.Map<IEnumerable<Vacancy>>(dbVacancies);
+        }
+
         private void AddVacancyBaseQuery(Dictionary<string, object> parameters, int maxCount, int offset)
         {
             this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
@@ -88,6 +107,8 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.SetLimit(maxCount.ToString());
             this.queryBuilder.SetOffset(offset.ToString());
         }
+
+
 
         private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null,
     string municipalityName = null, string cityName = null, int? locationRange = null)

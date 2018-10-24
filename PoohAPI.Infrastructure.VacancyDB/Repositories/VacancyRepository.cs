@@ -18,6 +18,16 @@ namespace PoohAPI.Infrastructure.VacancyDB.Repositories
             _mapper = mapper;
         }
 
+        public void AddFavouriteVacanacy(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
+
+        public void DeleteFavouriteVacanacy(string query, Dictionary<string, object> parameters)
+        {
+            NonQuery(query, parameters);
+        }
+
         public IEnumerable<DBVacancy> GetListVacancies(string query)
         {
             return GetAll<DBVacancy>(query);

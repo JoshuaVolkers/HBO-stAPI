@@ -14,5 +14,7 @@ namespace PoohAPI.Logic.Common.Interfaces
 int? educationid = null, int? educationalAttainmentid = null, IntershipType? intershipType = null, int? languageid = null, string cityName = null, string countryName = null, int? locationRange = null);
 
         Vacancy GetVacancyById(int id);
+
+        IEnumerable<Vacancy> GetFavoriteVacancies(int userid, int maxcount, int offset);
     }
 }

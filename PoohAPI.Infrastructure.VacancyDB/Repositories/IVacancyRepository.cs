@@ -13,5 +13,7 @@ namespace PoohAPI.Infrastructure.VacancyDB.Repositories
         IEnumerable<DBVacancy> GetListVacancies(string query, Dictionary<string, object> parameters);
         DBVacancy GetVacancy(string query);
         DBVacancy GetVacancy(string query, Dictionary<string, object> parameters);
+        void AddFavouriteVacanacy(string query, Dictionary<string, object> parameters);
+        void DeleteFavouriteVacanacy(string query, Dictionary<string, object> parameters);
     }
 }
