@@ -369,7 +369,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(3);
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(GetCurrentUserId());
             if (!(vacancies is null))
             {
                 return Ok(vacancies);
@@ -401,7 +401,7 @@ namespace PoohAPI.Controllers
 
             if(vacancy != null)
             {
-                int userid = 3;
+                int userid = GetCurrentUserId();
                 vacancyCommandService.AddFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
             }
@@ -433,7 +433,7 @@ namespace PoohAPI.Controllers
 
             if (vacancy != null)
             {
-                int userid = 3;
+                int userid = GetCurrentUserId();
                 vacancyCommandService.DeleteFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
             }

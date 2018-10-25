@@ -12,5 +12,6 @@ namespace PoohAPI.Logic.Common.Models.OptionModels
     {
         public int Id { get; set; }
         public string LanguageName { get; set; }
+        public string LanguageIso { get; set; }
     }
 }

@@ -74,5 +74,16 @@ namespace PoohAPI.Logic.Options.Services
             var emailAddresses = _optionRepository.GetAllAllowedEmailAddresses(query, parameters);
             return _mapper.Map<IEnumerable<AllowedEmailAddress>>(emailAddresses);
         }
+
+        public IEnumerable<Language> GetAllLanguages()
+        {
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_talen");
+
+            string query = _queryBuilder.BuildQuery();
+
+            var languages = _optionRepository.GetAllLanguages(query);
+            return _mapper.Map<IEnumerable<Language>>(languages);
+        }
     }
 }
