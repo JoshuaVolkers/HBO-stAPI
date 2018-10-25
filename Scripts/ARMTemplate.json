@@ -1,0 +1,2347 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "servers_elbho_database_dev_createMode": {
+            "defaultValue": "Default",
+            "type": "SecureString"
+        },
+        "accounts_Maps_name": {
+            "defaultValue": "Maps",
+            "type": "String"
+        },
+        "sites_elbho_api_dev_name": {
+            "defaultValue": "elbho-api-dev",
+            "type": "String"
+        },
+        "serverfarms_ELBHOAPIPlan_name": {
+            "defaultValue": "ELBHOAPIPlan",
+            "type": "String"
+        },
+        "components_elbho_api_dev_name": {
+            "defaultValue": "elbho-api-dev",
+            "type": "String"
+        },
+        "config_web_name": {
+            "defaultValue": "web",
+            "type": "String"
+        },
+        "servers_elbho_database_dev_name": {
+            "defaultValue": "elbho-database-dev",
+            "type": "String"
+        },
+        "storageAccounts_elbhostoragedev_name": {
+            "defaultValue": "elbhostoragedev",
+            "type": "String"
+        },
+        "databases_sys_name": {
+            "defaultValue": "sys",
+            "type": "String"
+        },
+        "alertrules_Failure_Anomalies___elbho_api_dev_name": {
+            "defaultValue": "Failure Anomalies - elbho-api-dev",
+            "type": "String"
+        },
+        "databases_mysql_name": {
+            "defaultValue": "mysql",
+            "type": "String"
+        },
+        "configurations_sql_mode_name": {
+            "defaultValue": "sql_mode",
+            "type": "String"
+        },
+        "configurations_server_id_name": {
+            "defaultValue": "server_id",
+            "type": "String"
+        },
+        "configurations_time_zone_name": {
+            "defaultValue": "time_zone",
+            "type": "String"
+        },
+        "configurations_flush_time_name": {
+            "defaultValue": "flush_time",
+            "type": "String"
+        },
+        "configurations_init_connect_name": {
+            "defaultValue": "init_connect",
+            "type": "String"
+        },
+        "configurations_tx_isolation_name": {
+            "defaultValue": "tx_isolation",
+            "type": "String"
+        },
+        "configurations_wait_timeout_name": {
+            "defaultValue": "wait_timeout",
+            "type": "String"
+        },
+        "configurations_max_join_size_name": {
+            "defaultValue": "max_join_size",
+            "type": "String"
+        },
+        "databases_information_schema_name": {
+            "defaultValue": "information_schema",
+            "type": "String"
+        },
+        "databases_performance_schema_name": {
+            "defaultValue": "performance_schema",
+            "type": "String"
+        },
+        "configurations_slow_query_log_name": {
+            "defaultValue": "slow_query_log",
+            "type": "String"
+        },
+        "configurations_event_scheduler_name": {
+            "defaultValue": "event_scheduler",
+            "type": "String"
+        },
+        "configurations_long_query_time_name": {
+            "defaultValue": "long_query_time",
+            "type": "String"
+        },
+        "configurations_max_error_count_name": {
+            "defaultValue": "max_error_count",
+            "type": "String"
+        },
+        "configurations_max_sort_length_name": {
+            "defaultValue": "max_sort_length",
+            "type": "String"
+        },
+        "configurations_net_retry_count_name": {
+            "defaultValue": "net_retry_count",
+            "type": "String"
+        },
+        "configurations_net_read_timeout_name": {
+            "defaultValue": "net_read_timeout",
+            "type": "String"
+        },
+        "configurations_table_open_cache_name": {
+            "defaultValue": "table_open_cache",
+            "type": "String"
+        },
+        "configurations_lock_wait_timeout_name": {
+            "defaultValue": "lock_wait_timeout",
+            "type": "String"
+        },
+        "configurations_net_write_timeout_name": {
+            "defaultValue": "net_write_timeout",
+            "type": "String"
+        },
+        "configurations_slave_net_timeout_name": {
+            "defaultValue": "slave_net_timeout",
+            "type": "String"
+        },
+        "configurations_max_seeks_for_key_name": {
+            "defaultValue": "max_seeks_for_key",
+            "type": "String"
+        },
+        "configurations_innodb_file_format_name": {
+            "defaultValue": "innodb_file_format",
+            "type": "String"
+        },
+        "configurations_innodb_io_capacity_name": {
+            "defaultValue": "innodb_io_capacity",
+            "type": "String"
+        },
+        "configurations_max_allowed_packet_name": {
+            "defaultValue": "max_allowed_packet",
+            "type": "String"
+        },
+        "configurations_max_connect_errors_name": {
+            "defaultValue": "max_connect_errors",
+            "type": "String"
+        },
+        "configurations_innodb_fill_factor_name": {
+            "defaultValue": "innodb_fill_factor",
+            "type": "String"
+        },
+        "configurations_innodb_table_locks_name": {
+            "defaultValue": "innodb_table_locks",
+            "type": "String"
+        },
+        "configurations_max_execution_time_name": {
+            "defaultValue": "max_execution_time",
+            "type": "String"
+        },
+        "configurations_interactive_timeout_name": {
+            "defaultValue": "interactive_timeout",
+            "type": "String"
+        },
+        "configurations_default_week_format_name": {
+            "defaultValue": "default_week_format",
+            "type": "String"
+        },
+        "configurations_innodb_large_prefix_name": {
+            "defaultValue": "innodb_large_prefix",
+            "type": "String"
+        },
+        "configurations_innodb_stats_method_name": {
+            "defaultValue": "innodb_stats_method",
+            "type": "String"
+        },
+        "configurations_parser_max_mem_size_name": {
+            "defaultValue": "parser_max_mem_size",
+            "type": "String"
+        },
+        "configurations_preload_buffer_size_name": {
+            "defaultValue": "preload_buffer_size",
+            "type": "String"
+        },
+        "hostNameBindings_elbho_api_dev.azurewebsites.net_name": {
+            "defaultValue": "elbho-api-dev.azurewebsites.net",
+            "type": "String"
+        },
+        "configurations_character_set_server_name": {
+            "defaultValue": "character_set_server",
+            "type": "String"
+        },
+        "configurations_group_concat_max_len_name": {
+            "defaultValue": "group_concat_max_len",
+            "type": "String"
+        },
+        "configurations_innodb_page_cleaners_name": {
+            "defaultValue": "innodb_page_cleaners",
+            "type": "String"
+        },
+        "configurations_innodb_max_purge_lag_name": {
+            "defaultValue": "innodb_max_purge_lag",
+            "type": "String"
+        },
+        "configurations_max_user_connections_name": {
+            "defaultValue": "max_user_connections",
+            "type": "String"
+        },
+        "configurations_max_write_lock_count_name": {
+            "defaultValue": "max_write_lock_count",
+            "type": "String"
+        },
+        "configurations_session_track_schema_name": {
+            "defaultValue": "session_track_schema",
+            "type": "String"
+        },
+        "configurations_stored_program_cache_name": {
+            "defaultValue": "stored_program_cache",
+            "type": "String"
+        },
+        "configurations_innodb_old_blocks_pct_name": {
+            "defaultValue": "innodb_old_blocks_pct",
+            "type": "String"
+        },
+        "configurations_show_compatibility_56_name": {
+            "defaultValue": "show_compatibility_56",
+            "type": "String"
+        },
+        "configurations_innodb_lru_scan_depth_name": {
+            "defaultValue": "innodb_lru_scan_depth",
+            "type": "String"
+        },
+        "configurations_optimizer_prune_level_name": {
+            "defaultValue": "optimizer_prune_level",
+            "type": "String"
+        },
+        "configurations_innodb_old_blocks_time_name": {
+            "defaultValue": "innodb_old_blocks_time",
+            "type": "String"
+        },
+        "configurations_innodb_read_io_threads_name": {
+            "defaultValue": "innodb_read_io_threads",
+            "type": "String"
+        },
+        "configurations_lower_case_table_names_name": {
+            "defaultValue": "lower_case_table_names",
+            "type": "String"
+        },
+        "configurations_min_examined_row_limit_name": {
+            "defaultValue": "min_examined_row_limit",
+            "type": "String"
+        },
+        "configurations_innodb_deadlock_detect_name": {
+            "defaultValue": "innodb_deadlock_detect",
+            "type": "String"
+        },
+        "configurations_innodb_io_capacity_max_name": {
+            "defaultValue": "innodb_io_capacity_max",
+            "type": "String"
+        },
+        "configurations_max_points_in_geometry_name": {
+            "defaultValue": "max_points_in_geometry",
+            "type": "String"
+        },
+        "configurations_max_sp_recursion_depth_name": {
+            "defaultValue": "max_sp_recursion_depth",
+            "type": "String"
+        },
+        "configurations_optimizer_search_depth_name": {
+            "defaultValue": "optimizer_search_depth",
+            "type": "String"
+        },
+        "firewallRules_AllowAllWindowsAzureIps_name": {
+            "defaultValue": "AllowAllWindowsAzureIps",
+            "type": "String"
+        },
+        "configurations_div_precision_increment_name": {
+            "defaultValue": "div_precision_increment",
+            "type": "String"
+        },
+        "configurations_innodb_write_io_threads_name": {
+            "defaultValue": "innodb_write_io_threads",
+            "type": "String"
+        },
+        "configurations_max_prepared_stmt_count_name": {
+            "defaultValue": "max_prepared_stmt_count",
+            "type": "String"
+        },
+        "configurations_innodb_change_buffering_name": {
+            "defaultValue": "innodb_change_buffering",
+            "type": "String"
+        },
+        "configurations_innodb_purge_batch_size_name": {
+            "defaultValue": "innodb_purge_batch_size",
+            "type": "String"
+        },
+        "configurations_innodb_stats_persistent_name": {
+            "defaultValue": "innodb_stats_persistent",
+            "type": "String"
+        },
+        "configurations_innodb_lock_wait_timeout_name": {
+            "defaultValue": "innodb_lock_wait_timeout",
+            "type": "String"
+        },
+        "configurations_max_length_for_sort_data_name": {
+            "defaultValue": "max_length_for_sort_data",
+            "type": "String"
+        },
+        "configurations_innodb_adaptive_flushing_name": {
+            "defaultValue": "innodb_adaptive_flushing",
+            "type": "String"
+        },
+        "configurations_innodb_compression_level_name": {
+            "defaultValue": "innodb_compression_level",
+            "type": "String"
+        },
+        "configurations_innodb_random_read_ahead_name": {
+            "defaultValue": "innodb_random_read_ahead",
+            "type": "String"
+        },
+        "configurations_innodb_rollback_segments_name": {
+            "defaultValue": "innodb_rollback_segments",
+            "type": "String"
+        },
+        "configurations_innodb_stats_auto_recalc_name": {
+            "defaultValue": "innodb_stats_auto_recalc",
+            "type": "String"
+        },
+        "configurations_innodb_stats_on_metadata_name": {
+            "defaultValue": "innodb_stats_on_metadata",
+            "type": "String"
+        },
+        "configurations_eq_range_index_dive_limit_name": {
+            "defaultValue": "eq_range_index_dive_limit",
+            "type": "String"
+        },
+        "configurations_innodb_thread_concurrency_name": {
+            "defaultValue": "innodb_thread_concurrency",
+            "type": "String"
+        },
+        "configurations_innodb_thread_sleep_delay_name": {
+            "defaultValue": "innodb_thread_sleep_delay",
+            "type": "String"
+        },
+        "configurations_log_slow_admin_statements_name": {
+            "defaultValue": "log_slow_admin_statements",
+            "type": "String"
+        },
+        "configurations_log_slow_slave_statements_name": {
+            "defaultValue": "log_slow_slave_statements",
+            "type": "String"
+        },
+        "configurations_innodb_default_row_format_name": {
+            "defaultValue": "innodb_default_row_format",
+            "type": "String"
+        },
+        "configurations_innodb_ft_enable_stopword_name": {
+            "defaultValue": "innodb_ft_enable_stopword",
+            "type": "String"
+        },
+        "configurations_innodb_adaptive_hash_index_name": {
+            "defaultValue": "innodb_adaptive_hash_index",
+            "type": "String"
+        },
+        "configurations_innodb_concurrency_tickets_name": {
+            "defaultValue": "innodb_concurrency_tickets",
+            "type": "String"
+        },
+        "configurations_innodb_max_dirty_pages_pct_name": {
+            "defaultValue": "innodb_max_dirty_pages_pct",
+            "type": "String"
+        },
+        "configurations_innodb_max_purge_lag_delay_name": {
+            "defaultValue": "innodb_max_purge_lag_delay",
+            "type": "String"
+        },
+        "configurations_session_track_state_change_name": {
+            "defaultValue": "session_track_state_change",
+            "type": "String"
+        },
+        "configurations_updatable_views_with_limit_name": {
+            "defaultValue": "updatable_views_with_limit",
+            "type": "String"
+        },
+        "configurations_innodb_read_ahead_threshold_name": {
+            "defaultValue": "innodb_read_ahead_threshold",
+            "type": "String"
+        },
+        "configurations_innodb_autoextend_increment_name": {
+            "defaultValue": "innodb_autoextend_increment",
+            "type": "String"
+        },
+        "configurations_innodb_buffer_pool_dump_pct_name": {
+            "defaultValue": "innodb_buffer_pool_dump_pct",
+            "type": "String"
+        },
+        "configurations_innodb_ft_num_word_optimize_name": {
+            "defaultValue": "innodb_ft_num_word_optimize",
+            "type": "String"
+        },
+        "configurations_innodb_log_compressed_pages_name": {
+            "defaultValue": "innodb_log_compressed_pages",
+            "type": "String"
+        },
+        "configurations_innodb_adaptive_flushing_lwm_name": {
+            "defaultValue": "innodb_adaptive_flushing_lwm",
+            "type": "String"
+        },
+        "configurations_innodb_cmp_per_index_enabled_name": {
+            "defaultValue": "innodb_cmp_per_index_enabled",
+            "type": "String"
+        },
+        "configurations_innodb_ft_result_cache_limit_name": {
+            "defaultValue": "innodb_ft_result_cache_limit",
+            "type": "String"
+        },
+        "configurations_log_queries_not_using_indexes_name": {
+            "defaultValue": "log_queries_not_using_indexes",
+            "type": "String"
+        },
+        "configurations_innodb_change_buffer_max_size_name": {
+            "defaultValue": "innodb_change_buffer_max_size",
+            "type": "String"
+        },
+        "configurations_innodb_optimize_fulltext_only_name": {
+            "defaultValue": "innodb_optimize_fulltext_only",
+            "type": "String"
+        },
+        "configurations_binlog_group_commit_sync_delay_name": {
+            "defaultValue": "binlog_group_commit_sync_delay",
+            "type": "String"
+        },
+        "configurations_innodb_compression_pad_pct_max_name": {
+            "defaultValue": "innodb_compression_pad_pct_max",
+            "type": "String"
+        },
+        "configurations_innodb_max_dirty_pages_pct_lwm_name": {
+            "defaultValue": "innodb_max_dirty_pages_pct_lwm",
+            "type": "String"
+        },
+        "configurations_log_bin_trust_function_creators_name": {
+            "defaultValue": "log_bin_trust_function_creators",
+            "type": "String"
+        },
+        "configurations_innodb_adaptive_max_sleep_delay_name": {
+            "defaultValue": "innodb_adaptive_max_sleep_delay",
+            "type": "String"
+        },
+        "configurations_innodb_stats_include_delete_marked_name": {
+            "defaultValue": "innodb_stats_include_delete_marked",
+            "type": "String"
+        },
+        "configurations_innodb_stats_transient_sample_pages_name": {
+            "defaultValue": "innodb_stats_transient_sample_pages",
+            "type": "String"
+        },
+        "configurations_innodb_purge_rseg_truncate_frequency_name": {
+            "defaultValue": "innodb_purge_rseg_truncate_frequency",
+            "type": "String"
+        },
+        "configurations_innodb_stats_persistent_sample_pages_name": {
+            "defaultValue": "innodb_stats_persistent_sample_pages",
+            "type": "String"
+        },
+        "configurations_log_throttle_queries_not_using_indexes_name": {
+            "defaultValue": "log_throttle_queries_not_using_indexes",
+            "type": "String"
+        },
+        "configurations_binlog_group_commit_sync_no_delay_count_name": {
+            "defaultValue": "binlog_group_commit_sync_no_delay_count",
+            "type": "String"
+        },
+        "configurations_innodb_compression_failure_threshold_pct_name": {
+            "defaultValue": "innodb_compression_failure_threshold_pct",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev'.",
+            "type": "Microsoft.DBforMySQL/servers",
+            "sku": {
+                "name": "B_Gen5_1",
+                "tier": "Basic",
+                "family": "Gen5",
+                "capacity": 1
+            },
+            "name": "[parameters('servers_elbho_database_dev_name')]",
+            "apiVersion": "2017-12-01-preview",
+            "location": "westeurope",
+            "scale": null,
+            "properties": {
+                "storageProfile": {
+                    "storageMB": 11264,
+                    "backupRetentionDays": 14,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "version": "5.7",
+                "sslEnforcement": "Enabled",
+                "createMode": "[parameters('servers_elbho_database_dev_createMode')]"
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/microsoft.insights/alertrules/Failure Anomalies - elbho-api-dev'.",
+            "type": "microsoft.insights/alertrules",
+            "name": "[parameters('alertrules_Failure_Anomalies___elbho_api_dev_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "West Europe",
+            "tags": {
+                "hidden-link:/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/microsoft.insights/components/elbho-api-dev": "Resource"
+            },
+            "scale": null,
+            "properties": {
+                "name": "[parameters('alertrules_Failure_Anomalies___elbho_api_dev_name')]",
+                "description": "",
+                "isEnabled": true,
+                "condition": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                    "dataSource": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                        "resourceUri": "[resourceId('microsoft.insights/components', parameters('components_elbho_api_dev_name'))]",
+                        "metricNamespace": null,
+                        "metricName": "advanced::A3108E3D-5E26-44CF-B232-783F5E20EF10::ewAiAEgAeQBwAGUAcgBpAG8AbgBBAHAAcABsAGkAYwBhAHQAaQBvAG4AUwBpAGQAIgA6AG4AdQBsAGwALAAiAEgAeQBwAGUAcgBpAG8AbgBTAHUAYgBqAGUAYwB0AFMAaQBkACIAOgBuAHUAbABsACwAIgBIAHkAcABlAHIAaQBvAG4ATwBiAHMAZQByAHYAZQByAFMAaQBkACIAOgBuAHUAbABsACwAIgBDAHUAcwB0AG8AbQBlAHIAQQBjAGMAbwB1AG4AdABJAGQAIgA6ACIAMAAwADAAMAAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAwADAAMAAwADAAMAAwADAAIgAsACIAQQBwAHAAbABpAGMAYQB0AGkAbwBuAE4AYQBtAGUAIgA6AG4AdQBsAGwALAAiAEEAcABwAGwAaQBjAGEAdABpAG8AbgBJAGQAIgA6AG4AdQBsAGwALAAiAFAAcgBvAGYAaQBsAGUASQBkACIAOgAwACwAIgBXAGkAbgBkAG8AdwBTAGkAegBlAEkAbgBNAGkAbgB1AHQAZQBzACIAOgA2ADAALAAiAE0AZQB0AHIAaQBjAE4AYQBtAGUAIgA6ACIAIgAsACIAVABoAHIAZQBzAGgAbwBsAGQAIgA6ADIALgAwACwAIgBBAGwAZQByAHQAVABlAG0AcABsAGEAdABlAEkAZAAiADoAIgAiACwAIgBSAHUAbABlAEkAZAAiADoAIgAiACwAIgBSAHUAbABlAE4AYQBtAGUAIgA6ACIAIgAsACIAUgB1AGwAZQBEAGUAcwBjAHIAaQBwAHQAaQBvAG4AIgA6ACIAIgAsACIAUgBlAHMAbwB1AHIAYwBlAEkAZAAiADoAbgB1AGwAbAAsACIAUwB1AGIAcwBjAHIAaQBwAHQAaQBvAG4ASQBkACIAOgBuAHUAbABsACwAIgBBAGcAZwByAGUAZwBhAHQAZQBGAHUAbgBjAHQAaQBvAG4AIgA6ACIAIgAsACIAQwBvAG0AcABhAHIAaQBzAG8AbgBPAHAAZQByAGEAdABvAHIAIgA6ACIAewBcACIAQgBhAHMAZQBsAGkAbgBlAFQAaQBtAGUAcwBwAGEAbgBcACIAOgBcACIAMAAwADoANAAwADoAMAAwAFwAIgAsAFwAIgBJAG4AcwBpAGcAaAB0AHMAUwBlAHIAdgBpAGMAZQBMAGEAZwBcACIAOgBcACIAMAAwADoAMAAwADoAMAAwAFwAIgAsAFwAIgBCAHUAZgBmAGUAcgBUAGkAbQBlAFwAIgA6AFwAIgAwADAAOgAwADEAOgAwADAAXAAiACwAXAAiAEIAbABvAGIAUwB0AG8AcgBhAGcAZQBMAG8AZwBnAGkAbgBnAEUAbgBhAGIAbABlAGQAXAAiADoAZgBhAGwAcwBlACwAXAAiAFUAcwBlAHIAUwB1AHAAcAByAGUAcwBzAGkAbwBuAHMAXAAiADoAbgB1AGwAbAAsAFwAIgBQAHIAbwBmAGkAbABlAEkAZABcACIAOgAwACwAXAAiAEUAbQBhAGkAbABUAHkAcABlAFwAIgA6ADAALABcACIAUgBkAGQARgBhAGkAbAB1AHIAZQBzAFMAcABpAGsAZQBUAGgAcgBlAHMAaABvAGwAZABcACIAOgAzAC4AMAAsAFwAIgBSAGEAdwBQAHIAbwBhAGMAdABpAHYAZQBSAHUAbABlAEMAbwBuAGYAaQBnAFwAIgA6AG4AdQBsAGwAfQAiACwAIgBFAG4AYQBiAGwAZQBTAGUAbgBkAEUAbQBhAGkAbABUAG8AQwB1AHMAdABvAG0AIgA6AGYAYQBsAHMAZQAsACIAQwB1AHMAdABvAG0ARQBtAGEAaQBsAHMARQBuAGMAbwBkAGUAZAAiADoAIgAiACwAIgBFAG4AYQBiAGwAZQBTAGUAbgBkAEUAbQBhAGkAbABUAG8ATwB3AG4AZQByAHMAIgA6AGYAYQBsAHMAZQB9AA=="
+                    },
+                    "operator": "GreaterThan",
+                    "threshold": 2,
+                    "windowSize": "PT1H"
+                },
+                "action": {
+                    "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                    "sendToServiceOwners": true,
+                    "customEmails": []
+                }
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_elbho_api_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/microsoft.insights/components/elbho-api-dev'.",
+            "type": "microsoft.insights/components",
+            "kind": "web",
+            "name": "[parameters('components_elbho_api_dev_name')]",
+            "apiVersion": "2015-05-01",
+            "location": "westeurope",
+            "tags": {
+                "hidden-link:/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Web/sites/elbho-api-dev": "Resource"
+            },
+            "scale": null,
+            "properties": {
+                "Application_Type": "web",
+                "Flow_Type": null,
+                "Request_Source": "IbizaWebAppExtensionCreate",
+                "HockeyAppId": null,
+                "SamplingPercentage": null
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Maps/accounts/Maps'.",
+            "type": "Microsoft.Maps/accounts",
+            "sku": {
+                "name": "s0",
+                "tier": "Standard"
+            },
+            "name": "[parameters('accounts_Maps_name')]",
+            "apiVersion": "2018-05-01",
+            "location": "global",
+            "scale": null,
+            "properties": {
+                "x-ms-client-id": "d995156f-ee32-493a-ab7b-a86c47b32168"
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Storage/storageAccounts/elbhostoragedev'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "name": "[parameters('storageAccounts_elbhostoragedev_name')]",
+            "apiVersion": "2018-07-01",
+            "location": "westeurope",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Web/serverfarms/ELBHOAPIPlan'.",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 0
+            },
+            "kind": "app",
+            "name": "[parameters('serverfarms_ELBHOAPIPlan_name')]",
+            "apiVersion": "2016-09-01",
+            "location": "West Europe",
+            "scale": null,
+            "properties": {
+                "name": "[parameters('serverfarms_ELBHOAPIPlan_name')]",
+                "workerTierName": null,
+                "adminSiteName": null,
+                "hostingEnvironmentProfile": null,
+                "perSiteScaling": false,
+                "reserved": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Web/sites/elbho-api-dev'.",
+            "type": "Microsoft.Web/sites",
+            "kind": "app",
+            "name": "[parameters('sites_elbho_api_dev_name')]",
+            "apiVersion": "2016-08-01",
+            "location": "West Europe",
+            "scale": null,
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_elbho_api_dev_name'),'.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_elbho_api_dev_name'),'.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ELBHOAPIPlan_name'))]",
+                "reserved": false,
+                "siteConfig": null,
+                "scmSiteAlsoStopped": false,
+                "hostingEnvironmentProfile": null,
+                "clientAffinityEnabled": true,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "cloningInfo": null
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ELBHOAPIPlan_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/binlog_group_commit_sync_delay'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_binlog_group_commit_sync_delay_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/binlog_group_commit_sync_no_delay_count'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_binlog_group_commit_sync_no_delay_count_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/character_set_server'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_character_set_server_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "latin1",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/div_precision_increment'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_div_precision_increment_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/eq_range_index_dive_limit'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_eq_range_index_dive_limit_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "200",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/event_scheduler'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_event_scheduler_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/group_concat_max_len'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_group_concat_max_len_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1024",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/init_connect'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_init_connect_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_adaptive_hash_index'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_adaptive_hash_index_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_concurrency_tickets'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_concurrency_tickets_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "5000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_file_format'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_file_format_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "Barracuda",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_io_capacity'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_io_capacity_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "200",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_lock_wait_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_lock_wait_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "50",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_old_blocks_pct'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_old_blocks_pct_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "37",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_old_blocks_time'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_old_blocks_time_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_page_cleaners'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_page_cleaners_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_read_ahead_threshold'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_read_ahead_threshold_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "56",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_read_io_threads'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_read_io_threads_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_thread_concurrency'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_thread_concurrency_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_thread_sleep_delay'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_thread_sleep_delay_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "10000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_write_io_threads'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_write_io_threads_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/interactive_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_interactive_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "28800",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/lock_wait_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_lock_wait_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "31536000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/log_bin_trust_function_creators'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_log_bin_trust_function_creators_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/log_queries_not_using_indexes'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_log_queries_not_using_indexes_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/log_slow_admin_statements'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_log_slow_admin_statements_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/log_slow_slave_statements'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_log_slow_slave_statements_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/log_throttle_queries_not_using_indexes'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_log_throttle_queries_not_using_indexes_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/long_query_time'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_long_query_time_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "10",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/lower_case_table_names'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_lower_case_table_names_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_allowed_packet'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_allowed_packet_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "536870912",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_connect_errors'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_connect_errors_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "100",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_length_for_sort_data'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_length_for_sort_data_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1024",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_prepared_stmt_count'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_prepared_stmt_count_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "16382",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/min_examined_row_limit'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_min_examined_row_limit_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/net_read_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_net_read_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "120",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/net_write_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_net_write_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "240",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/server_id'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_server_id_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "3256980521",
+                "source": "user-override"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/show_compatibility_56'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_show_compatibility_56_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/slave_net_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_slave_net_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "60",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/slow_query_log'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_slow_query_log_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/sql_mode'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_sql_mode_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/table_open_cache'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_table_open_cache_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "2000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/time_zone'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_time_zone_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "SYSTEM",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/tx_isolation'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_tx_isolation_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "REPEATABLE-READ",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/wait_timeout'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_wait_timeout_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "120",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/default_week_format'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_default_week_format_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/flush_time'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_flush_time_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_adaptive_flushing'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_adaptive_flushing_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_adaptive_flushing_lwm'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_adaptive_flushing_lwm_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "10",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_adaptive_max_sleep_delay'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_adaptive_max_sleep_delay_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "150000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_autoextend_increment'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_autoextend_increment_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "64",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_buffer_pool_dump_pct'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_buffer_pool_dump_pct_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "25",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_change_buffer_max_size'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_change_buffer_max_size_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "25",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_change_buffering'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_change_buffering_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "all",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_cmp_per_index_enabled'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_cmp_per_index_enabled_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_compression_failure_threshold_pct'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_compression_failure_threshold_pct_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "5",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_compression_level'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_compression_level_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "6",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_compression_pad_pct_max'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_compression_pad_pct_max_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "50",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_deadlock_detect'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_deadlock_detect_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_default_row_format'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_default_row_format_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "DYNAMIC",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_fill_factor'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_fill_factor_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "100",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_ft_enable_stopword'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_ft_enable_stopword_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_ft_num_word_optimize'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_ft_num_word_optimize_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "2000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_ft_result_cache_limit'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_ft_result_cache_limit_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "2000000000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_io_capacity_max'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_io_capacity_max_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "2000",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_large_prefix'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_large_prefix_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_log_compressed_pages'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_log_compressed_pages_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_lru_scan_depth'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_lru_scan_depth_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1024",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_max_dirty_pages_pct'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_max_dirty_pages_pct_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "75",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_max_dirty_pages_pct_lwm'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_max_dirty_pages_pct_lwm_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_max_purge_lag'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_max_purge_lag_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_max_purge_lag_delay'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_max_purge_lag_delay_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_optimize_fulltext_only'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_optimize_fulltext_only_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_purge_batch_size'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_purge_batch_size_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "300",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_purge_rseg_truncate_frequency'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_purge_rseg_truncate_frequency_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "128",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_random_read_ahead'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_random_read_ahead_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_rollback_segments'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_rollback_segments_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "128",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_auto_recalc'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_auto_recalc_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_include_delete_marked'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_include_delete_marked_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_method'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_method_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "nulls_equal",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_on_metadata'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_on_metadata_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_persistent'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_persistent_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_persistent_sample_pages'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_persistent_sample_pages_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "20",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_stats_transient_sample_pages'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_stats_transient_sample_pages_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "8",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/innodb_table_locks'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_innodb_table_locks_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_error_count'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_error_count_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "64",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_execution_time'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_execution_time_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_join_size'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_join_size_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "18446744073709551615",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_points_in_geometry'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_points_in_geometry_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "65536",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_seeks_for_key'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_seeks_for_key_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4294967295",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_sort_length'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_sort_length_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1024",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_sp_recursion_depth'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_sp_recursion_depth_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_user_connections'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_user_connections_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "0",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/max_write_lock_count'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_max_write_lock_count_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "4294967295",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/net_retry_count'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_net_retry_count_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "10",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/optimizer_prune_level'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_optimizer_prune_level_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "1",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/optimizer_search_depth'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_optimizer_search_depth_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "62",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/parser_max_mem_size'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_parser_max_mem_size_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "18446744073709551615",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/preload_buffer_size'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_preload_buffer_size_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "32768",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/session_track_schema'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_session_track_schema_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "ON",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/session_track_state_change'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_session_track_state_change_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "OFF",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/stored_program_cache'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_stored_program_cache_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "256",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/configurations/updatable_views_with_limit'.",
+            "type": "Microsoft.DBforMySQL/servers/configurations",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('configurations_updatable_views_with_limit_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "value": "YES",
+                "source": "system-default"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/databases/information_schema'.",
+            "type": "Microsoft.DBforMySQL/servers/databases",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('databases_information_schema_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "charset": "utf8",
+                "collation": "utf8_general_ci"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/databases/mysql'.",
+            "type": "Microsoft.DBforMySQL/servers/databases",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('databases_mysql_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "charset": "latin1",
+                "collation": "latin1_swedish_ci"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/databases/performance_schema'.",
+            "type": "Microsoft.DBforMySQL/servers/databases",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('databases_performance_schema_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "charset": "utf8",
+                "collation": "utf8_general_ci"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/databases/sys'.",
+            "type": "Microsoft.DBforMySQL/servers/databases",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('databases_sys_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "charset": "utf8",
+                "collation": "utf8_general_ci"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.DBforMySQL/servers/elbho-database-dev/firewallRules/AllowAllWindowsAzureIps'.",
+            "type": "Microsoft.DBforMySQL/servers/firewallRules",
+            "name": "[concat(parameters('servers_elbho_database_dev_name'), '/', parameters('firewallRules_AllowAllWindowsAzureIps_name'))]",
+            "apiVersion": "2017-12-01-preview",
+            "scale": null,
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('servers_elbho_database_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Web/sites/elbho-api-dev/config/web'.",
+            "type": "Microsoft.Web/sites/config",
+            "name": "[concat(parameters('sites_elbho_api_dev_name'), '/', parameters('config_web_name'))]",
+            "apiVersion": "2016-08-01",
+            "location": "West Europe",
+            "scale": null,
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "phpVersion": "5.6",
+                "pythonVersion": "",
+                "nodeVersion": "",
+                "linuxFxVersion": "",
+                "windowsFxVersion": null,
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": null,
+                "httpLoggingEnabled": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$elbho-api-dev",
+                "publishingPassword": null,
+                "appSettings": null,
+                "azureStorageAccounts": {},
+                "metadata": null,
+                "connectionStrings": null,
+                "machineKey": null,
+                "handlerMappings": null,
+                "documentRoot": null,
+                "scmType": "None",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "javaVersion": null,
+                "javaContainer": null,
+                "javaContainerVersion": null,
+                "appCommandLine": "",
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false,
+                        "virtualDirectories": null
+                    }
+                ],
+                "winAuthAdminState": 0,
+                "winAuthTenantState": 0,
+                "customAppPoolIdentityAdminState": false,
+                "customAppPoolIdentityTenantState": false,
+                "runtimeADUser": null,
+                "runtimeADUserPassword": null,
+                "loadBalancing": "LeastRequests",
+                "routingRules": [],
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "limits": null,
+                "autoHealEnabled": false,
+                "autoHealRules": null,
+                "tracingOptions": null,
+                "vnetName": "",
+                "siteAuthEnabled": false,
+                "siteAuthSettings": {
+                    "enabled": null,
+                    "unauthenticatedClientAction": null,
+                    "tokenStoreEnabled": null,
+                    "allowedExternalRedirectUrls": null,
+                    "defaultProvider": null,
+                    "clientId": null,
+                    "clientSecret": null,
+                    "issuer": null,
+                    "allowedAudiences": null,
+                    "additionalLoginParams": null,
+                    "isAadAutoProvisioned": false,
+                    "googleClientId": null,
+                    "googleClientSecret": null,
+                    "googleOAuthScopes": null,
+                    "facebookAppId": null,
+                    "facebookAppSecret": null,
+                    "facebookOAuthScopes": null,
+                    "twitterConsumerKey": null,
+                    "twitterConsumerSecret": null,
+                    "microsoftAccountClientId": null,
+                    "microsoftAccountClientSecret": null,
+                    "microsoftAccountOAuthScopes": null
+                },
+                "cors": null,
+                "push": null,
+                "apiDefinition": null,
+                "autoSwapSlotName": null,
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": null,
+                "xManagedServiceIdentityId": null,
+                "ipSecurityRestrictions": null,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "ftpsState": "AllAllowed",
+                "reservedInstanceCount": 0
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_elbho_api_dev_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Web/sites/elbho-api-dev/hostNameBindings/elbho-api-dev.azurewebsites.net'.",
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "name": "[concat(parameters('sites_elbho_api_dev_name'), '/', parameters('hostNameBindings_elbho_api_dev.azurewebsites.net_name'))]",
+            "apiVersion": "2016-08-01",
+            "location": "West Europe",
+            "scale": null,
+            "properties": {
+                "siteName": "elbho-api-dev",
+                "domainId": null,
+                "hostNameType": "Verified"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_elbho_api_dev_name'))]"
+            ]
+        }
+    ]
+}
