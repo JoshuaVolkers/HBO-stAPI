@@ -97,6 +97,10 @@
       <Project>{88a2193c-920a-4ec7-9ceb-bbd512dcfbf3}</Project>
       <Name>PoohAPI.Logic.MapAPI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Options\PoohAPI.Logic.Options.csproj">
+      <Project>{720a2d55-f713-4164-a264-77d6399d9e5d}</Project>
+      <Name>PoohAPI.Logic.Options</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.Reviews\PoohAPI.Logic.Reviews.csproj">
       <Project>{06234d95-eb1e-4702-ac6b-1c135369035f}</Project>
       <Name>PoohAPI.Logic.Reviews</Name>

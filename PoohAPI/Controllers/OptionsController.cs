@@ -1,7 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PoohAPI.Logic.Common.Enums;
-using PoohAPI.Models.OptionModels;
+using PoohAPI.Infrastructure.ReviewDB.Repositories;
+using PoohAPI.Logic.Common.Interfaces;
+using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Models.OptionModels;
+using PoohAPI.Logic.Common.Models.PresentationModels;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace PoohAPI.Controllers
 {
@@ -9,6 +15,13 @@ namespace PoohAPI.Controllers
     [Route("options")]
     public class OptionsController : Controller
     {
+        private readonly IOptionReadService _optionReadService;
+
+        public OptionsController(IOptionReadService reviewReadService)
+        {
+            _optionReadService = reviewReadService;
+        }
+
         /// <summary>
         /// Gets the majors from which the students can choose
         /// </summary>
@@ -21,9 +34,19 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<Major>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetMajors()
+        public IActionResult GetMajors([FromQuery]int maxCount = 5, [FromQuery]int offset = 0)
         {
-            return Ok(new List<Major>());
+            if (maxCount < 1 || maxCount > 100)
+                return BadRequest("MaxCount should be between 1 and 100");
+            if (offset < 0)
+                return BadRequest("Offset should be 0 or higher");
+
+            IEnumerable<Major> majors = _optionReadService.GetAllMajors(maxCount, offset);
+
+            if (majors is null)
+                return NotFound("No majors found");
+
+            return Ok(majors);
         }
 
         /// <summary>
@@ -85,15 +108,16 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the request failed</response>
         /// <response code="404">If no internship types were found</response>
-        [HttpGet]
-        [Route("internshiptypes")]
-        [ProducesResponseType(typeof(IntershipType), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public IActionResult GetInternshipTypes()
-        {
-            return Ok(new IntershipType());
-        }
+        
+        //[HttpGet]
+        //[Route("internshiptypes")]
+        //[ProducesResponseType(typeof(IntershipType), 200)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //public IActionResult GetInternshipTypes()
+        //{
+        //    return Ok(new IntershipType());
+        //}
 
         /// <summary>
         /// Gets allowed email addresses

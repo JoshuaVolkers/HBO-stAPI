@@ -1,4 +1,4 @@
-﻿using PoohAPI.Models.OptionModels;
+﻿using PoohAPI.Logic.Common.Models.OptionModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PoohAPI.Logic.Common.Interfaces
 {
-    interface IOptionReadService
+    public interface IOptionReadService
     {
         IEnumerable<Major> GetAllMajors(int maxCount, int offset);
     }
