@@ -10,6 +10,7 @@ using PoohAPI.Infrastructure.CompanyDB.Respositories;
 using AutoMapper;
 using PoohAPI.Infrastructure.CompanyDB.Models;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace PoohAPI.Logic.Companies.Services
 {
@@ -19,13 +20,15 @@ namespace PoohAPI.Logic.Companies.Services
         private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IQueryBuilder queryBuilder;
+        private readonly IConfiguration config;
 
-        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder)
+        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IConfiguration config)
         {
             this.companyRepository = companyRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
             this.queryBuilder = queryBuilder;
+            this.config = config;
         }
 
         /// <summary>
@@ -35,6 +38,9 @@ namespace PoohAPI.Logic.Companies.Services
         /// <returns></returns>
         public Company GetCompanyById(int id)
         {
+            string testValue = this.config.GetValue<string>("TestValue");
+            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
+
             string query = @"SELECT b.*, l.land_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, 
                     IF(r.review_sterren IS NULL, 0,
                             CASE WHEN COUNT(r.review_sterren) > 4
@@ -170,16 +176,26 @@ namespace PoohAPI.Logic.Companies.Services
                         )) as distance");
                     this.queryBuilder.AddHaving("distance < @rangeKm");
                 }
+                else
+                {
+                    // Find matches in database
+                    this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
+                }
             }
             else
             {
                 // Find matches in database
-                if (cityName != null)
-                    AddCityFilter(parameters, cityName);
-
-                if (countryName != null)
-                    AddCountryFilter(parameters, countryName);
+                this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
             }
+        }
+
+        private void AddLocationFilterWithoutCoordinates(Dictionary<string, object> parameters, string countryName, string cityName)
+        {
+            if (cityName != null)
+                AddCityFilter(parameters, cityName);
+
+            if (countryName != null)
+                AddCountryFilter(parameters, countryName);
         }
 
         private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
