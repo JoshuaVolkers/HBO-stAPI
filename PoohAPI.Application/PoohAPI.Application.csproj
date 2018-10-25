@@ -97,6 +97,10 @@
       <Project>{88a2193c-920a-4ec7-9ceb-bbd512dcfbf3}</Project>
       <Name>PoohAPI.Logic.MapAPI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Options\PoohAPI.Logic.Options.csproj">
+      <Project>{720a2d55-f713-4164-a264-77d6399d9e5d}</Project>
+      <Name>PoohAPI.Logic.Options</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.Reviews\PoohAPI.Logic.Reviews.csproj">
       <Project>{06234d95-eb1e-4702-ac6b-1c135369035f}</Project>
       <Name>PoohAPI.Logic.Reviews</Name>
@@ -104,6 +108,10 @@
     <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj">
       <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>
       <Name>PoohAPI.Logic.Users</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Vacancies\PoohAPI.Logic.Vacancies.csproj">
+      <Project>{1758a16a-7182-4328-a4e8-03dd5f4405c7}</Project>
+      <Name>PoohAPI.Logic.Vacancies</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
