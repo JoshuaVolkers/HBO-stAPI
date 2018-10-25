@@ -1,20 +1,16 @@
-﻿//BUILD PIPELINE TEST THING
-//BLUH
-//ONCE MORE
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PoohAPI.RequestModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.BaseModels;
 using PoohAPI.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using PoohAPI.Authorization;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Models.AuthenticationModels;
 using PoohAPI.Logic.Common.Models.InputModels;
@@ -30,13 +26,15 @@ namespace PoohAPI.Controllers
         private readonly IUserCommandService userCommandService;
         private readonly IVacancyReadService vacancyReadService;
         private readonly IVacancyCommandService vacancyCommandService;
+        private readonly ITokenHelper tokenHelper;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper)
         {
             this.userReadService = userReadService;
             this.userCommandService = userCommandService;
             this.vacancyReadService = vacancyReadService;
             this.vacancyCommandService = vacancyCommandService;
+            this.tokenHelper = tokenHelper;
         }
 
         /// <summary>
@@ -59,9 +57,9 @@ namespace PoohAPI.Controllers
 
             var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
 
-            return Ok(TokenHelper.GenerateJWT(identity, refreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity, refreshToken));
         }
 
         /// <summary>
@@ -104,8 +102,8 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
-            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
         /// <summary>
@@ -140,9 +138,9 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
 
-            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
         /// <summary>
@@ -193,9 +191,9 @@ namespace PoohAPI.Controllers
                 if (user == null)
                     return BadRequest("Specified token does not exist!");
 
-                var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+                var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
 
-                return Ok(TokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
+                return Ok(this.tokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
             }
 
             return BadRequest("Refresh token is not a valid GUID!");

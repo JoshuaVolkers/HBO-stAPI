@@ -331,3 +331,5 @@ ASALocalRun/
 .mfractor/
 PoohAPI_YAML_Spec.yml
 PoohAPI.Infrastructure.Common/MySQLClient.cs
+PoohAPI/appsettings.json
+PoohAPI/appsettings.json
