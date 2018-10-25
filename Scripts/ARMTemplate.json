@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "servers_elbho_database_dev_createMode": {
-            "defaultValue": null,
+            "defaultValue": "Default",
             "type": "SecureString"
         },
         "accounts_Maps_name": {
@@ -28,6 +28,10 @@
         },
         "servers_elbho_database_dev_name": {
             "defaultValue": "elbho-database-dev",
+            "type": "String"
+        },
+        "storageAccounts_elbhostoragedev_name": {
+            "defaultValue": "elbhostoragedev",
             "type": "String"
         },
         "databases_sys_name": {
@@ -571,6 +575,42 @@
             "scale": null,
             "properties": {
                 "x-ms-client-id": "d995156f-ee32-493a-ab7b-a86c47b32168"
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/c329b6f0-2e7b-4879-ab67-34b813c1ef80/resourceGroups/ELBHO-API/providers/Microsoft.Storage/storageAccounts/elbhostoragedev'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "name": "[parameters('storageAccounts_elbhostoragedev_name')]",
+            "apiVersion": "2018-07-01",
+            "location": "westeurope",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
             },
             "dependsOn": []
         },
