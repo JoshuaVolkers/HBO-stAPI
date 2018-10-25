@@ -1,5 +1,6 @@
 ﻿using PoohAPI.Infrastructure.MapAPI.Models;
 using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace PoohAPI.Infrastructure.MapAPI.APIClients
 {
@@ -24,21 +26,28 @@ namespace PoohAPI.Infrastructure.MapAPI.APIClients
         private MapCoordinates RunAddressRequest(string query)
         {
             string requestUrl = baseURL + addressPath + "subscription-key=" + this.apiKey + "&api-version=1.0&query=\"" + query + "\"";
-
-            HttpClient httpClient = new HttpClient();
-            //httpClient.BaseAddress = new Uri(baseURL + addressPath);
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            HttpResponseMessage response = httpClient.GetAsync(requestUrl).Result;
+            
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(requestUrl);
+            httpWebRequest.Accept = "application/json";
+            
             MapCoordinates mapCoordinates = new MapCoordinates();
-
-            if (response.IsSuccessStatusCode)
+            mapCoordinates.ResponseSucceeded = false;
+            HttpWebResponse response;
+            
+            try {
+                response = (HttpWebResponse)httpWebRequest.GetResponse();
+            }
+            catch(Exception e) {
+                return mapCoordinates;
+            }
+            
+            if ((int)response.StatusCode == 200)
             {
-                string jsonData = response.Content.ReadAsStringAsync().Result;
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream);
+                string jsonData = reader.ReadToEnd();
 
                 AzureMapsAddressResult result = JsonConvert.DeserializeObject<AzureMapsAddressResult>(jsonData);
-                //List<AddressResult> result = JsonConvert.DeserializeObject<List<AddressResult>>(jsonData);
 
                 if (result.results.Count > 0)
                 {
@@ -46,14 +55,6 @@ namespace PoohAPI.Infrastructure.MapAPI.APIClients
                     mapCoordinates.Longitude = result.results[0].position.lon;
                     mapCoordinates.ResponseSucceeded = true;
                 }
-                else
-                {
-                    mapCoordinates.ResponseSucceeded = false;
-                }
-            }
-            else
-            {
-                mapCoordinates.ResponseSucceeded = false;
             }
 
             return mapCoordinates;

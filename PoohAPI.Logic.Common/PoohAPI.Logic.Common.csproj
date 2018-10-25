@@ -39,6 +39,9 @@
     <Reference Include="AutoMapper.Extensions.Microsoft.DependencyInjection, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.Extensions.Microsoft.DependencyInjection.5.0.1\lib\netstandard2.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll</HintPath>
     </Reference>
+    <Reference Include="BCrypt.Net-Next, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.3.1.0\lib\net452\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -77,12 +80,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\MailClient.cs" />
+    <Compile Include="Enums\UserAccountType.cs" />
+    <Compile Include="Enums\UserRole.cs" />
+    <Compile Include="Helpers\DataReaderTypeConverter.cs" />
     <Compile Include="Classes\QueryBuilder.cs" />
-    <Compile Include="DataReaderTypeConverter.cs" />
     <Compile Include="Enums\IntershipType.cs" />
     <Compile Include="Enums\ReviewVerificationStatus.cs" />
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
+    <Compile Include="Interfaces\IMailClient.cs" />
     <Compile Include="Interfaces\IMapAPIReadService.cs" />
     <Compile Include="Interfaces\IOptionReadService.cs" />
     <Compile Include="Interfaces\IQueryBuilder.cs" />
@@ -91,23 +98,32 @@
     <Compile Include="Interfaces\IUserCommandService.cs" />
     <Compile Include="Interfaces\ICompanyReadService.cs" />
     <Compile Include="Interfaces\IUserReadService.cs" />
+    <Compile Include="Interfaces\IVacancyCommandService.cs" />
+    <Compile Include="Interfaces\IVacancyReadService.cs" />
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
+    <Compile Include="Models\BaseModels\BaseLocation.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Coordinates.cs" />
     <Compile Include="Models\InputModels\ReviewUpdateInput.cs" />
     <Compile Include="Models\InputModels\UserUpdateInput.cs" />
+    <Compile Include="Models\JwtUser.cs" />
     <Compile Include="Models\Location.cs" />
+<<<<<<< HEAD
     <Compile Include="Models\OptionModels\City.cs" />
     <Compile Include="Models\OptionModels\Country.cs" />
     <Compile Include="Models\OptionModels\EducationLevel.cs" />
     <Compile Include="Models\OptionModels\Language.cs" />
     <Compile Include="Models\OptionModels\Major.cs" />
+=======
+    <Compile Include="Models\PresentationModels\ReviewPublicPresentation.cs" />
+>>>>>>> dev
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewAnonymous.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Token.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserEmailValidation.cs" />
     <Compile Include="Models\Vacancy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -120,10 +136,6 @@
     <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
       <Project>{2B1822DC-9E62-4A4C-9D31-76E2029CE8FD}</Project>
       <Name>PoohAPI.Infrastructure.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoohAPI.Infrastructure.ReviewDB\PoohAPI.Infrastructure.ReviewDB.csproj">
-      <Project>{7C1E0BCD-22B2-450C-BC44-513591528BA7}</Project>
-      <Name>PoohAPI.Infrastructure.ReviewDB</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

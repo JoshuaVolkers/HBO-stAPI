@@ -2,11 +2,6 @@
 using PoohAPI.Infrastructure.Common;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PoohAPI.Logic.Common.Init
 {
@@ -16,6 +11,7 @@ namespace PoohAPI.Logic.Common.Init
         {
             services.AddSingleton<IMySQLClient, MySQLClient>();
             services.AddScoped<IQueryBuilder, QueryBuilder>();
+            services.AddScoped<IMailClient, MailClient>();
         }
     }
 }

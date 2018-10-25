@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿//BUILD PIPELINE TEST THING
+using Microsoft.AspNetCore.Mvc;
 using PoohAPI.RequestModels;
 using System;
 using System.Collections.Generic;
@@ -8,140 +9,305 @@ using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Models.AuthenticationModels;
 using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Produces("application/json")]
     [Route("users")]
     public class UsersController : Controller
     {
-        private readonly IUserReadService _userReadService;
-        private readonly IUserCommandService _userCommandService;
+        private readonly IUserReadService userReadService;
+        private readonly IUserCommandService userCommandService;
+        private readonly IVacancyReadService vacancyReadService;
+        private readonly IVacancyCommandService vacancyCommandService;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService)
         {
-            _userReadService = userReadService;
-            _userCommandService = userCommandService;
+            this.userReadService = userReadService;
+            this.userCommandService = userCommandService;
+            this.vacancyReadService = vacancyReadService;
+            this.vacancyCommandService = vacancyCommandService;
         }
 
         /// <summary>
         /// Starts the login process
         /// </summary>
         /// <param name="loginRequest">The loginRequest model</param>
-        /// <returns>The logged in user</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
-        //[AllowAnonymous]
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(JWTToken), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            var user = _userReadService.Login(loginRequest.Login, loginRequest.Password);
+            var user = this.userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
-            return Ok(/*TokenHelper.RequestToken(user)*/);
+
+            var token = this.userCommandService.UpdateRefreshToken(user.Id);
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+
+            return Ok(TokenHelper.GenerateJWT(identity, token));
+        }
+
+        /// <summary>
+        /// Login using Facebook AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from Facebook</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("facebook")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> FacebookAsync([FromBody] string AccessToken)
+        {
+            var client = new HttpClient();
+            var appAccessTokenResponse = await client.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id=&client_secret=&grant_type=client_credentials");
+            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
+
+            var userAccessTokenValidationResponse = await client.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserTokenData>(userAccessTokenValidationResponse);
+
+            if (!userAccessTokenValidation.IsValid)
+            {
+                client.Dispose();
+                return BadRequest("Facebook access token is invalid!");
+            }
+
+            var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
+
+            client.Dispose();
+
+            var user = this.userReadService.GetUserByEmail<JwtUser>(userInfo.Email);
+
+            if (user == null)
+            {
+                user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
+            }
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
+        }
+
+        /// <summary>
+        /// Login using LinkedIn AccessToken
+        /// </summary>
+        /// <param name="AccessToken">AccessToken retrieved from LinkedIn</param>
+        /// <param name="redirectUri">The redirectUri that was also used when requesting the acces token</param>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>  
+        /// <response code="401">If the login failed due to incorrect credentials</response>
+        /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("linkedin")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(401)]
+        public async System.Threading.Tasks.Task<IActionResult> LinkedInAsync([FromBody] string AccessToken, [FromBody] string redirectUri)
+        {
+            var client = new HttpClient();
+
+            var appAccessTokenResponse = await client.GetStringAsync($"https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code={AccessToken}&redirect_uri={redirectUri}&client_id=1&client_secret=1");
+            var appAccessToken = JsonConvert.DeserializeObject<LinkedInAppAccessToken>(appAccessTokenResponse);
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", appAccessToken.AccessToken);
+            var userInfoResponse = await client.GetStringAsync($"https://api.linkedin.com/v2/people/me?projection=(id,firstName,lastName,email-address)");
+            var userInfo = JsonConvert.DeserializeObject<LinkedInUserData>(userInfoResponse);
+
+            var user = this.userReadService.GetUserByEmail<JwtUser>(userInfo.Email);
+
+            if (user == null)
+            {
+                user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
+            }
+
+            var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+
+            return Ok(TokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
         /// <summary>
         /// Starts the register process
         /// </summary>
         /// <param name="registerRequest">The registerRequest model</param>
-        /// <returns>The registered user</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>  
+        /// <response code="401">If the login failed due to incomplete personal information</response>
+        [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(JWTToken), 200)]
         [ProducesResponseType(401)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest("Not all values were filled in correctly!");
+            if (!registerRequest.AcceptTermsAndConditions)
+                return BadRequest("You need to accept the terms and conditions before creating your account!");
+            if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
+                return BadRequest("The filled in emailaddress is not allowed!");
+            if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
+                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
+                    registerRequest.EmailAddress));      
+
+            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
+
+            return Ok("Verification email has been sent.");
         }
 
         /// <summary>
-        /// Checks if token is still valid
+        /// Request a new acces token by using the refreshtoken.
         /// </summary>
-        /// <param name="token">The token to be checked</param>
-        /// <returns>A boolean that says if the token if valid</returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="400">If no token was given as parameter</response>
-        [HttpPost]
-        [Route("checktoken")]
-        [ProducesResponseType(typeof(Boolean), 200)]
-        [ProducesResponseType(400)]
-        public IActionResult CheckToken([FromBody]Token token)
+        /// <response code="404">If the refreshtoken does not exist</response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("token/{refreshToken}/refresh")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult RefreshAccesToken(string refreshToken)
         {
-            return Ok(new Boolean());
+            if (Guid.TryParse(refreshToken, out Guid parsedGuid))
+            {
+                var user = this.userReadService.GetUserByRefreshToken(parsedGuid.ToString("N"));
+                if (user == null)
+                    return BadRequest("Specified token does not exist!");
+
+                var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+
+                return Ok(TokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
+            }
+
+            return BadRequest("Refresh token is not a valid GUID!");
         }
 
         /// <summary>
-        /// Get's all of the users. (Admin rights are required for this endpoint!)
+        /// Revokes the refresh token, invalidating it for future use.
+        /// </summary>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the refreshtoken does not exist</response>
+        [AllowAnonymous]
+        [HttpDelete]
+        [Route("token/{refreshToken}/revoke")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult RevokeRefreshToken(string refreshToken)
+        {
+            if (Guid.TryParse(refreshToken, out Guid parsedGuid))
+            {
+                this.userCommandService.DeleteRefreshToken(parsedGuid.ToString("N"));
+                return Ok();
+            }
+            return BadRequest("Refresh token is not a valid GUID!");
+        }
+
+        /// <summary>
+        /// Verifies email address of newly registered users and activates their accounts.
+        /// </summary>
+        /// <param name="token">Token that is send to the users' email address.</param>
+        /// <returns></returns>
+        /// <response code="200"></response>
+        /// <response code="400"></response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verify")]
+        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(400)]
+        public IActionResult VerifyEmail([FromQuery]string token)
+        {
+            User user = this.userCommandService.VerifyUserEmail(token);
+
+            if (user is null)
+                return BadRequest("Token is invalid or expired.");
+
+            return Ok("Your email address has been verified. Please, log into your account with your application.");
+        }
+
+        /// <summary>
+        /// Get's all of the users. ('Validator' or 'Elbho_medewerker' role is required for this endpoint!)
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
-        /// <param name="educationalAttainment">A comma seperated list of educationalAttainments (opleidingsniveau)</param>
-        /// <param name="educations">A comma seperated list of educations</param>
-        /// <param name="city">The city in which the user should be located.</param>
+        /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
+        /// <param name="educations">A comma seperated list of education Ids</param>
+        /// <param name="cityName">The city in which the user should be located.</param>
+        /// <param name="countryName">The name of the country where the student should live. Country names can be found in the country endpoint.</param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
-        /// <param name="preferredLanguages">A comma seperated list of preferredLanguages of which the user should have set at least one</param>
+        /// <param name="additionalLocationSearchTerms">Municipality,province or state seperated by spaces. This is required to identify the correct city if there are multiple cities with the same name within a country. This parameter is only useful when used with range.</param>
+        /// <param name="preferredLanguage">The preferred language of the user</param>
         /// <returns>A list of users</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        //[Authorize(Roles = "administrator")]
+        //[Authorize(Roles = "Validator, Elbho_medewerker")]
+        [AllowAnonymous]
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string educationalAttainment = null, [FromQuery]string educations = null,
-            [FromQuery]string city = null, [FromQuery]double range = 5.0, [FromQuery]string preferredLanguages = null)
+        public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
+            [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
+            [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
+            [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
-            return Ok(_userReadService.GetAllUsers(maxCount, offset));
+            if (maxCount < 1 || maxCount > 100)
+                return BadRequest("MaxCount should be between 1 and 100");
+            if (offset < 0)
+                return BadRequest("Offset should be 0 or larger");
+
+            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
+                educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
+
+            if (users is null)
+                return NotFound("No users found");
+
+
+            return Ok(users);
         }
 
         /// <summary>
         /// Get's the userdata for the specified user
         /// </summary>
-        /// <param name="id">The id of the user to retrieve</param>
         /// <returns>A user model</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpGet]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById(int id)
+        public object GetUserById()
         {
-            //return User.Claims.Select(c =>
-            //    new
-            //    {
-            //        Type = c.Type,
-            //        Value = c.Value
-            //    });
-
-            User user = _userReadService.GetUserById(id);
-
-            if (user is User)
-            {
-                return Ok(user);
-            }
-            else
-            {
+            var user = this.userReadService.GetUserById(GetCurrentUserId());
+            if (user == null)
                 return NotFound("User not found.");
-            }
 
-            //return Ok(_userReadService.GetUserById(GetCurrentUserId()));
+            return Ok(user);
         }
 
         /// <summary>
@@ -153,28 +319,28 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         /// <response code="404">If the user was not found</response>  
         [HttpDelete]
-        [Route("{id}")]
+        [Route("me")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser(int id)
+        public IActionResult DeleteUser()
         {
-            _userCommandService.DeleteUser(id);
+            this.userCommandService.DeleteUser(GetCurrentUserId());
             return Ok();
         }
 
         /// <summary>
         /// Updates the userdata for the specified user.
         /// </summary>
-        /// <param name="id">The id of the user to update</param>
         /// <param name="userData">The user model containing the updated data</param>
         /// <returns>The updated user model</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [AllowAnonymous]
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
@@ -183,25 +349,20 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid)
-            {
-                return Ok(_userCommandService.UpdateUser(userData));
-            }
+            if (ModelState.IsValid /*&& GetCurrentUserId().Equals(userData.Id)*/)
+                return Ok(this.userCommandService.UpdateUser(userData));
             else
-            {
                 return BadRequest("Informatie involledig.");
-            }
         }
 
         /// <summary>
         /// Get's the users favorite vacancies.
         /// </summary>
-        /// <param name="id">The id of the user whose favorite vacancies should be retrieved</param>
         /// <returns>A list of vacancies</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user has no favorites</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
         [HttpGet]
         [Route("me/favorites")]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
@@ -210,7 +371,15 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            return Ok(new List<Vacancy>());
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(3);
+            if (!(vacancies is null))
+            {
+                return Ok(vacancies);
+            }
+            else
+            {
+                return NotFound("No vacancies were found");
+            }
         }
 
         /// <summary>
@@ -221,20 +390,28 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified vacancy was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
         [HttpPut]
         [Route("me/favorites/{vacancyId}")]
         [ProducesResponseType(typeof(Vacancy), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult AddVacancyToFavorites(int vacancyId = 1)
+        public IActionResult AddVacancyToFavorites(int vacancyId)
         {
-            //Retrieve baseVacancy for ID, if found continue, else badRequest.
-            if (vacancyId == 1)
-                return Ok();
+            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+
+            if(vacancy != null)
+            {
+                int userid = 3;
+                vacancyCommandService.AddFavourite(userid, vacancyId);
+                return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
+            }
+
             else
-                return BadRequest("No vacancy found with ID: " + vacancyId);
+            {
+                return NotFound("Specified vacancy was not found!");
+            }
         }
 
         /// <summary>
@@ -252,13 +429,21 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult RemoveVacancyFromFavorites(int vacancyId = 1)
+        public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
-            //Retrieve baseVacancy for ID, if found continue, else badRequest.
-            if (vacancyId == 1)
-                return Ok();
+            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+
+            if (vacancy != null)
+            {
+                int userid = 3;
+                vacancyCommandService.DeleteFavourite(userid, vacancyId);
+                return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
+            }
+
             else
-                return BadRequest("No vacancy found with ID: " + vacancyId);
+            {
+                return NotFound("Specified vacancy was not found!");
+            }
         }
 
         /// <summary>
@@ -282,8 +467,14 @@ namespace PoohAPI.Controllers
 
         private int GetCurrentUserId()
         {
-            return Int32.Parse(User.Claims.Where(c => c.Type == ClaimTypes.Sid).Select(c => c.Value).SingleOrDefault());
+            return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
         }
 
+        private bool CheckIfEmailAddressIsAllowed(string emailAddress)
+        {
+            var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
+            var domain = emailAddress.Substring(emailAddress.LastIndexOf("@") + 1);
+            return allowedEmails.Any(d => d.Contains(domain));
+        }
     }
 }

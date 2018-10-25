@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoohAPI.Logic.Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,5 +28,6 @@ namespace PoohAPI.Infrastructure.CompanyDB.Models
         public decimal bedrijf_lengtegraad { get; set; }
         public decimal average_reviews { get; set; }
         public double distance { get; set; }
+        public string opleidingen { get; set; }
     }
 }

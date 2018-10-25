@@ -1,5 +1,4 @@
-﻿using PoohAPI.Infrastructure.ReviewDB.Models;
-using PoohAPI.Logic.Common.Models;
+﻿using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.InputModels;
 using System;
 using System.Collections.Generic;
@@ -13,6 +12,6 @@ namespace PoohAPI.Logic.Common.Interfaces
     {
         Review UpdateReview(ReviewUpdateInput ReviewInput);
         void DeleteReview(int id);
-        DBReview PostReview(int companyId, int userId, int stars, string writtenReview, int anonymous);
+        Review PostReview(int companyId, int userId, int stars, string writtenReview, int anonymous);
     }
 }

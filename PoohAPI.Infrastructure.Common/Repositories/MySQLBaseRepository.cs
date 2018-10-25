@@ -108,17 +108,20 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             return null;
         }
 
-        public void NonQuery(string query)
+        public int NonQuery(string query)
         {
             if (_client.OpenConnection())
             {
                 var command = new MySqlCommand(query, _client.Connection());
-                command.ExecuteNonQuery();
+                var result = command.ExecuteNonQuery();
                 _client.CloseConnection();
+                return result;
             }
+
+            return 0;
         }
 
-        public void NonQuery(string query, Dictionary<string, object> parameters)
+        public int NonQuery(string query, Dictionary<string, object> parameters)
         {
             if (_client.OpenConnection())
             {
@@ -129,9 +132,33 @@ namespace PoohAPI.Infrastructure.Common.Repositories
                     command.Parameters.AddWithValue(parameter.Key, parameter.Value);
                 }
 
-                command.ExecuteNonQuery();
+                var result = Convert.ToInt32(command.ExecuteScalar());
                 _client.CloseConnection();
+                return result;
             }
+
+            return 0;
         }
+
+        //public int NonQueryReturnId(string query, Dictionary<string, object> parameters, string returnId)
+        //{
+        //    if (_client.OpenConnection())
+        //    {
+        //        var command = new MySqlCommand(query, _client.Connection());
+
+        //        foreach (KeyValuePair<string, object> parameter in parameters)
+        //        {
+        //            command.Parameters.AddWithValue(parameter.Key, parameter.Value);
+        //        }
+        //        if(!string.IsNullOrEmpty(returnId))
+        //            command.Parameters.Add("@"+ returnId, MySqlDbType.Int16, 11).Direction = ParameterDirection.Output;
+
+        //        var result = command.ExecuteNonQuery();
+        //        _client.CloseConnection();
+        //        return result;
+        //    }
+
+        //    return 0;
+        //}
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using AutoMapper;
 using PoohAPI.Infrastructure.UserDB.Models;
 using PoohAPI.Logic.Common;
+using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
 
@@ -29,7 +31,17 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.PreferredLanguage, o => o.MapFrom(s => s.talen_naam))
                 .ReverseMap();
 
-            CreateMap<DBUser, Location>()
+            CreateMap<User, JwtUser>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.NiceName))
+                .ForMember(d => d.Role, o => o.MapFrom(s => s.Role));
+
+            CreateMap<DBUser, JwtUser>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.user_id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.user_name))
+                .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role));
+
+            CreateMap<DBUser, BaseLocation>()
                 .ForMember(d => d.CountryId, o => o.MapFrom(s => s.user_land))
                 .ForMember(d => d.CountryName, o => o.MapFrom(s => s.land_naam))
                 .ForMember(d => d.City, o => o.MapFrom(s => s.user_woonplaats))
@@ -37,8 +49,17 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.Longitude, o => o.MapFrom(s => s.user_lengtegraad))
                 .ReverseMap();
 
+            CreateMap<DBUserEmailVerification, UserEmailVerification>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.ver_id))
+                .ForMember(d => d.UserId, o => o.MapFrom(s => s.ver_user_id))
+                .ForMember(d => d.Token, o => o.MapFrom(s => s.ver_token))
+                .ForMember(d => d.ExpirationDate, o => o.MapFrom(s => s.ver_expiration))
+                .ReverseMap();
+
 
             CreateMap<IDataReader, DBUser>().ConvertUsing<DataReaderTypeConverter<DBUser>>();
+
+            CreateMap<IDataReader, DBUserEmailVerification>().ConvertUsing<DataReaderTypeConverter<DBUserEmailVerification>>();
         }
     }
 }

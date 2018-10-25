@@ -16,29 +16,24 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
             _mapper = mapper;
         }
 
-        public IEnumerable<WPUser> GetAllUsers(string query)
-        {
-            return GetAll<WPUser>(query);
-        }
-
-        public WPUser GetUser(string query)
-        {
-            return GetSingle<WPUser>(query);
-        }
-
         public DBUser GetUser(string query, Dictionary<string, object> parameters)
         {
             return GetSingle<DBUser>(query, parameters);
         }
 
-        public void UpdateUser(string query, Dictionary<string, object> parameters)
+        public IEnumerable<DBUser> GetAllUsers(string query, Dictionary<string, object> parameters)
         {
-            NonQuery(query, parameters);
+            return GetAll<DBUser>(query, parameters);
+        }
+        
+        public DBUserEmailVerification GetUserVerification(string query, Dictionary<string, object> parameters)
+        {
+            return GetSingle<DBUserEmailVerification>(query, parameters);
         }
 
-        public void DeleteUser(string query, Dictionary<string, object> parameters)
+        public int UpdateDelete(string query, Dictionary<string, object> parameters)
         {
-            NonQuery(query, parameters);
+            return NonQuery(query, parameters);
         }
     }
 }

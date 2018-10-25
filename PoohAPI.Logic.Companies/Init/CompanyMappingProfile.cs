@@ -43,6 +43,7 @@ namespace PoohAPI.Logic.Companies.Init
                 .ForMember(d => d.Location, o => o.MapFrom(s => s))
                 .ForMember(d => d.LogoPath, o => o.MapFrom(s => s.bedrijf_logo))
                 .ForMember(d => d.AverageReviewStars, o => o.MapFrom(s => (double)s.average_reviews))
+                .ForMember(d => d.Majors, o => o.MapFrom(s => s.opleidingen))
                 .ReverseMap();
 
             CreateMap<IDataReader, DBCompany>().ConvertUsing<DataReaderTypeConverter<DBCompany>>();
