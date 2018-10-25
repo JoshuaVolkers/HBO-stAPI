@@ -56,5 +56,23 @@ namespace PoohAPI.Logic.Options.Services
             var edLevels = _optionRepository.GetAllEducationLevels(query, parameters);
             return _mapper.Map<IEnumerable<EducationLevel>>(edLevels);
         }
+
+        public IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount, int offset)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_student_email");
+            _queryBuilder.SetLimit("@limit");
+            _queryBuilder.SetOffset("@offset");
+
+            parameters.Add("@limit", maxCount);
+            parameters.Add("@offset", offset);
+
+            string query = _queryBuilder.BuildQuery();
+
+            var emailAddresses = _optionRepository.GetAllAllowedEmailAddresses(query, parameters);
+            return _mapper.Map<IEnumerable<AllowedEmailAddress>>(emailAddresses);
+        }
     }
 }

@@ -20,10 +20,16 @@ namespace PoohAPI.Logic.Options.Init
 
             CreateMap<DBEducationLevel, EducationLevel>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.opn_id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.opn_naam));                
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.opn_naam));
+
+            CreateMap<DBAllowedEmailAddress, AllowedEmailAddress>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.se_id))
+                .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.se_domein))
+                .ForMember(d => d.EducationalInstitutionId, o => o.MapFrom(s => s.se_onderwijsinstelling_id));
 
             CreateMap<IDataReader, DBMajor>().ConvertUsing<DataReaderTypeConverter<DBMajor>>();
             CreateMap<IDataReader, DBEducationLevel>().ConvertUsing<DataReaderTypeConverter<DBEducationLevel>>();
+            CreateMap<IDataReader, DBAllowedEmailAddress>().ConvertUsing<DataReaderTypeConverter<DBAllowedEmailAddress>>();
         }
     }
 }

@@ -11,5 +11,6 @@ namespace PoohAPI.Logic.Common.Interfaces
     {
         IEnumerable<Major> GetAllMajors(int maxCount, int offset);
         IEnumerable<EducationLevel> GetAllEducationLevels(int maxCount, int offset);
+        IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount, int offset);
     }
 }

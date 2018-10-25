@@ -71,7 +71,7 @@ namespace PoohAPI.Controllers
             IEnumerable<EducationLevel> educationLevels = _optionReadService.GetAllEducationLevels(maxCount, offset);
 
             if (educationLevels is null)
-                return NotFound("No majors found");
+                return NotFound("No education levels found");
 
             return Ok(educationLevels);
         }
@@ -141,9 +141,19 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetAllowedEmailAddresses()
+        public IActionResult GetAllowedEmailAddresses([FromQuery]int maxCount = 5, [FromQuery]int offset = 0)
         {
-            return Ok(new List<string>());
+            if (maxCount < 1 || maxCount > 100)
+                return BadRequest("MaxCount should be between 1 and 100");
+            if (offset < 0)
+                return BadRequest("Offset should be 0 or higher");
+
+            IEnumerable<AllowedEmailAddress> allowedEmails = _optionReadService.GetAllAllowedEmailAddresses(maxCount, offset);
+
+            if (allowedEmails is null)
+                return NotFound("No allowed emailaddresses found");
+
+            return Ok(allowedEmails);
         }
 
         /// <summary>

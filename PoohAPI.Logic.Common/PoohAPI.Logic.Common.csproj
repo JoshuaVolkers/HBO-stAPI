@@ -103,6 +103,7 @@
     <Compile Include="Models\BaseModels\BaseCompany.cs" />
     <Compile Include="Models\BaseModels\BaseLocation.cs" />
     <Compile Include="Models\BaseModels\BaseUser.cs" />
+    <Compile Include="Models\OptionModels\AllowedEmailAddress.cs" />
     <Compile Include="Models\OptionModels\City.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Coordinates.cs" />
