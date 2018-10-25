@@ -53,11 +53,11 @@ namespace PoohAPI.Controllers
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 
-            var token = this.userCommandService.UpdateRefreshToken(user.Id);
+            var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
             var identity = TokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
 
-            return Ok(TokenHelper.GenerateJWT(identity, token));
+            return Ok(TokenHelper.GenerateJWT(identity, refreshToken));
         }
 
         /// <summary>
