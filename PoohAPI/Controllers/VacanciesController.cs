@@ -87,41 +87,5 @@ namespace PoohAPI.Controllers
                 return NotFound("vacancy not found.");
             }
         }
-
-        /// <summary>
-        /// Gets favourite vacancies by a user
-        /// </summary>
-        /// <param name="userid">The Id of the user to retrieve the vacancies for</param>
-        /// <param name="maxcount">The max amount of vacancies to return, defaults to 5</param>
-        /// <param name="offset">The number of vacancies to skip</param>
-        /// <returns>List of favourite vacancies</returns>
-        /// <response code="200">Returns a list of favourited vacancies by the user</response>
-        /// <response code="404">If no favourite vacancies were found</response>   
-        [HttpGet("userid")]
-        [ProducesResponseType(typeof(Vacancy), 200)]
-        [ProducesResponseType(404)]
-        public IActionResult GetFavoriteVacancies(int userid, int maxcount, int offset)
-        {
-            if (maxcount < 0 || maxcount > 100)
-            {
-                return BadRequest("MaxCount should be between 1 and 100");
-            }
-
-            if (offset < 0)
-            {
-                return BadRequest("Offset should be 0 or larger");
-            }
-
-            IEnumerable<Vacancy> vacancies = this.vacancyReadService.GetFavoriteVacancies(userid, maxcount, offset);
-
-            if (!(vacancies is null))
-            {
-                return Ok(vacancies);
-            }
-            else
-            {
-                return NotFound("No vacancies were found");
-            }
-        }
     }
 }

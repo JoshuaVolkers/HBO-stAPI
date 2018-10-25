@@ -8,5 +8,7 @@ namespace PoohAPI.Logic.Common.Interfaces
 {
     public interface IVacancyCommandService
     {
+        void AddFavourite(int userid, int vacancyid);
+        void DeleteFavourite(int userid, int vacancyid);
     }
 }

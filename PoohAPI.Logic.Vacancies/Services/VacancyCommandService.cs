@@ -27,7 +27,7 @@ namespace PoohAPI.Logic.Vacancies.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             string query = @"INSERT INTO reg_vacatures_favoriet (vf_vacature_id, vf_user_id)    
-                             VALUES (@userid, @vacancyid)";
+                             VALUES (@vacancyid, @userid)";
 
             parameters.Add("@userid", userid);
             parameters.Add("@vacancyid", vacancyid);
