@@ -84,6 +84,7 @@
     <Compile Include="Init\DIComponentsConfig.cs" />
     <Compile Include="Interfaces\ICompanyCommandService.cs" />
     <Compile Include="Interfaces\IMapAPIReadService.cs" />
+    <Compile Include="Interfaces\IOptionReadService.cs" />
     <Compile Include="Interfaces\IQueryBuilder.cs" />
     <Compile Include="Interfaces\IReviewCommandService.cs" />
     <Compile Include="Interfaces\IReviewReadService.cs" />
@@ -97,6 +98,11 @@
     <Compile Include="Models\InputModels\ReviewUpdateInput.cs" />
     <Compile Include="Models\InputModels\UserUpdateInput.cs" />
     <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\OptionModels\City.cs" />
+    <Compile Include="Models\OptionModels\Country.cs" />
+    <Compile Include="Models\OptionModels\EducationLevel.cs" />
+    <Compile Include="Models\OptionModels\Language.cs" />
+    <Compile Include="Models\OptionModels\Major.cs" />
     <Compile Include="Models\Review.cs" />
     <Compile Include="Models\ReviewAnonymous.cs" />
     <Compile Include="Models\Tag.cs" />
