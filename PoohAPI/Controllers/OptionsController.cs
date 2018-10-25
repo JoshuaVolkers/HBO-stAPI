@@ -170,7 +170,12 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetLanguages()
         {
-            return Ok(new List<Language>());
+            IEnumerable<Language> languages = _optionReadService.GetAllLanguages();
+
+            if (languages is null)
+                return NotFound("No languages found");
+
+            return Ok(languages);
         }
     }
 }

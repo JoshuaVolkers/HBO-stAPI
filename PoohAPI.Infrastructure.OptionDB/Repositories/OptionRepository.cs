@@ -29,5 +29,10 @@ namespace PoohAPI.Infrastructure.OptionDB.Repositories
         {
             return GetAll<DBAllowedEmailAddress>(query, parameters);
         }
+
+        public IEnumerable<DBLanguage> GetAllLanguages(string query)
+        {
+            return GetAll<DBLanguage>(query);
+        }
     }
 }
