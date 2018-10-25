@@ -16,10 +16,14 @@ namespace PoohAPI.Logic.Options.Init
                 .ForMember(d => d.CrohoNumber, o => o.MapFrom(s => s.opl_croho_nr))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.opl_naam))
                 .ForMember(d => d.EducationLevel, o => o.MapFrom(s => s.opl_niveau))
-                .ForMember(d => d.Active, o => o.MapFrom(s => s.opl_actief))
-                .ReverseMap();            
+                .ForMember(d => d.Active, o => o.MapFrom(s => s.opl_actief));
+
+            CreateMap<DBEducationLevel, EducationLevel>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.opn_id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.opn_naam));                
 
             CreateMap<IDataReader, DBMajor>().ConvertUsing<DataReaderTypeConverter<DBMajor>>();
+            CreateMap<IDataReader, DBEducationLevel>().ConvertUsing<DataReaderTypeConverter<DBEducationLevel>>();
         }
     }
 }

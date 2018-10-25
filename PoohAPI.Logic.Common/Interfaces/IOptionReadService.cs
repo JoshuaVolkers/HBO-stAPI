@@ -10,5 +10,6 @@ namespace PoohAPI.Logic.Common.Interfaces
     public interface IOptionReadService
     {
         IEnumerable<Major> GetAllMajors(int maxCount, int offset);
+        IEnumerable<EducationLevel> GetAllEducationLevels(int maxCount, int offset);
     }
 }

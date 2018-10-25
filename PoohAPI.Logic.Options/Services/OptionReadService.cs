@@ -38,5 +38,23 @@ namespace PoohAPI.Logic.Options.Services
             var majors = _optionRepository.GetAllMajors(query, parameters);
             return _mapper.Map<IEnumerable<Major>>(majors);
         }
+
+        public IEnumerable<EducationLevel> GetAllEducationLevels(int maxCount, int offset)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_opleidingsniveau");
+            _queryBuilder.SetLimit("@limit");
+            _queryBuilder.SetOffset("@offset");
+
+            parameters.Add("@limit", maxCount);
+            parameters.Add("@offset", offset);
+
+            string query = _queryBuilder.BuildQuery();
+
+            var edLevels = _optionRepository.GetAllEducationLevels(query, parameters);
+            return _mapper.Map<IEnumerable<EducationLevel>>(edLevels);
+        }
     }
 }
