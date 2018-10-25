@@ -28,11 +28,15 @@ namespace PoohAPI.Controllers
     {
         private readonly IUserReadService userReadService;
         private readonly IUserCommandService userCommandService;
+        private readonly IVacancyReadService vacancyReadService;
+        private readonly IVacancyCommandService vacancyCommandService;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService)
         {
             this.userReadService = userReadService;
             this.userCommandService = userCommandService;
+            this.vacancyReadService = vacancyReadService;
+            this.vacancyCommandService = vacancyCommandService;
         }
 
         /// <summary>
@@ -257,11 +261,10 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        //[Authorize(Roles = "Validator, Elbho_medewerker")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Validator, Elbho_medewerker")]
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<BaseUser>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
@@ -338,7 +341,6 @@ namespace PoohAPI.Controllers
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
-        [AllowAnonymous]
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
@@ -360,7 +362,7 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified user has no favorites</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
         [HttpGet]
         [Route("me/favorites")]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
@@ -369,7 +371,15 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            return Ok(new List<Vacancy>());
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(GetCurrentUserId());
+            if (!(vacancies is null))
+            {
+                return Ok(vacancies);
+            }
+            else
+            {
+                return NotFound("No vacancies were found");
+            }
         }
 
         /// <summary>
@@ -380,19 +390,28 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the specified vacancy was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="401">If the user was unauthenticated</response>
         [HttpPut]
         [Route("me/favorites/{vacancyId}")]
         [ProducesResponseType(typeof(Vacancy), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult AddVacancyToFavorites(int vacancyId = 1)
+        public IActionResult AddVacancyToFavorites(int vacancyId)
         {
-            if (vacancyId == 1)
-                return Ok();
+            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+
+            if(vacancy != null)
+            {
+                int userid = GetCurrentUserId();
+                vacancyCommandService.AddFavourite(userid, vacancyId);
+                return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
+            }
+
             else
-                return BadRequest("No vacancy found with ID: " + vacancyId);
+            {
+                return NotFound("Specified vacancy was not found!");
+            }
         }
 
         /// <summary>
@@ -410,12 +429,21 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public IActionResult RemoveVacancyFromFavorites(int vacancyId = 1)
+        public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
-            if (vacancyId == 1)
-                return Ok();
+            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+
+            if (vacancy != null)
+            {
+                int userid = GetCurrentUserId();
+                vacancyCommandService.DeleteFavourite(userid, vacancyId);
+                return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
+            }
+
             else
-                return BadRequest("No vacancy found with ID: " + vacancyId);
+            {
+                return NotFound("Specified vacancy was not found!");
+            }
         }
 
         /// <summary>

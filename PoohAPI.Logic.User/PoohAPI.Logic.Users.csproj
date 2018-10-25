@@ -107,7 +107,7 @@
       <Name>PoohAPI.Infrastructure.UserDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj">
-      <Project>{5784F3F3-E383-4DA8-AC93-4EBDEBA8C05B}</Project>
+      <Project>{5784f3f3-e383-4da8-ac93-4ebdeba8c05b}</Project>
       <Name>PoohAPI.Logic.Common</Name>
     </ProjectReference>
   </ItemGroup>

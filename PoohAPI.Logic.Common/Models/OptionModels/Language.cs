@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Models.OptionModels
+namespace PoohAPI.Logic.Common.Models.OptionModels
 {
     /// <summary>
     /// Language that is supported by hbo-stagemarkt
@@ -12,5 +12,6 @@ namespace PoohAPI.Models.OptionModels
     {
         public int Id { get; set; }
         public string LanguageName { get; set; }
+        public string LanguageIso { get; set; }
     }
 }

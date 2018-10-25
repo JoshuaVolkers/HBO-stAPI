@@ -27,7 +27,7 @@ namespace PoohAPI.Logic.Reviews.Services
 
         public Common.Models.Review GetReviewById(int id)
         {
-            var query = "SELECT review_id, review_bedrijf_id, review_student_id, review_sterren" +
+            var query = "SELECT review_id, review_bedrijf_id, IF(review_anoniem = 0, review_student_id, 0), review_sterren" +
             ", review_geschreven, review_anoniem, review_datum, review_status" +
             ", review_status_bevestigd_door " +
             "FROM reg_reviews " +
@@ -36,15 +36,9 @@ namespace PoohAPI.Logic.Reviews.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("@id", id);
 
-            var dbReview = this._reviewRepository.GetReview(query, parameters);
-            //dbReview = this._reviewRepository.GetReview(query);
+            var dbReview = this._reviewRepository.GetReview(query, parameters);           
 
-            return this._mapper.Map<Common.Models.Review>(dbReview);
-
-            //var query = string.Format("query", id);
-            //var review = _reviewRepository.GetReviewById(query);
-
-            //return _mapper.Map<Common.Models.Review>(review);
+            return this._mapper.Map<Common.Models.Review>(dbReview);            
         }
 
         public IEnumerable<int> GetListReviewIdsForUser(int userId)
