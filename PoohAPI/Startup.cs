@@ -15,7 +15,6 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using PoohAPI.Authorization;
 
 namespace PoohAPI
 {
@@ -45,7 +44,6 @@ namespace PoohAPI
 
             //Dependency Injection
             DependencyInit.Init(services);
-            services.AddScoped<ITokenHelper, TokenHelper>();
 
             #region Swagger configuration
             services.AddSwaggerGen(s =>
@@ -95,11 +93,11 @@ namespace PoohAPI
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = Configuration.GetValue<string>("JWTIssuer"),
-                ValidAudience = Configuration.GetValue<string>("JWTAudience"),
+                ValidIssuer = "poohapi",
+                ValidAudience = "poohapi",
                 RequireExpirationTime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWTSigningKey")))
+                    Encoding.UTF8.GetBytes("D2n2skmv8xY3ZcSzgc9eMwWjYzXMPXHtWKarHxscXeZN6FbX6qkeBsw88txVPRyHf4j2VkEH4XZLskGgKSJHHybhjVXAHXEYMw8z6gGTG58wT8y49bJ8ezMJNXhFz9Vd"))
             };
 
             services.AddAuthentication(options =>

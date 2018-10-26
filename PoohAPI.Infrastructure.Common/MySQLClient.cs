@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace PoohAPI.Infrastructure.Common
 {
@@ -15,11 +14,9 @@ namespace PoohAPI.Infrastructure.Common
         private string _database;
         private string _uid;
         private string _password;
-        private IConfiguration _config;
 
-        public MySQLClient(IConfiguration config)
+        public MySQLClient()
         {
-            _config = config;
             Init();
         }
 
@@ -33,15 +30,10 @@ namespace PoohAPI.Infrastructure.Common
         {
             //These values should be retrieved from the appsettings.json and the configurationportal on Azure later on.
             
-            //_server = "localhost";
-            //_database = "elbho_register";
-            //_uid = "root";
-            //_password = "";
-
-            _server = _config.GetValue<string>("DatabaseHost");
-            _database = _config.GetValue<string>("DatabaseName");
-            _uid = _config.GetValue<string>("DatabaseUid");
-            _password = _config.GetValue<string>("DatabasePassword");
+            _server = "localhost";
+            _database = "elbho_register";
+            _uid = "root";
+            _password = "";
 
             //var connectionString = string.Format("server={0};database={1};uid={2};password={3};", _server, _database,
             //    _uid, _password);
