@@ -124,28 +124,19 @@ namespace PoohAPI.Logic.Users.Services
             return user;
         }
 
-        public JwtUser Login(string email = null, string password = null, int? userid = null)
+        public JwtUser Login(string email, string password)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
             this.queryBuilder.AddSelect(@"*");
             this.queryBuilder.SetFrom("reg_users");
-
-            if(email != null)
-            {
-                this.queryBuilder.AddWhere("user_email = @email");
-                parameters.Add("@email", email);
-            }
-
-            else if(userid != null)
-            {
-                this.queryBuilder.AddWhere("user_id = @id");
-                parameters.Add("@id", userid);
-            }
-
+            this.queryBuilder.AddWhere("user_email = @email");
             this.queryBuilder.AddWhere("user_account_type = @type");
             var query = this.queryBuilder.BuildQuery();
 
-            parameters.Add("@type", (int)UserAccountType.ApiUser);
+            var parameters = new Dictionary<string, object>
+            {
+                { "@email", email },
+                { "@type", (int)UserAccountType.ApiUser}
+            };
 
             var user = _userRepository.GetUser(query, parameters);
 
