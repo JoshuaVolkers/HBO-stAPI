@@ -62,7 +62,7 @@ namespace PoohAPI.Controllers
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(ReviewPost), 200)]
+        [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
