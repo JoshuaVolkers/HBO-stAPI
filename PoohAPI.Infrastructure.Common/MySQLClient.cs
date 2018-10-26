@@ -15,7 +15,6 @@ namespace PoohAPI.Infrastructure.Common
         private string _database;
         private string _uid;
         private string _password;
-        private string _sslMode;
         private IConfiguration _config;
 
         public MySQLClient(IConfiguration config)
@@ -33,16 +32,14 @@ namespace PoohAPI.Infrastructure.Common
         private void Init()
         {
 
-            //_server = _config.GetValue<string>("DatabaseHost");
-            //_database = _config.GetValue<string>("DatabaseName");
-            //_uid = _config.GetValue<string>("DatabaseUid");
-            //_password = _config.GetValue<string>("DatabasePassword");
-            //_sslMode = _config.GetValue<string>("SslMode");
+            _server = _config.GetValue<string>("DatabaseHost");
+            _database = _config.GetValue<string>("DatabaseName");
+            _uid = _config.GetValue<string>("DatabaseUid");
+            _password = _config.GetValue<string>("DatabasePassword");
 
-            //var connectionString = string.Format("server={0};database={1};uid={2};password={3};SslMode=none", _server, _database,
-            //    _uid, _password);
+            var connectionString = string.Format("server={0};database={1};uid={2};password={3};", _server, _database,
+                _uid, _password);
 
-            var connectionString = _config.GetValue<string>("MySqlConnectionString");
             _connection = new MySqlConnection(connectionString);
         }
 
