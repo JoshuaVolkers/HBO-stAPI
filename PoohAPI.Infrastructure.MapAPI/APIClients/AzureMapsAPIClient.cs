@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace PoohAPI.Infrastructure.MapAPI.APIClients
 {
@@ -17,10 +18,12 @@ namespace PoohAPI.Infrastructure.MapAPI.APIClients
         private const string baseURL = "https://atlas.microsoft.com";
         private const string addressPath = "/search/address/json?";
         private string apiKey;
+        private readonly IConfiguration config;
 
-        public AzureMapsAPIClient()
+        public AzureMapsAPIClient(IConfiguration config)
         {
-            this.apiKey = "";
+            this.config = config;
+            this.apiKey = config.GetValue<string>("AzureMapsAPIKey");
         }
 
         private MapCoordinates RunAddressRequest(string query)
