@@ -82,10 +82,6 @@
     <Compile Include="Services\MapAPIReadService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PoohAPI.Common\PoohAPI.Common.csproj">
-      <Project>{7b051e95-5173-4783-80c3-d6d849a67be4}</Project>
-      <Name>PoohAPI.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Infrastructure.MapAPI\PoohAPI.Infrastructure.MapAPI.csproj">
       <Project>{271367a5-f8de-4122-8e68-0e98394e67bd}</Project>
       <Name>PoohAPI.Infrastructure.MapAPI</Name>
