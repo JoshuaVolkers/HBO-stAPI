@@ -8,6 +8,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+PoohAPI/appsettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -330,3 +331,5 @@ ASALocalRun/
 .mfractor/
 PoohAPI_YAML_Spec.yml
 PoohAPI.Infrastructure.Common/MySQLClient.cs
+PoohAPI/appsettings.json
+PoohAPI/appsettings.json
