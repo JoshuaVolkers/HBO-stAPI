@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Logic.Common.Models.InputModels
+namespace PoohAPI.Models.InputModels
 {
     public class ReviewUpdateInput
     {

@@ -118,16 +118,21 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the request failed</response>
         /// <response code="404">If no internship types were found</response>
-        
-        //[HttpGet]
-        //[Route("internshiptypes")]
-        //[ProducesResponseType(typeof(IntershipType), 200)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        //public IActionResult GetInternshipTypes()
-        //{
-        //    return Ok(new IntershipType());
-        //}
+
+        [HttpGet]
+        [Route("internshiptypes")]
+        [ProducesResponseType(typeof(InternshipType), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetInternshipTypes()
+        {
+            IEnumerable<InternshipType> internshipTypes = _optionReadService.GetAllInternshipTypes();
+
+            if (internshipTypes is null)
+                return NotFound("No internship types found");
+
+            return Ok(internshipTypes);
+        }
 
         /// <summary>
         /// Gets allowed email addresses

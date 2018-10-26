@@ -13,5 +13,6 @@ namespace PoohAPI.Infrastructure.OptionDB.Repositories
         IEnumerable<DBEducationLevel> GetAllEducationLevels(string query, Dictionary<string, object> parameters);
         IEnumerable<DBAllowedEmailAddress> GetAllAllowedEmailAddresses(string query, Dictionary<string, object> parameters);
         IEnumerable<DBLanguage> GetAllLanguages(string query);
+        IEnumerable<DBInternshipType> GetAllIntershipTypes(string query);
     }
 }

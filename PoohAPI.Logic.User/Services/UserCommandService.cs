@@ -5,7 +5,6 @@ using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.InputModels;
 using System.Net.Mail;
 using System;
 using System.Web;
@@ -70,6 +69,15 @@ namespace PoohAPI.Logic.Users.Services
             return this.mapper.Map<JwtUser>(user);
         }
 
+        public void ResetPassword(string email, int userid)
+        {
+            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
+            var user = this.userReadService.GetUserByEmail<User>(email);
+            int minutes = 15;
+            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
+            this.SendResetEmail(user, emailVerificationToken, minutes);
+        }
+
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
             string url = "http://localhost:60824/users/verify?token=" + emailVerificationToken;
@@ -77,6 +85,22 @@ namespace PoohAPI.Logic.Users.Services
             string subject = "e-mail verification hbo-stagemarkt";
             string body = "Beste " + user.NiceName + ",<br/><br/>";
             body += "Dank je voor het aanmelden bij hbo-stagemarkt. Klik op de volgende link om je account te bevestigen: <br/><br/> ";
+            body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
+            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
+            body += "Met vriendelijke groet, <br/><br/>";
+            body += "Stichting ELBHO";
+
+            this.mailClient.SendEmail(user.EmailAddress, subject, body);
+        }
+
+        private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
+        {
+            string url = "http://localhost:49970/users/verifyreset?token=" + emailVerificationToken;
+
+            string subject = "wachtwoord reset hbo-stagemarkt";
+            string body = "Beste " + user.NiceName + ",<br/><br/>";
+            body += "Deze mail wordt gestuurd omdat het wachtwoord van uw hbo-stagemarkt account is gereset.: <br/><br/> ";
+            body += "Klik op de volgende link om je nieuwe wachtwoord te genereren. Als u niet uw wachtwoord wilt resetten, dan klikt u niet op de link: <br/><br/> ";
             body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
             body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
             body += "Met vriendelijke groet, <br/><br/>";
@@ -161,6 +185,29 @@ namespace PoohAPI.Logic.Users.Services
             return this.mapper.Map<User>(this.userReadService.GetUserById(userEmailValidation.UserId));
         }
 
+        public string VerifyResetPassword(string token)
+        {
+            UserEmailVerification userEmailValidation = this.userReadService.GetUserEmailVerificationByToken(token);
+
+            if(userEmailValidation is null)
+            {
+                return null;
+            }
+
+            if (userEmailValidation.ExpirationDate < DateTime.Now)
+            {
+                this.DeleteEmailVerificationToken(userEmailValidation.UserId);
+                return null;
+            }
+
+            else
+            {
+                string newPassword = Guid.NewGuid().ToString("d").Substring(1, 12);
+                this.UpdatePassword(userEmailValidation.UserId, newPassword, null, true);
+                return newPassword;
+            }
+        }
+
         public void DeleteUser(int id)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -176,9 +223,9 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateDelete(query, parameters);
         }
 
-        public User UpdateUser(UserUpdateInput userInput)
+        public User UpdateUser(int countryId, string city, int educationId, int educationalAttainmentId, int preferredLanguageId, int userId, string AdditionalLocationIdentifier = null)
         {
-            this.InsertStudentDataIfNotExist(userInput.Id);
+            this.InsertStudentDataIfNotExist(userId);
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             
@@ -187,14 +234,14 @@ namespace PoohAPI.Logic.Users.Services
                                  user_op_niveau = @educationLevelId, user_taal = @languageId");
             this.queryBuilder.AddWhere("user_id = @id");
 
-            parameters.Add("@countryId", userInput.CountryId);
-            parameters.Add("@cityName", userInput.City);
-            parameters.Add("@educationId", userInput.EducationId);
-            parameters.Add("@educationLevelId", userInput.EducationalAttainmentId);
-            parameters.Add("@languageId", userInput.PreferredLanguageId);
-            parameters.Add("@id", userInput.Id);
+            parameters.Add("@countryId", countryId);
+            parameters.Add("@cityName", city);
+            parameters.Add("@educationId", educationId);
+            parameters.Add("@educationLevelId", educationalAttainmentId);
+            parameters.Add("@languageId", preferredLanguageId);
+            parameters.Add("@id", userId);
 
-            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(userInput.City, null, userInput.AdditionalLocationIdentifier);
+            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(city, null, AdditionalLocationIdentifier);
 
             if (coordinates is Coordinates)
             {
@@ -208,7 +255,7 @@ namespace PoohAPI.Logic.Users.Services
 
             this.userRepository.UpdateDelete(query, parameters);
 
-            return this.userReadService.GetUserById(userInput.Id);
+            return this.userReadService.GetUserById(userId);
         }
 
         public void DeleteRefreshToken(string refreshToken)
@@ -258,5 +305,39 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateDelete(command, parameters);
         }
 
+        public bool UpdatePassword(int userid, string newPassword, string oldPassword = null, bool isreset = false)
+        {
+            JwtUser jwtUser;
+
+            if (isreset)
+            {
+                jwtUser = null;
+            }
+
+            else
+            {
+                jwtUser = userReadService.Login(oldPassword, null, userid);
+            }
+
+            if (isreset || jwtUser != null)
+            {
+                string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 10);
+                string query = @"UPDATE reg_users SET user_password = @password WHERE user_id = @userid";
+                Dictionary<string, object> parameters = new Dictionary<string, object>
+                {
+                    { "@userid", userid },
+                    {"@password", hashedPassword }
+                };
+
+                userRepository.UpdateDelete(query, parameters);
+
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
+        }
     }
 }

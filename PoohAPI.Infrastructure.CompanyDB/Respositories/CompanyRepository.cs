@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using PoohAPI.Common;
 using PoohAPI.Infrastructure.Common;
 using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.CompanyDB.Models;

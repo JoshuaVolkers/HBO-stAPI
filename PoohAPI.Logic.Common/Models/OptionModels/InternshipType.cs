@@ -8,9 +8,9 @@ namespace PoohAPI.Logic.Common.Models.OptionModels
     /// <summary>
     /// Model that holds the information about an education level
     /// </summary>
-    public class EducationLevel
+    public class InternshipType
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

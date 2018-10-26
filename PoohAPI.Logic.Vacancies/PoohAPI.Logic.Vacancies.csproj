@@ -94,10 +94,6 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PoohAPI.Common\PoohAPI.Common.csproj">
-      <Project>{7b051e95-5173-4783-80c3-d6d849a67be4}</Project>
-      <Name>PoohAPI.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Infrastructure.Common\PoohAPI.Infrastructure.Common.csproj">
       <Project>{2b1822dc-9e62-4a4c-9d31-76e2029ce8fd}</Project>
       <Name>PoohAPI.Infrastructure.Common</Name>

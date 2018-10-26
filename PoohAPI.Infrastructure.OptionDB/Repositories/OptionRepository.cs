@@ -34,5 +34,10 @@ namespace PoohAPI.Infrastructure.OptionDB.Repositories
         {
             return GetAll<DBLanguage>(query);
         }
+
+        public IEnumerable<DBInternshipType> GetAllIntershipTypes(string query)
+        {
+            return GetAll<DBInternshipType>(query);
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using PoohAPI.Common;
 using PoohAPI.Infrastructure.Common;
 using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Models;
@@ -34,6 +33,11 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         public int UpdateDelete(string query, Dictionary<string, object> parameters)
         {
             return NonQuery(query, parameters);
+        }
+
+        public string GetUserPassword(string query, Dictionary<string, object> parameters)
+        {
+            return GetSingle<string>(query, parameters);
         }
     }
 }
