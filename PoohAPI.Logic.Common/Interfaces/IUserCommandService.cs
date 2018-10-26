@@ -12,13 +12,16 @@ namespace PoohAPI.Logic.Common.Interfaces
     public interface IUserCommandService
     {
         JwtUser RegisterUser(string login, string email, UserAccountType accountType, string password = null);
+        void ResetPassword(string email, int userid);
         User UpdateUser(UserUpdateInput userInput);
         void DeleteUser(int id);
         string CreateEmailVerificationToken(int userId);
         void DeleteEmailVerificationToken(int userId);
         void CreateEmailVerification(int userId, string token, DateTime expirationDate);
         User VerifyUserEmail(string token);
+        string VerifyResetPassword(string token);
         void DeleteRefreshToken(string refreshToken);
         string UpdateRefreshToken(int userId);
+        bool UpdatePassword(int userid, PasswordUpdateInput passwordUpdateInput, bool isreset = false);
     }
 }
