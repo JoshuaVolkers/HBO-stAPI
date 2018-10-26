@@ -74,42 +74,7 @@ namespace PoohAPI.Controllers
                 return NotFound("No education levels found");
 
             return Ok(educationLevels);
-        }
-
-        /// <summary>
-        /// Gets the cities which are registered within the jobs module of hbo-stagemarkt
-        /// </summary>
-        /// <param name="countryId">The id of the country in which the city is located</param>
-        /// <returns>A list of cities</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the request failed</response>
-        /// <response code="404">If no cities were found</response>
-        [HttpGet]
-        [Route("cities")]
-        [ProducesResponseType(typeof(IEnumerable<City>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public IActionResult GetCities([FromQuery]int countryId)
-        {
-            return Ok(new List<City>());
-        }
-
-        /// <summary>
-        /// Gets the countries which are registered within the jobs module of hbo-stagemarkt
-        /// </summary>
-        /// <returns>A list of countries</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the request failed</response>
-        /// <response code="404">If no cities were found</response>
-        [HttpGet]
-        [Route("countries")]
-        [ProducesResponseType(typeof(IEnumerable<Country>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public IActionResult GetCountries()
-        {
-            return Ok(new List<Country>());
-        }
+        }       
 
         /// <summary>
         /// Gets the internship types to choose from
@@ -118,16 +83,21 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the request failed</response>
         /// <response code="404">If no internship types were found</response>
-        
-        //[HttpGet]
-        //[Route("internshiptypes")]
-        //[ProducesResponseType(typeof(IntershipType), 200)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        //public IActionResult GetInternshipTypes()
-        //{
-        //    return Ok(new IntershipType());
-        //}
+
+        [HttpGet]
+        [Route("internshiptypes")]
+        [ProducesResponseType(typeof(InternshipType), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetInternshipTypes()
+        {
+            IEnumerable<InternshipType> internshipTypes = _optionReadService.GetAllInternshipTypes();
+
+            if (internshipTypes is null)
+                return NotFound("No internship types found");
+
+            return Ok(internshipTypes);
+        }
 
         /// <summary>
         /// Gets allowed email addresses

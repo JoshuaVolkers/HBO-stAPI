@@ -125,6 +125,7 @@
     <Compile Include="Models\OptionModels\Country.cs" />
     <Compile Include="Models\OptionModels\EducationLevel.cs" />
     <Compile Include="Models\JwtUser.cs" />
+    <Compile Include="Models\OptionModels\InternshipType.cs" />
     <Compile Include="Models\OptionModels\Language.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\OptionModels\Major.cs" />
