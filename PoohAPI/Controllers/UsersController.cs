@@ -354,6 +354,98 @@ namespace PoohAPI.Controllers
         }
 
         /// <summary>
+        /// Updates the password for the authenticated user.
+        /// </summary>
+        /// <param name="passwordUpdateInput">The password model containing the new and old password</param>
+        /// <returns></returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the specified user was not found</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [HttpPut]
+        [Route("me/updatepassword")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult UpdatePassword([FromBody]PasswordUpdateInput passwordUpdateInput)
+        {
+            if (ModelState.IsValid)
+            {
+                if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput))
+                {
+                    return Ok("Password has been changed.");
+                }
+                else
+                {
+                    return BadRequest("Old password not correct!");
+                }
+            }
+
+            else
+            {
+                return BadRequest("Not all fields were filled in correctly");
+            }
+        }
+
+        /// <summary>
+        /// Sends an email to the given email to reset the password
+        /// </summary>
+        /// <param name="emailAddress">The email to reset the password for and send the mail to</param>
+        /// <returns></returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the specified user was not found</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("forgotpassword")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult ForgotPassword(string emailAddress)
+        {
+            User user = this.userReadService.GetUserByEmail<User>(emailAddress);
+            if (user is null)
+            {
+                return BadRequest("User with given email does not exist!");
+            }
+
+            else
+            {
+                userCommandService.ResetPassword(emailAddress, user.Id);
+                return Ok("Reset email has been sent to the email!");
+            }
+        }
+
+        /// <summary>
+        /// Generates a new password for the user.
+        /// </summary>
+        /// <param name="token">The token generated and sent to the email to verify the reset</param>
+        /// <returns></returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="404">If the token was invalid</response>   
+        /// <response code="403">If the user was unauthorized</response>  
+        /// <response code="401">If the user was unauthenticated</response>
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("verifyreset")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult VerifyReset(string token)
+        {
+            string newpassword = this.userCommandService.VerifyResetPassword(token);
+
+            if (newpassword is null)
+                return BadRequest("Token is invalid or expired.");
+
+            return Ok("Your password has been reset, your new password is: " + newpassword);
+        }
+
+        /// <summary>
         /// Get's the users favorite vacancies.
         /// </summary>
         /// <returns>A list of vacancies</returns>
