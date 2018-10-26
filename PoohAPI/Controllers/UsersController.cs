@@ -468,6 +468,7 @@ namespace PoohAPI.Controllers
             return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
         }
 
+        //TODO: remove this hardcoded stuff.
         private bool CheckIfEmailAddressIsAllowed(string emailAddress)
         {
             var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
