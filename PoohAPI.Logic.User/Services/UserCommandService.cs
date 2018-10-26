@@ -5,7 +5,6 @@ using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.InputModels;
 using System.Net.Mail;
 using System;
 using System.Web;
@@ -203,11 +202,9 @@ namespace PoohAPI.Logic.Users.Services
 
             else
             {
-                string newpassword = Guid.NewGuid().ToString("d").Substring(1, 12);
-                PasswordUpdateInput passwordUpdateInput = new PasswordUpdateInput();
-                passwordUpdateInput.NewPassword = newpassword;
-                this.UpdatePassword(userEmailValidation.UserId, passwordUpdateInput, true);
-                return newpassword;
+                string newPassword = Guid.NewGuid().ToString("d").Substring(1, 12);
+                this.UpdatePassword(userEmailValidation.UserId, newPassword, null, true);
+                return newPassword;
             }
         }
 
@@ -226,9 +223,9 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateDelete(query, parameters);
         }
 
-        public User UpdateUser(UserUpdateInput userInput)
+        public User UpdateUser(int countryId, string city, int educationId, int educationalAttainmentId, int preferredLanguageId, int userId, string AdditionalLocationIdentifier = null)
         {
-            this.InsertStudentDataIfNotExist(userInput.Id);
+            this.InsertStudentDataIfNotExist(userId);
 
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             
@@ -237,14 +234,14 @@ namespace PoohAPI.Logic.Users.Services
                                  user_op_niveau = @educationLevelId, user_taal = @languageId");
             this.queryBuilder.AddWhere("user_id = @id");
 
-            parameters.Add("@countryId", userInput.CountryId);
-            parameters.Add("@cityName", userInput.City);
-            parameters.Add("@educationId", userInput.EducationId);
-            parameters.Add("@educationLevelId", userInput.EducationalAttainmentId);
-            parameters.Add("@languageId", userInput.PreferredLanguageId);
-            parameters.Add("@id", userInput.Id);
+            parameters.Add("@countryId", countryId);
+            parameters.Add("@cityName", city);
+            parameters.Add("@educationId", educationId);
+            parameters.Add("@educationLevelId", educationalAttainmentId);
+            parameters.Add("@languageId", preferredLanguageId);
+            parameters.Add("@id", userId);
 
-            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(userInput.City, null, userInput.AdditionalLocationIdentifier);
+            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(city, null, AdditionalLocationIdentifier);
 
             if (coordinates is Coordinates)
             {
@@ -258,7 +255,7 @@ namespace PoohAPI.Logic.Users.Services
 
             this.userRepository.UpdateDelete(query, parameters);
 
-            return this.userReadService.GetUserById(userInput.Id);
+            return this.userReadService.GetUserById(userId);
         }
 
         public void DeleteRefreshToken(string refreshToken)
@@ -308,7 +305,7 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateDelete(command, parameters);
         }
 
-        public bool UpdatePassword(int userid, PasswordUpdateInput passwordUpdateInput, bool isreset = false)
+        public bool UpdatePassword(int userid, string newPassword, string oldPassword = null, bool isreset = false)
         {
             JwtUser jwtUser;
 
@@ -319,12 +316,12 @@ namespace PoohAPI.Logic.Users.Services
 
             else
             {
-                jwtUser = userReadService.Login(null, passwordUpdateInput.OldPassword, userid);
+                jwtUser = userReadService.Login(oldPassword, null, userid);
             }
 
             if (isreset || jwtUser != null)
             {
-                string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordUpdateInput.NewPassword, 10);
+                string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 10);
                 string query = @"UPDATE reg_users SET user_password = @password WHERE user_id = @userid";
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {

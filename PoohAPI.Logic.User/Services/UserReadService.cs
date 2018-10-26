@@ -124,8 +124,11 @@ namespace PoohAPI.Logic.Users.Services
             return user;
         }
 
-        public JwtUser Login(string email = null, string password = null, int? userid = null)
+        public JwtUser Login(string password, string email = null, int? userid = null)
         {
+            if(string.IsNullOrWhiteSpace(email) && userid == null)
+                throw new ArgumentNullException("email OR userid is required!");
+
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             this.queryBuilder.AddSelect(@"*");
             this.queryBuilder.SetFrom("reg_users");

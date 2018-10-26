@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using PoohAPI.Authorization;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Models.AuthenticationModels;
-using PoohAPI.Logic.Common.Models.InputModels;
+using PoohAPI.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
@@ -51,7 +51,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
-            var user = this.userReadService.Login(loginRequest.EmailAddress, loginRequest.Password);
+            var user = this.userReadService.Login(loginRequest.Password, loginRequest.EmailAddress);
             if (user == null)
                 return BadRequest("Username or password was incorrect!");
 
@@ -348,7 +348,7 @@ namespace PoohAPI.Controllers
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
             if (ModelState.IsValid /*&& GetCurrentUserId().Equals(userData.Id)*/)
-                return Ok(this.userCommandService.UpdateUser(userData));
+                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, userData.Id, userData.AdditionalLocationIdentifier));
             else
                 return BadRequest("Informatie involledig.");
         }
@@ -372,7 +372,7 @@ namespace PoohAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput))
+                if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput.NewPassword, passwordUpdateInput.OldPassword))
                 {
                     return Ok("Password has been changed.");
                 }

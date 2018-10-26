@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PoohAPI.Logic.Common.Models.InputModels;
 
 namespace PoohAPI.Logic.Common.Interfaces
 {
@@ -13,7 +12,9 @@ namespace PoohAPI.Logic.Common.Interfaces
     {
         JwtUser RegisterUser(string login, string email, UserAccountType accountType, string password = null);
         void ResetPassword(string email, int userid);
-        User UpdateUser(UserUpdateInput userInput);
+
+        User UpdateUser(int countryId, string city, int educationId, int educationalAttainmentId,
+            int preferredLanguageId, int userId, string AdditionalLocationIdentifier = null);
         void DeleteUser(int id);
         string CreateEmailVerificationToken(int userId);
         void DeleteEmailVerificationToken(int userId);
@@ -22,6 +23,6 @@ namespace PoohAPI.Logic.Common.Interfaces
         string VerifyResetPassword(string token);
         void DeleteRefreshToken(string refreshToken);
         string UpdateRefreshToken(int userId);
-        bool UpdatePassword(int userid, PasswordUpdateInput passwordUpdateInput, bool isreset = false);
+        bool UpdatePassword(int userid, string newPassword, string oldPassword = null, bool isreset = false);
     }
 }
