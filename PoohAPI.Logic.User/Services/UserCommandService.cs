@@ -70,15 +70,6 @@ namespace PoohAPI.Logic.Users.Services
             return this.mapper.Map<JwtUser>(user);
         }
 
-        public void ResetPassword(string email, int userid)
-        {
-            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
-            var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 15;
-            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendResetEmail(user, emailVerificationToken, minutes);
-        }
-
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
             string url = "http://localhost:60824/users/verify?token=" + emailVerificationToken;
@@ -86,22 +77,6 @@ namespace PoohAPI.Logic.Users.Services
             string subject = "e-mail verification hbo-stagemarkt";
             string body = "Beste " + user.NiceName + ",<br/><br/>";
             body += "Dank je voor het aanmelden bij hbo-stagemarkt. Klik op de volgende link om je account te bevestigen: <br/><br/> ";
-            body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
-            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
-            body += "Met vriendelijke groet, <br/><br/>";
-            body += "Stichting ELBHO";
-
-            this.mailClient.SendEmail(user.EmailAddress, subject, body);
-        }
-
-        private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
-        {
-            string url = "http://localhost:49970/users/verifyreset?token=" + emailVerificationToken;
-
-            string subject = "wachtwoord reset hbo-stagemarkt";
-            string body = "Beste " + user.NiceName + ",<br/><br/>";
-            body += "Deze mail wordt gestuurd omdat het wachtwoord van uw hbo-stagemarkt account is gereset.: <br/><br/> ";
-            body += "Klik op de volgende link om je nieuwe wachtwoord te genereren. Als u niet uw wachtwoord wilt resetten, dan klikt u niet op de link: <br/><br/> ";
             body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
             body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
             body += "Met vriendelijke groet, <br/><br/>";
@@ -184,31 +159,6 @@ namespace PoohAPI.Logic.Users.Services
             this.DeleteEmailVerificationToken(userEmailValidation.UserId);
 
             return this.mapper.Map<User>(this.userReadService.GetUserById(userEmailValidation.UserId));
-        }
-
-        public string VerifyResetPassword(string token)
-        {
-            UserEmailVerification userEmailValidation = this.userReadService.GetUserEmailVerificationByToken(token);
-
-            if(userEmailValidation is null)
-            {
-                return null;
-            }
-
-            if (userEmailValidation.ExpirationDate < DateTime.Now)
-            {
-                this.DeleteEmailVerificationToken(userEmailValidation.UserId);
-                return null;
-            }
-
-            else
-            {
-                string newpassword = Guid.NewGuid().ToString("d").Substring(1, 12);
-                PasswordUpdateInput passwordUpdateInput = new PasswordUpdateInput();
-                passwordUpdateInput.NewPassword = newpassword;
-                this.UpdatePassword(userEmailValidation.UserId, passwordUpdateInput, true);
-                return newpassword;
-            }
         }
 
         public void DeleteUser(int id)
@@ -308,39 +258,5 @@ namespace PoohAPI.Logic.Users.Services
             this.userRepository.UpdateDelete(command, parameters);
         }
 
-        public bool UpdatePassword(int userid, PasswordUpdateInput passwordUpdateInput, bool isreset = false)
-        {
-            JwtUser jwtUser;
-
-            if (isreset)
-            {
-                jwtUser = null;
-            }
-
-            else
-            {
-                jwtUser = userReadService.Login(null, passwordUpdateInput.OldPassword, userid);
-            }
-
-            if (isreset || jwtUser != null)
-            {
-                string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordUpdateInput.NewPassword, 10);
-                string query = @"UPDATE reg_users SET user_password = @password WHERE user_id = @userid";
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                {
-                    { "@userid", userid },
-                    {"@password", hashedPassword }
-                };
-
-                userRepository.UpdateDelete(query, parameters);
-
-                return true;
-            }
-
-            else
-            {
-                return false;
-            }
-        }
     }
 }

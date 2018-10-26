@@ -13,6 +13,5 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         DBUser GetUser(string query, Dictionary<string, object> parameters);
         DBUserEmailVerification GetUserVerification(string query, Dictionary<string, object> parameters);
         int UpdateDelete(string query, Dictionary<string, object> parameters);
-        string GetUserPassword(string query, Dictionary<string, object> parameters);
     }
 }
