@@ -3,7 +3,6 @@ using PoohAPI.Infrastructure.ReviewDB.Models;
 using PoohAPI.Infrastructure.ReviewDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.InputModels;
 using System;
 using System.Collections.Generic;
 
@@ -33,19 +32,19 @@ namespace PoohAPI.Logic.Reviews.Services
             _reviewRepository.DeleteReview(query, parameters);
         }
 
-        public Review UpdateReview(ReviewUpdateInput reviewInput)
+        public Review UpdateReview(int reviewId, int companyId, int userId, int stars, string writtenReview, int anonymous, DateTime creationDate, int verifiedReview, int verifiedBy)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
-            parameters.Add("@id", reviewInput.Id);
-            parameters.Add("@companyId", reviewInput.CompanyId);
-            parameters.Add("@userId", reviewInput.UserId);
-            parameters.Add("@stars", reviewInput.Stars);
-            parameters.Add("@writtenReview", reviewInput.WrittenReview);
-            parameters.Add("@anonymous", reviewInput.Anonymous);
-            parameters.Add("@creationDate", reviewInput.CreationDate);
-            parameters.Add("@verifiedReview", reviewInput.VerifiedReview);
-            parameters.Add("@verifiedBy", reviewInput.VerifiedBy);
+            parameters.Add("@id", reviewId);
+            parameters.Add("@companyId", companyId);
+            parameters.Add("@userId", userId);
+            parameters.Add("@stars", stars);
+            parameters.Add("@writtenReview", writtenReview);
+            parameters.Add("@anonymous", anonymous);
+            parameters.Add("@creationDate", creationDate);
+            parameters.Add("@verifiedReview", verifiedReview);
+            parameters.Add("@verifiedBy", verifiedBy);
 
             string query = "UPDATE reg_reviews SET review_id = @id" +
                 ", review_bedrijf_id = @companyId, review_student_id = @userId" +
@@ -56,7 +55,7 @@ namespace PoohAPI.Logic.Reviews.Services
 
             _reviewRepository.UpdateReview(query, parameters);
 
-            return _reviewReadService.GetReviewById(reviewInput.Id);
+            return _reviewReadService.GetReviewById(reviewId);
         }
 
         public Review PostReview(int companyId, int userId, int stars, string writtenReview, int anonymous)

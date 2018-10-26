@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using PoohAPI.Common;
 using PoohAPI.Infrastructure.Common;
 using PoohAPI.Infrastructure.Common.Repositories;
 using PoohAPI.Infrastructure.UserDB.Models;
