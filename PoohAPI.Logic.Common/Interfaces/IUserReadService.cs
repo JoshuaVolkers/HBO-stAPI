@@ -12,7 +12,7 @@ namespace PoohAPI.Logic.Common.Interfaces
             string additionalLocationSearchTerms = null, int? preferredLanguage = null);
         User GetUserById(int id, bool isActive = true);
         T GetUserByEmail<T>(string email);
-        JwtUser Login(string email, string password);
+        JwtUser Login(string email = null, string password = null, int? userid = null);
         JwtUser GetUserByRefreshToken(string refreshToken);
         UserEmailVerification GetUserEmailVerificationByUserId(int userId);
         UserEmailVerification GetUserEmailVerificationByToken(string token);

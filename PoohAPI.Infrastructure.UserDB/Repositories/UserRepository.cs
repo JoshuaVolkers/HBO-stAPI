@@ -35,5 +35,10 @@ namespace PoohAPI.Infrastructure.UserDB.Repositories
         {
             return NonQuery(query, parameters);
         }
+
+        public string GetUserPassword(string query, Dictionary<string, object> parameters)
+        {
+            return GetSingle<string>(query, parameters);
+        }
     }
 }
