@@ -374,7 +374,7 @@ namespace PoohAPI.Controllers
             {
                 if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput))
                 {
-                    return Ok("Wachtwoord is aangepast");
+                    return Ok("Password has been changed.");
                 }
                 else
                 {
@@ -384,7 +384,7 @@ namespace PoohAPI.Controllers
 
             else
             {
-                return BadRequest("Informatie involledig.");
+                return BadRequest("Not all fields were filled in correctly");
             }
         }
 
