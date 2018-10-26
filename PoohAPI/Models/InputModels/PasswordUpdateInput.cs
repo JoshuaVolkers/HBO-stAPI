@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace PoohAPI.Logic.Common.Models.InputModels
+namespace PoohAPI.Models.InputModels
 {
     public class PasswordUpdateInput
     {

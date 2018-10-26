@@ -2,7 +2,7 @@
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.RequestModels;
-using PoohAPI.Logic.Common.Models.InputModels;
+using PoohAPI.Models.InputModels;
 
 namespace PoohAPI.Controllers
 {
@@ -70,7 +70,7 @@ namespace PoohAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, reviewData.UserId, reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));                
+                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, reviewData.UserId, reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));
             }
             else
             {
@@ -105,15 +105,17 @@ namespace PoohAPI.Controllers
                 }
                 else if (review.Locked == true)
                 {
-                    return BadRequest("Review has been locked.");                    
+                    return BadRequest("Review has been locked.");
                 }
                 else
-                    return Ok(_reviewCommandService.UpdateReview(reviewData));
+                    return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, reviewData.UserId, reviewData.Stars,
+                        reviewData.WrittenReview, reviewData.Anonymous, reviewData.CreationDate,
+                        reviewData.VerifiedReview, reviewData.VerifiedBy));
             }
             else
             {
                 return BadRequest("Review information is incomplete");
-            }            
+            }
         }
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace PoohAPI.Controllers
         public IActionResult DeleteReview(int reviewId)
         {
             Review review = _reviewReadService.GetReviewById(reviewId);
-            if(review == null)
+            if (review == null)
             {
                 return BadRequest("Review not found.");
             }
@@ -139,7 +141,7 @@ namespace PoohAPI.Controllers
             {
                 _reviewCommandService.DeleteReview(reviewId);
                 return Ok("Review has been deleted.");
-            }                
+            }
             else
                 return BadRequest("Review has been locked.");
         }
