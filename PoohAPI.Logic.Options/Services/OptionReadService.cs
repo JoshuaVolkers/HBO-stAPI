@@ -85,5 +85,16 @@ namespace PoohAPI.Logic.Options.Services
             var languages = _optionRepository.GetAllLanguages(query);
             return _mapper.Map<IEnumerable<Language>>(languages);
         }
+
+        public IEnumerable<InternshipType> GetAllInternshipTypes()
+        {
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_stagesoort");
+
+            string query = _queryBuilder.BuildQuery();
+
+            var internshiptypes = _optionRepository.GetAllIntershipTypes(query);
+            return _mapper.Map<IEnumerable<InternshipType>>(internshiptypes);
+        }
     }
 }

@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="demoImages\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

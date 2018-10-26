@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Models\DBAllowedEmailAddress.cs" />
     <Compile Include="Models\DBEducationLevel.cs" />
+    <Compile Include="Models\DBInternshipType.cs" />
     <Compile Include="Models\DBLanguage.cs" />
     <Compile Include="Models\DBMajor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
