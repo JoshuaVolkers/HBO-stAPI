@@ -39,9 +39,11 @@
     <Reference Include="AutoMapper.Extensions.Microsoft.DependencyInjection, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.Extensions.Microsoft.DependencyInjection.5.0.1\lib\netstandard2.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf, Version=3.5.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.5.1\lib\net45\Google.Protobuf.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="BCrypt.Net-Next, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.3.1.0\lib\net452\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -83,12 +85,37 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PoohAPI.Logic.Common\PoohAPI.Logic.Common.csproj">
+      <Project>{5784f3f3-e383-4da8-ac93-4ebdeba8c05b}</Project>
+      <Name>PoohAPI.Logic.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Companies\PoohAPI.Logic.Companies.csproj">
+      <Project>{2d883c65-93f9-4ea4-8075-833359b30630}</Project>
+      <Name>PoohAPI.Logic.Companies</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.MapAPI\PoohAPI.Logic.MapAPI.csproj">
+      <Project>{88a2193c-920a-4ec7-9ceb-bbd512dcfbf3}</Project>
+      <Name>PoohAPI.Logic.MapAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Options\PoohAPI.Logic.Options.csproj">
+      <Project>{720a2d55-f713-4164-a264-77d6399d9e5d}</Project>
+      <Name>PoohAPI.Logic.Options</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Reviews\PoohAPI.Logic.Reviews.csproj">
+      <Project>{06234d95-eb1e-4702-ac6b-1c135369035f}</Project>
+      <Name>PoohAPI.Logic.Reviews</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PoohAPI.Logic.User\PoohAPI.Logic.Users.csproj">
       <Project>{17b6ab1f-27e4-4352-9e8c-97348c020511}</Project>
       <Name>PoohAPI.Logic.Users</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.Vacancies\PoohAPI.Logic.Vacancies.csproj">
+      <Project>{1758a16a-7182-4328-a4e8-03dd5f4405c7}</Project>
+      <Name>PoohAPI.Logic.Vacancies</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

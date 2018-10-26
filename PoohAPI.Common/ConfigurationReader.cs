@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PoohAPI.Common
 {
-    public static class ConfigurationReader
+    public sealed class ConfigurationReader
     {
+
         private static string GetConfigurationSetting(string key)
         {
-            return ConfigurationManager.AppSettings[key];
+            return Environment.GetEnvironmentVariable(key);
         }
 
         public static string TestValue => GetConfigurationSetting(nameof(TestValue));

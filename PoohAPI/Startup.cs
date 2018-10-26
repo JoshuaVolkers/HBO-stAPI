@@ -8,7 +8,14 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PoohAPI.Application;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using PoohAPI.Authorization;
 
 namespace PoohAPI
 {
@@ -38,6 +45,7 @@ namespace PoohAPI
 
             //Dependency Injection
             DependencyInit.Init(services);
+            services.AddScoped<ITokenHelper, TokenHelper>();
 
             #region Swagger configuration
             services.AddSwaggerGen(s =>
@@ -55,12 +63,55 @@ namespace PoohAPI
                         }
                     });
 
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }}
+                };
+
+                s.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: Authorization: Bearer {token}",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+
+                s.AddSecurityRequirement(security);
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
 
                 s.DescribeAllEnumsAsStrings();
             });
+            #endregion
+
+            #region JWT validation configuration
+
+            var tokenOptions = new TokenValidationParameters
+            {
+                ClockSkew = TimeSpan.FromMinutes(5),
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = Configuration.GetValue<string>("JWTIssuer"),
+                ValidAudience = Configuration.GetValue<string>("JWTAudience"),
+                RequireExpirationTime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWTSigningKey")))
+            };
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = tokenOptions;
+                    //options.SaveToken = true;
+                });
             #endregion
 
             services.AddMvc()
@@ -78,6 +129,8 @@ namespace PoohAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
+
             app.UseMvc();
 
             app.UseSwagger();
@@ -87,8 +140,6 @@ namespace PoohAPI
                 s.SwaggerEndpoint("/swagger/v1/swagger.json", "ELBHO/HBO-stagemarkt API");
                 s.RoutePrefix = string.Empty;
             });
-
-            app.UseDeveloperExceptionPage();
         }
     }
 }
