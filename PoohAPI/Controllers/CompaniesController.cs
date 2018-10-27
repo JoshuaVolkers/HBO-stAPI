@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
-using PoohAPI.Logic.Common.Models.PresentationModels;
 using System.Collections.Generic;
 
 namespace PoohAPI.Controllers
@@ -78,9 +77,6 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult Get(int id)
         {
-            string testValue = this.config.GetValue<string>("TestValue");
-            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
-
             Company company = this.companyReadService.GetCompanyById(id);
             
             if (company is null)
@@ -97,12 +93,11 @@ namespace PoohAPI.Controllers
         /// <response code="200">Returns the anonymous reviews of the company</response>
         /// <response code="404">If the specified company was not found</response>   
         [HttpGet("{id}/reviews")]
-        [ProducesResponseType(typeof(IEnumerable<ReviewPublicPresentation>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ReviewPublic>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetCompanyReviews(int id)
         {
-            //TODO: we should be able to return both anonymous and normal reviews based on the choice the student made when posting it.
-            IEnumerable<ReviewPublicPresentation> reviews = this.reviewReadService.GetListReviewsForCompany(id);
+            IEnumerable<ReviewPublic> reviews = this.reviewReadService.GetListReviewsForCompany(id);
 
             if (reviews is null)
                 return NotFound("No reviews found for this company.");

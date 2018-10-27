@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PoohAPI.Logic.Common.Models.PresentationModels
+namespace PoohAPI.Logic.Common.Models
 {
-    public class ReviewPublicPresentation
+    public class ReviewPublic
     {
         public int Id { get; set; }
         public int CompanyId { get; set; }

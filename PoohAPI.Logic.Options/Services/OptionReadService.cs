@@ -2,6 +2,7 @@
 using PoohAPI.Infrastructure.OptionDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Classes;
 using PoohAPI.Logic.Common.Models.OptionModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,11 +15,11 @@ namespace PoohAPI.Logic.Options.Services
         private readonly IMapper _mapper;
         private readonly IQueryBuilder _queryBuilder;
 
-        public OptionReadService(IOptionRepository optionRepository, IMapper mapper, IQueryBuilder queryBuilder)
+        public OptionReadService(IOptionRepository optionRepository, IMapper mapper)
         {
             _optionRepository = optionRepository;
             _mapper = mapper;
-            _queryBuilder = queryBuilder;
+            _queryBuilder = new QueryBuilder();
         }
 
         public IEnumerable<Major> GetAllMajors(int maxCount, int offset)
@@ -95,6 +96,23 @@ namespace PoohAPI.Logic.Options.Services
 
             var internshiptypes = _optionRepository.GetAllIntershipTypes(query);
             return _mapper.Map<IEnumerable<InternshipType>>(internshiptypes);
+        }
+
+        public Country GetCountryById(int id)
+        {
+            _queryBuilder.AddSelect("*");
+            _queryBuilder.SetFrom("reg_landen");
+            _queryBuilder.AddWhere("land_id = @id");
+
+            string query = _queryBuilder.BuildQuery();
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            parameters.Add("@id", id);
+
+            var country = _optionRepository.GetCountryById(query, parameters);
+
+            return _mapper.Map<Country>(country);
         }
     }
 }

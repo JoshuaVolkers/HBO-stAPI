@@ -4,6 +4,7 @@ using PoohAPI.Infrastructure.VacancyDB.Repositories;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,12 @@ namespace PoohAPI.Logic.Vacancies.Services
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IQueryBuilder queryBuilder;
 
-        public VacancyReadService(IVacancyRepository vacancyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder)
+        public VacancyReadService(IVacancyRepository vacancyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService)
         {
             this.vacancyRepository = vacancyRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
         }
 
         public IEnumerable<Vacancy> GetListVacancies(int maxCount = 5, int offset = 0, string additionalLocationSearchTerms = null, int? educationid = null, int? educationalAttainmentid = null, IntershipType? intershipType = null, int? languageid = null, string cityName = null, string countryName = null, int? locationRange = null)
@@ -203,6 +204,19 @@ namespace PoohAPI.Logic.Vacancies.Services
                 this.queryBuilder.AddWhere("t.talen_id = @languageid");
                 parameters.Add("@languageid", languageid);
             }
+        }
+
+        public IEnumerable<int> GetListVacancyIdsForUser(int userId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", userId);
+
+            string query = @"SELECT vacature_id 
+                             FROM reg_vacatures v
+                             INNER JOIN reg_vacatures_favoriet f ON v.vacature_id = f.vf_vacature_id
+                             WHERE vf_user_id = @id";
+
+            return this.mapper.Map<IEnumerable<int>>(this.vacancyRepository.GetListVacancyIds(query, parameters));
         }
     }
 }
