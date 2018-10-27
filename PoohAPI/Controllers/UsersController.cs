@@ -27,14 +27,16 @@ namespace PoohAPI.Controllers
         private readonly IVacancyReadService vacancyReadService;
         private readonly IVacancyCommandService vacancyCommandService;
         private readonly ITokenHelper tokenHelper;
+        private readonly IOptionReadService optionReadService;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper, IOptionReadService optionReadService)
         {
             this.userReadService = userReadService;
             this.userCommandService = userCommandService;
             this.vacancyReadService = vacancyReadService;
             this.vacancyCommandService = vacancyCommandService;
             this.tokenHelper = tokenHelper;
+            this.optionReadService = optionReadService;
         }
 
         /// <summary>
@@ -159,10 +161,13 @@ namespace PoohAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Not all values were filled in correctly!");
+
             if (!registerRequest.AcceptTermsAndConditions)
                 return BadRequest("You need to accept the terms and conditions before creating your account!");
+
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
+
             if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
                 return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
                     registerRequest.EmailAddress));      
@@ -563,9 +568,10 @@ namespace PoohAPI.Controllers
         //TODO: remove this hardcoded stuff.
         private bool CheckIfEmailAddressIsAllowed(string emailAddress)
         {
-            var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
+            var allowedEmails = this.optionReadService.GetAllAllowedEmailAddresses(0, 0)
+                .Select(x => x.EmailAddress);
             var domain = emailAddress.Substring(emailAddress.LastIndexOf("@") + 1);
-            return allowedEmails.Any(d => d.Contains(domain));
+            return allowedEmails.Any(address => address.Contains(domain));
         }
     }
 }
