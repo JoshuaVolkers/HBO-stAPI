@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Logic.Common.Classes;
 using PoohAPI.Infrastructure.CompanyDB.Respositories;
 using AutoMapper;
 using PoohAPI.Infrastructure.CompanyDB.Models;
@@ -22,12 +23,12 @@ namespace PoohAPI.Logic.Companies.Services
         private readonly IQueryBuilder queryBuilder;
         private readonly IConfiguration config;
 
-        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IConfiguration config)
+        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IConfiguration config)
         {
             this.companyRepository = companyRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
             this.config = config;
         }
 
@@ -38,9 +39,6 @@ namespace PoohAPI.Logic.Companies.Services
         /// <returns></returns>
         public Company GetCompanyById(int id)
         {
-            string testValue = this.config.GetValue<string>("TestValue");
-            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
-
             string query = @"SELECT b.*, l.land_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, 
                     IF(r.review_sterren IS NULL, 0,
                             CASE WHEN COUNT(r.review_sterren) > 4

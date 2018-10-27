@@ -36,10 +36,15 @@ namespace PoohAPI.Logic.Options.Init
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.stage_id))
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.stagesoort));
 
+            CreateMap<DBCountry, Country>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.land_id))
+                .ForMember(d => d.Name, o => o.MapFrom(s => s.land_naam));
+
             CreateMap<IDataReader, DBMajor>().ConvertUsing<DataReaderTypeConverter<DBMajor>>();
             CreateMap<IDataReader, DBEducationLevel>().ConvertUsing<DataReaderTypeConverter<DBEducationLevel>>();
             CreateMap<IDataReader, DBAllowedEmailAddress>().ConvertUsing<DataReaderTypeConverter<DBAllowedEmailAddress>>();
             CreateMap<IDataReader, DBInternshipType>().ConvertUsing<DataReaderTypeConverter<DBInternshipType>>();
+            CreateMap<IDataReader, DBCountry>().ConvertUsing<DataReaderTypeConverter<DBCountry>>();
         }
     }
 }

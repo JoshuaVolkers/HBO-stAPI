@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DBReview.cs" />
+    <Compile Include="Models\DBReviewId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IReviewRespository.cs" />
     <Compile Include="Repositories\ReviewRepository.cs" />

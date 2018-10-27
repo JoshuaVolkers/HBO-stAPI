@@ -45,6 +45,11 @@ namespace PoohAPI.Logic.Vacancies.Init
                 .ReverseMap();
 
             CreateMap<IDataReader, DBVacancy>().ConvertUsing<DataReaderTypeConverter<DBVacancy>>();
+
+            CreateMap<IDataReader, DBVacancyId>().ConvertUsing<DataReaderTypeConverter<DBVacancyId>>();
+
+            CreateMap<DBVacancyId, int>()
+                .ConvertUsing(s => s.vacature_id);
         }
     }
 }

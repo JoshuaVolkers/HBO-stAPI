@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PoohAPI.Logic.Common.Classes;
 
 namespace PoohAPI.Logic.Vacancies.Services
 {
@@ -15,11 +16,11 @@ namespace PoohAPI.Logic.Vacancies.Services
         private readonly IMapper mapper;
         private readonly IQueryBuilder queryBuilder;
 
-        public VacancyCommandService(IVacancyRepository vacancyRepository, IMapper mapper, IQueryBuilder queryBuilder)
+        public VacancyCommandService(IVacancyRepository vacancyRepository, IMapper mapper)
         {
             this.vacancyRepository = vacancyRepository;
             this.mapper = mapper;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
         }
 
         public void AddFavourite(int userid, int vacancyid)

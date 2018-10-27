@@ -16,5 +16,6 @@ int? educationid = null, int? educationalAttainmentid = null, IntershipType? int
         Vacancy GetVacancyById(int id);
 
         IEnumerable<Vacancy> GetFavoriteVacancies(int userid);
+        IEnumerable<int> GetListVacancyIdsForUser(int userId);
     }
 }

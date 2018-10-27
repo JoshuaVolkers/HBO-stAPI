@@ -40,9 +40,9 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
             NonQuery(query, parameters);
         }
 
-        public IEnumerable<int> GetListReviewIds(string query, Dictionary<string, object> parameters)
+        public IEnumerable<DBReviewId> GetListReviewIds(string query, Dictionary<string, object> parameters)
         {
-            return GetAll<int>(query, parameters);
+            return GetAll<DBReviewId>(query, parameters);
         }
 
         public IEnumerable<DBReview> GetListReviews(string query, Dictionary<string, object> parameters)
