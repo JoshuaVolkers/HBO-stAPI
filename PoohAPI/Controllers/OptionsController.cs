@@ -4,7 +4,6 @@ using PoohAPI.Infrastructure.ReviewDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.OptionModels;
-using PoohAPI.Logic.Common.Models.PresentationModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

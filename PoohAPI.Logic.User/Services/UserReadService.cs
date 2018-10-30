@@ -6,6 +6,7 @@ using PoohAPI.Logic.Common.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Logic.Common.Classes;
 using System.Linq;
 using System.Threading.Tasks;
 using PoohAPI.Infrastructure.UserDB.Models;
@@ -19,15 +20,17 @@ namespace PoohAPI.Logic.Users.Services
         private readonly IQueryBuilder queryBuilder;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IReviewReadService reviewReadService;
+        private readonly IVacancyReadService vacancyReadService;
 
-        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder,
-            IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService)
+        public UserReadService(IUserRepository userRepository, IMapper mapper,
+            IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService, IVacancyReadService vacancyReadService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
             this.mapAPIReadService = mapAPIReadService;
             this.reviewReadService = reviewReadService;
+            this.vacancyReadService = vacancyReadService;
         }
 
         public IEnumerable<User> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
@@ -120,6 +123,7 @@ namespace PoohAPI.Logic.Users.Services
                 return null;
 
             user.Reviews = this.reviewReadService.GetListReviewIdsForUser(user.Id);
+            user.FavoriteVacancies = this.vacancyReadService.GetListVacancyIdsForUser(user.Id);
 
             return user;
         }

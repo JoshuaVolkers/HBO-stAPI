@@ -38,6 +38,11 @@ namespace PoohAPI.Infrastructure.VacancyDB.Repositories
             return GetAll<DBVacancy>(query, parameters);
         }
 
+        public IEnumerable<DBVacancyId> GetListVacancyIds(string query, Dictionary<string, object> parameters)
+        {
+            return GetAll<DBVacancyId>(query, parameters);
+        }
+
         public DBVacancy GetVacancy(string query)
         {
             return GetSingle<DBVacancy>(query);

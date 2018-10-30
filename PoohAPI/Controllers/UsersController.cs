@@ -354,7 +354,7 @@ namespace PoohAPI.Controllers
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
             if (ModelState.IsValid)
-                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, userData.Id, userData.AdditionalLocationIdentifier));
+                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
             else
                 return BadRequest("Informatie involledig.");
         }

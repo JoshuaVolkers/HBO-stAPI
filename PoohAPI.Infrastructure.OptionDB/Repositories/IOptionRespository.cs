@@ -14,5 +14,6 @@ namespace PoohAPI.Infrastructure.OptionDB.Repositories
         IEnumerable<DBAllowedEmailAddress> GetAllAllowedEmailAddresses(string query, Dictionary<string, object> parameters);
         IEnumerable<DBLanguage> GetAllLanguages(string query);
         IEnumerable<DBInternshipType> GetAllIntershipTypes(string query);
+        DBCountry GetCountryById(string query, Dictionary<string, object> parameters);
     }
 }
