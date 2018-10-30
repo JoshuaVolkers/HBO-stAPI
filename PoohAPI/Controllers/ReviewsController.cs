@@ -96,58 +96,59 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the specified review does not exist</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
-        //[HttpPut]
-        //[Route("{reviewId}/PostInternshipContract")]
-        //[ProducesResponseType(typeof(Review), 200)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(403)]
-        //[ProducesResponseType(401)]
-        //public IActionResult UpdateReviewContract(string name)
-        //{
-        //    var newFileName = string.Empty;
+        /// <response code="401">If the user was unauthenticated</response>
+        [Obsolete]
+        [HttpPut]
+        [Route("{reviewId}/PostInternshipContract")]
+        [ProducesResponseType(typeof(Review), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        public IActionResult UpdateReviewContract(string name)
+        {
+            var newFileName = string.Empty;
 
-        //    if (HttpContext.Request.Form.Files != null)
-        //    {
-        //        var fileName = string.Empty;
-        //        string PathDB = string.Empty;
+            if (HttpContext.Request.Form.Files != null)
+            {
+                var fileName = string.Empty;
+                string PathDB = string.Empty;
 
-        //        var files = HttpContext.Request.Form.Files;
+                var files = HttpContext.Request.Form.Files;
 
-        //        foreach (var file in files)
-        //        {
-        //            if (file.Length > 0)
-        //            {
-        //                //Getting FileName
-        //                fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        //Getting FileName
+                        fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
 
-        //                //Assigning Unique Filename (Guid)
-        //                var myUniqueFileName = Convert.ToString(Guid.NewGuid());
+                        //Assigning Unique Filename (Guid)
+                        var myUniqueFileName = Convert.ToString(Guid.NewGuid());
 
-        //                //Getting file Extension
-        //                var FileExtension = Path.GetExtension(fileName);
+                        //Getting file Extension
+                        var FileExtension = Path.GetExtension(fileName);
 
-        //                // concating  FileName + FileExtension
-        //                newFileName = myUniqueFileName + FileExtension;
+                        // concating  FileName + FileExtension
+                        newFileName = myUniqueFileName + FileExtension;
 
-        //                // Combines two strings into a path.
-        //                fileName = Path.Combine(_environment.WebRootPath, "demoImages") + $@"\{newFileName}";
+                        // Combines two strings into a path.
+                        fileName = Path.Combine(_environment.WebRootPath, "demoImages") + $@"\{newFileName}";
 
-        //                // if you want to store path of folder in database
-        //                PathDB = "demoImages/" + newFileName;
+                        // if you want to store path of folder in database
+                        PathDB = "demoImages/" + newFileName;
 
-        //                using (FileStream fs = System.IO.File.Create(fileName))
-        //                {
-        //                    file.CopyTo(fs);
-        //                    fs.Flush();
-        //                }
-        //            }
-        //        }
+                        using (FileStream fs = System.IO.File.Create(fileName))
+                        {
+                            file.CopyTo(fs);
+                            fs.Flush();
+                        }
+                    }
+                }
 
 
-        //    }
-        //    return View();
-        //}
+            }
+            return View();
+        }
 
         /// <summary>
         /// Updates the specified review.
