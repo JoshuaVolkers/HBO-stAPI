@@ -3,6 +3,7 @@ using PoohAPI.RequestModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
@@ -27,14 +28,16 @@ namespace PoohAPI.Controllers
         private readonly IVacancyReadService vacancyReadService;
         private readonly IVacancyCommandService vacancyCommandService;
         private readonly ITokenHelper tokenHelper;
+        private readonly IOptionReadService optionReadService;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper, IOptionReadService optionReadService)
         {
             this.userReadService = userReadService;
             this.userCommandService = userCommandService;
             this.vacancyReadService = vacancyReadService;
             this.vacancyCommandService = vacancyCommandService;
             this.tokenHelper = tokenHelper;
+            this.optionReadService = optionReadService;
         }
 
         /// <summary>
@@ -57,7 +60,7 @@ namespace PoohAPI.Controllers
 
             var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
 
             return Ok(this.tokenHelper.GenerateJWT(identity, refreshToken));
         }
@@ -102,7 +105,7 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
             return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
 
@@ -138,7 +141,7 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
 
             return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
         }
@@ -159,10 +162,13 @@ namespace PoohAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest("Not all values were filled in correctly!");
+
             if (!registerRequest.AcceptTermsAndConditions)
                 return BadRequest("You need to accept the terms and conditions before creating your account!");
+
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
+
             if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
                 return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
                     registerRequest.EmailAddress));      
@@ -191,7 +197,7 @@ namespace PoohAPI.Controllers
                 if (user == null)
                     return BadRequest("Specified token does not exist!");
 
-                var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+                var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
 
                 return Ok(this.tokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
             }
@@ -300,9 +306,9 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById()
+        public IActionResult GetUserById()
         {
-            var user = this.userReadService.GetUserById(GetCurrentUserId());
+            var user = this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false);
             if (user == null)
                 return NotFound("User not found.");
 
@@ -326,7 +332,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteUser()
         {
-            this.userCommandService.DeleteUser(GetCurrentUserId());
+            this.userCommandService.DeleteUser(CustomAuthorizationHelper.GetCurrentUserId(User));
             return Ok();
         }
 
@@ -347,8 +353,8 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid /*&& GetCurrentUserId().Equals(userData.Id)*/)
-                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, GetCurrentUserId(), userData.AdditionalLocationIdentifier));
+            if (ModelState.IsValid)
+                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
             else
                 return BadRequest("Informatie involledig.");
         }
@@ -372,7 +378,7 @@ namespace PoohAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput.NewPassword, passwordUpdateInput.OldPassword))
+                if(userCommandService.UpdatePassword(CustomAuthorizationHelper.GetCurrentUserId(User), passwordUpdateInput.NewPassword, passwordUpdateInput.OldPassword))
                 {
                     return Ok("Password has been changed.");
                 }
@@ -461,7 +467,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(GetCurrentUserId());
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
             if (!(vacancies is null))
             {
                 return Ok(vacancies);
@@ -493,7 +499,7 @@ namespace PoohAPI.Controllers
 
             if(vacancy != null)
             {
-                int userid = GetCurrentUserId();
+                int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.AddFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
             }
@@ -525,7 +531,7 @@ namespace PoohAPI.Controllers
 
             if (vacancy != null)
             {
-                int userid = GetCurrentUserId();
+                int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.DeleteFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
             }
@@ -555,17 +561,12 @@ namespace PoohAPI.Controllers
             return Ok(new List<Review>());
         }
 
-        private int GetCurrentUserId()
-        {
-            return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
-        }
-
-        //TODO: remove this hardcoded stuff.
         private bool CheckIfEmailAddressIsAllowed(string emailAddress)
         {
-            var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
+            var allowedEmails = this.optionReadService.GetAllAllowedEmailAddresses(0, 0)
+                .Select(x => x.EmailAddress);
             var domain = emailAddress.Substring(emailAddress.LastIndexOf("@") + 1);
-            return allowedEmails.Any(d => d.Contains(domain));
+            return allowedEmails.Any(address => address.Contains(domain));
         }
     }
 }

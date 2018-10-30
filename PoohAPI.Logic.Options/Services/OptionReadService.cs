@@ -27,13 +27,13 @@ namespace PoohAPI.Logic.Options.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             _queryBuilder.AddSelect(@"*");
-            _queryBuilder.SetFrom("reg_opleidingen");            
+            _queryBuilder.SetFrom("reg_opleidingen");
             _queryBuilder.SetLimit("@limit");
             _queryBuilder.SetOffset("@offset");
 
             parameters.Add("@limit", maxCount);
             parameters.Add("@offset", offset);
-                        
+
             string query = _queryBuilder.BuildQuery();
 
             var majors = _optionRepository.GetAllMajors(query, parameters);
@@ -58,17 +58,23 @@ namespace PoohAPI.Logic.Options.Services
             return _mapper.Map<IEnumerable<EducationLevel>>(edLevels);
         }
 
-        public IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount, int offset)
+        public IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount = 0, int offset = 0)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             _queryBuilder.AddSelect(@"*");
             _queryBuilder.SetFrom("reg_student_email");
-            _queryBuilder.SetLimit("@limit");
-            _queryBuilder.SetOffset("@offset");
 
-            parameters.Add("@limit", maxCount);
-            parameters.Add("@offset", offset);
+            if (maxCount > 0)
+            {
+                _queryBuilder.SetLimit("@limit");
+                parameters.Add("@limit", maxCount);
+            }
+            if (offset > 0)
+            {
+                _queryBuilder.SetOffset("@offset");
+                parameters.Add("@offset", offset);
+            }
 
             string query = _queryBuilder.BuildQuery();
 

@@ -82,6 +82,7 @@ namespace PoohAPI
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
 
+                //s.IgnoreObsoleteActions();
                 s.DescribeAllEnumsAsStrings();
             });
             #endregion

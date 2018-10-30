@@ -17,7 +17,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="demoImages\" />
+    <Compile Remove="demoImages\**" />
+    <Content Remove="demoImages\**" />
+    <EmbeddedResource Remove="demoImages\**" />
+    <None Remove="demoImages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

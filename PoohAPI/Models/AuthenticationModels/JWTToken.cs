@@ -15,10 +15,6 @@ namespace PoohAPI.Models
             RefreshToken = refreshToken;
         }
 
-        public JWTToken()
-        {
-        }
-
         public string Id { get; }
         public string AuthToken { get; }
         public int ExpiresIn { get; }
