@@ -13,5 +13,6 @@ namespace PoohAPI.Logic.Common.Models.BaseModels
         public string NiceName { get; set; }
         public string EmailAddress { get; set; }
         public UserRole Role { get; set; }
+        public bool Active { get; set; }
     }
 }

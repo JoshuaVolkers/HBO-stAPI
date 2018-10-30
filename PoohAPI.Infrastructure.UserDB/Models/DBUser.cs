@@ -27,5 +27,7 @@ namespace PoohAPI.Infrastructure.UserDB.Models
         public int user_social_account { get; set; }
         public decimal user_breedtegraad { get; set; }
         public decimal user_lengtegraad { get; set; }
+        public string user_refresh_token { get; set; }
+        public int user_account_type { get; set; }
     }
 }

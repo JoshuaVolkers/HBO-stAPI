@@ -24,7 +24,7 @@ namespace PoohAPI.Authorization
             var claims = new List<Claim>()
             {
                 user.FindFirst("id"),
-                user.FindFirst(ClaimTypes.Name),
+                user.FindFirst("active"),
                 user.FindFirst(JwtRegisteredClaimNames.Iat),
                 user.FindFirst(ClaimTypes.Role)
             };            
@@ -43,11 +43,11 @@ namespace PoohAPI.Authorization
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsIdentity CreateClaimsIdentity(string userName, int userId, string userRole)
+        public ClaimsIdentity CreateClaimsIdentity(bool activeUser, int userId, string userRole)
         {
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            return new ClaimsIdentity(new GenericIdentity(userId.ToString(), "Token"), new[]
             {
-                new Claim(ClaimTypes.Name, userName),
+                new Claim("active", activeUser.ToString()),
                 new Claim("id", userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
                 new Claim(ClaimTypes.Role, userRole)

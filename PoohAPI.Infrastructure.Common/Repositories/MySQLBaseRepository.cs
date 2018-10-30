@@ -20,8 +20,6 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             _client = client;
         }
         
-        //Add methods for SELECT, INSERT, UPDATE statements that also manage the connectionstate so as to keep the responsability
-        //for the connectionstate it in this class.
         public T GetSingle<T>(string query)
         {
             if (_client.OpenConnection())
@@ -139,26 +137,5 @@ namespace PoohAPI.Infrastructure.Common.Repositories
 
             return 0;
         }
-
-        //public int NonQueryReturnId(string query, Dictionary<string, object> parameters, string returnId)
-        //{
-        //    if (_client.OpenConnection())
-        //    {
-        //        var command = new MySqlCommand(query, _client.Connection());
-
-        //        foreach (KeyValuePair<string, object> parameter in parameters)
-        //        {
-        //            command.Parameters.AddWithValue(parameter.Key, parameter.Value);
-        //        }
-        //        if(!string.IsNullOrEmpty(returnId))
-        //            command.Parameters.Add("@"+ returnId, MySqlDbType.Int16, 11).Direction = ParameterDirection.Output;
-
-        //        var result = command.ExecuteNonQuery();
-        //        _client.CloseConnection();
-        //        return result;
-        //    }
-
-        //    return 0;
-        //}
     }
 }
