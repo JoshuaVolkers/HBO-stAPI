@@ -41,7 +41,7 @@ namespace PoohAPI.Logic.Users.Services
 
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
                     s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad,
-                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
+                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam, u.user_active");
             this.queryBuilder.SetFrom("reg_users u");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
@@ -94,9 +94,8 @@ namespace PoohAPI.Logic.Users.Services
         public User GetUserById(int id, bool isActive = true)
         {
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, u.user_role, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
-                    s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
-                    IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
-                    IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam");
+                    s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, u.user_active,  
+                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
 
             this.queryBuilder.SetFrom("reg_users u");
 
