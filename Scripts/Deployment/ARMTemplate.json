@@ -1,0 +1,143 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "app_service_name": {
+      "defaultValue": "elbho-api-acc",
+      "type": "string"
+    },
+
+    "maps_service_name": {
+      "defaultValue": "elbho-maps-acc",
+      "type": "string"
+    },
+    "storage_name": {
+      "defaultValue": "elbhostorageacc",
+      "type": "string"
+    },
+    "api_plan_name": {
+      "defaultValue": "elbhoapiplan",
+      "type": "string"
+    },
+    "location": {
+      "defaultValue": "West Europe",
+      "type": "string"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_RAGRS",
+        "tier": "bleh"
+      },
+      "kind": "StorageV2",
+      "name": "[parameters('storage_name')]",
+      "apiVersion": "2018-07-01",
+      "location": "[parameters('location')]",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Maps/accounts",
+      "sku": {
+        "name": "s0",
+        "tier": "Standard"
+      },
+      "name": "[parameters('maps_service_name')]",
+      "apiVersion": "2018-05-01",
+      "location": "global",
+      "scale": null,
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "F1",
+        "tier": "Free",
+        "size": "F1",
+        "family": "F",
+        "capacity": 0
+      },
+      "kind": "app",
+      "name": "[parameters('api_plan_name')]",
+      "apiVersion": "2016-09-01",
+      "location": "[parameters('location')]",
+      "scale": null,
+      "properties": {
+        "name": "[parameters('api_plan_name')]",
+        "workerTierName": null,
+        "adminSiteName": null,
+        "hostingEnvironmentProfile": null,
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "app",
+      "name": "[parameters('app_service_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "[parameters('location')]",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('app_service_name'),'.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('app_service_name'),'.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null
+      },
+      "dependsOn": []
+    }
+  ]
+}
