@@ -30,7 +30,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "sku": {
         "name": "Standard_RAGRS",
-        "tier": "bleh"
+        "tier": "Standard"
       },
       "kind": "StorageV2",
       "name": "[parameters('storage_name')]",
