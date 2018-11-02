@@ -1,4 +1,3 @@
-import api_schemas
 import requests
 import cerberus
 import pytest
@@ -27,7 +26,7 @@ def test_api_path(apiurl):
 
 # login with valid credentials
 @pytest.mark.unit
-def test_login_student(studentemail, studentpass):
+def test_valid_jwt_token(studentemail, studentpass):
     payload = {'emailAddress': studentemail, 'password': studentpass}
     login_request = requests.post(base_url+users_path+"/login", json=payload)
     f_test_status_code_200(login_request)
@@ -35,7 +34,7 @@ def test_login_student(studentemail, studentpass):
     f_test_login(token)
 
 # login with invalid credentials
-def test_login_student_fail(studentemail):
+def test_login_student_invalid_credentials(studentemail):
     payload = {'emailAddress': studentemail, 'password': str(uuid.uuid4())}
     login_request = requests.post(base_url+users_path+"/login", json=payload)
     f_test_status_code_401(login_request)
