@@ -39,7 +39,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response> 
         /// <response code="404">If the review was not found</response> 
-        [HttpGet("{reviewId}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -161,7 +161,7 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
-        [Route("{reviewId}")]
+        [Route("{Id}")]
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
@@ -201,17 +201,17 @@ namespace PoohAPI.Controllers
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
         [HttpDelete]
-        [Route("{reviewId}")]
-        public IActionResult DeleteReview(int reviewId)
+        [Route("{Id}")]
+        public IActionResult DeleteReview(int id)
         {
-            Review review = _reviewReadService.GetReviewById(reviewId);
+            Review review = _reviewReadService.GetReviewById(id);
             if (review == null)
             {
                 return BadRequest("Review not found.");
             }
             else if (review.Locked == false)
             {
-                _reviewCommandService.DeleteReview(reviewId);
+                _reviewCommandService.DeleteReview(id);
                 return Ok("Review has been deleted.");
             }
             else

@@ -66,9 +66,3 @@ company_review_schema = {
                     'nameReviewer' : {'type' : 'string'},
                     'reviewDate' : {'type' : 'string'}
                 }
-
-jwt_token_schema = {
-                'id' : {'type' : 'string'},
-                'authToken' : {'type' : 'string'},
-                
-}
