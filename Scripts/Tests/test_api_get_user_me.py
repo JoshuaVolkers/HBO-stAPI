@@ -24,6 +24,7 @@ def f_test_status_code_200(request):
 headers = ''
 
 # Login to student
+@pytest.mark.unit
 def test_login_student(studentemail, studentpass):
     payload = {'emailAddress': studentemail, 'password': studentpass}
     login_request = requests.post(base_url+users_path+"/login", json=payload)
