@@ -4,9 +4,9 @@ def pytest_addoption(parser):
     parser.addoption("--studentemail", action="store", default="default name")
     parser.addoption("--studentpass", action="store", default="default name")
     parser.addoption("--apiurl", action="store", default="default name")
-    parser.addoption("--jwtKey", actio="store", default="default name")
-    parser.addoption("--jwtIssuer", actio="store", default="default name")
-    parser.addoption("--jwtAudience", actio="store", default="default name")
+    parser.addoption("--jwtKey", action="store", default="default name")
+    parser.addoption("--jwtIssuer", action="store", default="default name")
+    parser.addoption("--jwtAudience", action="store", default="default name")
 
 def pytest_generate_tests(metafunc):
     option_value = metafunc.config.option.adminemail
