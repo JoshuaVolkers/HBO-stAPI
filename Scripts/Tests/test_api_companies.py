@@ -13,7 +13,7 @@ def f_test_company(company):
     #print("Company schema test conducted");
     #print()
     #print(v.errors)
-    assert correct == False
+    assert correct == True
 
 def f_test_base_company(base_company):
     v = Validator(api_schemas.base_company_schema)
