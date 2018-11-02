@@ -49,9 +49,9 @@ namespace PoohAPI.Authorization
             return new ClaimsIdentity(new GenericIdentity(userId.ToString(), "Token"), new[]
             {
                 new Claim("active", activeUser.ToString()),
-                new Claim("id", userId.ToString()),
+                new Claim("id", userId.ToString(), ClaimValueTypes.Integer32),
                 new Claim("refreshToken", string.IsNullOrWhiteSpace(refreshToken) ? "" : refreshToken),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                 new Claim(ClaimTypes.Role, userRole)
             });
         }
