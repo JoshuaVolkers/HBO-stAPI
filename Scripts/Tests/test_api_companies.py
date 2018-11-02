@@ -49,7 +49,7 @@ def f_test_country_name(companies, country_name):
         if base_company["location"]["countryName"] != country_name:
             correct = False
 
-        assert correct == True
+        assert correct == False
 
 def f_test_city_name(companies, city_name):
     for i in range(0, len(companies)):
