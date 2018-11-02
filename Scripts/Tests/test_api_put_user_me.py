@@ -11,9 +11,6 @@ users_path = "users"
 def f_test_user(user):
     v = Validator(api_schemas.user_schema)
     correct = v.validate(user)
-    #print("User schema test conducted");
-    #if len(v.errors) > 0:
-    #    print(v.errors)
     assert correct == True
 
 def f_test_user_input(user, educationalAttainmentId, educationId, preferredLanguageId, countryId, city):
@@ -33,12 +30,9 @@ def f_test_user_input(user, educationalAttainmentId, educationId, preferredLangu
     if user["location"]["city"] != city:
         correct = False
 
-    #print("User input test conducted");
-
     assert correct == True
 
 def f_test_status_code_200(request):
-    #print("Status code test conducted")
     assert request.status_code == 200
 
 headers = ''

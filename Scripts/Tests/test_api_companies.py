@@ -10,24 +10,17 @@ companies_path = "companies"
 def f_test_company(company):
     v = Validator(api_schemas.company_schema)
     correct = v.validate(company)
-    #print("Company schema test conducted");
-    #print()
-    #print(v.errors)
     assert correct == True
 
 def f_test_base_company(base_company):
     v = Validator(api_schemas.base_company_schema)
     correct = v.validate(base_company)
-    #print("Base Company schema test conducted")
-    #print()
-    #print(v.errors)
     assert correct == True
 
 def f_test_max_companies(companies, max):
     correct = True
     if len(companies) > max:
         correct = False
-    #print("Max companies test conducted")
 
     assert correct == True
 
@@ -37,8 +30,6 @@ def f_test_min_stars(companies, min_stars):
         correct = True
         if base_company["averageReviewStars"] < min_stars:
             correct = False
-        
-        #print("Min stars test conducted")
 
         assert correct == True
 
@@ -48,8 +39,6 @@ def f_test_max_stars(companies, max_stars):
         correct = True
         if base_company["averageReviewStars"] > max_stars:
             correct = False
-        
-        #print("Max stars test conducted")
 
         assert correct == True
 
@@ -60,8 +49,6 @@ def f_test_country_name(companies, country_name):
         if base_company["location"]["countryName"] != country_name:
             correct = False
 
-        #print("Country name test conducted")
-
         assert correct == True
 
 def f_test_city_name(companies, city_name):
@@ -71,8 +58,6 @@ def f_test_city_name(companies, city_name):
         if base_company["location"]["city"] != city_name:
             correct = False
 
-        #print("City name test conducted")
-
         assert correct == True
 
 def f_test_location_range(companies, r):
@@ -81,8 +66,6 @@ def f_test_location_range(companies, r):
         correct = True
         if base_company["location"]["range"] > r:
             correct = False
-
-        #print("Range test conducted")
 
         assert correct == True
 
@@ -97,12 +80,9 @@ def f_test_major(companies, major_name):
                 correct = True
                 break
 
-        #print("Major test conducted")
-
         assert correct == True
 
 def f_test_status_code_200(request):
-    #print("Status code test conducted")
     assert request.status_code == 200
 
 # Test multiple companies (Default)

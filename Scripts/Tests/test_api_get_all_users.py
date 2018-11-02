@@ -11,16 +11,12 @@ users_path = "users"
 def f_test_user(user):
     v = Validator(api_schemas.user_schema)
     correct = v.validate(user)
-    #print("User schema test conducted");
-    #if len(v.errors) > 0:
-        #print(v.errors)
     assert correct == True
 
 def f_test_max_users(users, max):
     correct = True
     if len(users) > max:
         correct = False
-    #print("Max users test conducted")
 
     assert correct == True
 
@@ -33,8 +29,6 @@ def f_test_educational_attainments_filter(users, educationalAttainmentIds):
             if user["educationalAttainmentId"] == educationalAttainmentIds[j]:
                 correct = True
 
-        #print("EducationalAttainment test conducted")
-
         assert correct == True
 
 def f_test_educations_filter(users, educationIds):
@@ -46,8 +40,6 @@ def f_test_educations_filter(users, educationIds):
             if user["educationId"] == educationIds[j]:
                 correct = True
 
-        #print("EducationIds test conducted")
-
         assert correct == True
 
 def f_test_country_name(users, country_name):
@@ -56,8 +48,6 @@ def f_test_country_name(users, country_name):
         correct = True
         if user["location"]["countryName"] != country_name:
             correct = False
-
-        #print("Country name test conducted")
 
         assert correct == True
 
@@ -68,8 +58,6 @@ def f_test_city_name(users, city_name):
         if user["location"]["city"] != city_name:
             correct = False
 
-        #print("City name test conducted")
-
         assert correct == True
 
 def f_test_location_range(users, r):
@@ -78,8 +66,6 @@ def f_test_location_range(users, r):
         correct = True
         if user["location"]["range"] > r:
             correct = False
-
-        #print("Range test conducted")
 
         assert correct == True
 
@@ -90,12 +76,9 @@ def f_test_preferred_language(users, lanuage_id):
         if user["preferredLanguageId"] != lanuage_id:
             correct = False
 
-        #print("PreferredLanguageId test conducted")
-
         assert correct == True
 
 def f_test_status_code_200(request):
-    #print("Status code test conducted")
     assert request.status_code == 200
 
 # global headers variable
