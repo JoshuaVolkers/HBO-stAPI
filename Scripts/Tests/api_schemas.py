@@ -66,3 +66,47 @@ company_review_schema = {
                     'nameReviewer' : {'type' : 'string'},
                     'reviewDate' : {'type' : 'string'}
                 }
+
+review_schema = {
+                    'id' : {'type' : 'integer'},
+                    'companyId' : {'type' : 'integer'},
+					'userId' : {'type' : 'integer'},
+                    'stars' : {'type' : 'integer'},
+                    'writtenReview' : {'type' : 'string'},
+					'anonymous' : {'type' : 'integer'},
+                    'creationDate' : {'type' : 'string'},
+                    'verifiedReview' : {'type' : 'integer'},
+					'verifiedBy' : {'type' : 'integer'},
+					'verificationDate' : {'type' : 'string'},
+					'locked' : {'type' : 'boolean'}
+                }
+
+major_schema = {
+                    'id' : {'type' : 'integer'},
+                    'crohoNumber' : {'type' : 'integer'},
+					'name' : {'type' : 'string'},
+                    'educationLevel' : {'type' : 'string'},
+					'active' : {'type' : 'integer'}
+                }
+
+educationLevel_schema = {
+                    'id' : {'type' : 'integer'},
+					'name' : {'type' : 'string'}
+                }
+
+allowedEmailadress_schema = {
+                    'id' : {'type' : 'integer'},
+					'emailAddress' : {'type' : 'string'},
+					'educationalInstitutionId' : {'type' : 'integer'}
+                }
+
+language_schema = {
+                    'id' : {'type' : 'integer'},
+					'languageName' : {'type' : 'string'},
+					'languageIso' : {'type' : 'string'}
+                }
+
+internshipType_schema = {
+                    'id' : {'type' : 'integer'},
+					'name' : {'type' : 'string'}
+                }

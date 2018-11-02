@@ -19,6 +19,7 @@ def f_test_status_code_200(request):
 
 # set global base_url variable
 base_url = ''
+@pytest.mark.unit
 def test_api_path(apiurl):
     global base_url
     base_url = apiurl
