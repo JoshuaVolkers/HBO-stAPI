@@ -50,7 +50,7 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
@@ -60,9 +60,9 @@ namespace PoohAPI.Controllers
 
             var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), refreshToken);
 
-            return Ok(this.tokenHelper.GenerateJWT(identity, refreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("facebook")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public async System.Threading.Tasks.Task<IActionResult> FacebookAsync([FromBody] string AccessToken)
         {
@@ -105,8 +105,8 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
-            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), user.RefreshToken);
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("linkedin")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public async System.Threading.Tasks.Task<IActionResult> LinkedInAsync([FromBody] string AccessToken, [FromBody] string redirectUri)
         {
@@ -141,9 +141,9 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), user.RefreshToken);
 
-            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
@@ -187,7 +187,7 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("token/{refreshToken}/refresh")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(404)]
         public IActionResult RefreshAccesToken(string refreshToken)
         {
@@ -197,9 +197,9 @@ namespace PoohAPI.Controllers
                 if (user == null)
                     return BadRequest("Specified token does not exist!");
 
-                var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString());
+                var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), parsedGuid.ToString("N"));
 
-                return Ok(this.tokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
+                return Ok(this.tokenHelper.GenerateJWT(identity));
             }
 
             return BadRequest("Refresh token is not a valid GUID!");
@@ -208,7 +208,7 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Revokes the refresh token, invalidating it for future use.
         /// </summary>
-        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <returns></returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="404">If the refreshtoken does not exist</response>
         [AllowAnonymous]
@@ -230,13 +230,13 @@ namespace PoohAPI.Controllers
         /// Verifies email address of newly registered users and activates their accounts.
         /// </summary>
         /// <param name="token">Token that is send to the users' email address.</param>
-        /// <returns></returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200"></response>
         /// <response code="400"></response>
         [AllowAnonymous]
         [HttpGet]
         [Route("verify")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(400)]
         public IActionResult VerifyEmail([FromQuery]string token)
         {

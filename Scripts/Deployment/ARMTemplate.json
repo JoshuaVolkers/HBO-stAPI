@@ -6,7 +6,6 @@
       "defaultValue": "elbho-api-acc",
       "type": "string"
     },
-
     "maps_service_name": {
       "defaultValue": "elbho-maps-acc",
       "type": "string"
@@ -26,6 +25,32 @@
   },
   "variables": {},
   "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "F1",
+        "tier": "Free",
+        "size": "F1",
+        "family": "F",
+        "capacity": 0
+      },
+      "kind": "app",
+      "name": "[parameters('api_plan_name')]",
+      "apiVersion": "2016-09-01",
+      "location": "[parameters('location')]",
+      "scale": null,
+      "properties": {
+        "name": "[parameters('api_plan_name')]",
+        "workerTierName": null,
+        "adminSiteName": null,
+        "hostingEnvironmentProfile": null,
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "dependsOn": []
+    },
     {
       "type": "Microsoft.Storage/storageAccounts",
       "sku": {
@@ -74,32 +99,6 @@
       "dependsOn": []
     },
     {
-      "type": "Microsoft.Web/serverfarms",
-      "sku": {
-        "name": "F1",
-        "tier": "Free",
-        "size": "F1",
-        "family": "F",
-        "capacity": 0
-      },
-      "kind": "app",
-      "name": "[parameters('api_plan_name')]",
-      "apiVersion": "2016-09-01",
-      "location": "[parameters('location')]",
-      "scale": null,
-      "properties": {
-        "name": "[parameters('api_plan_name')]",
-        "workerTierName": null,
-        "adminSiteName": null,
-        "hostingEnvironmentProfile": null,
-        "perSiteScaling": false,
-        "reserved": false,
-        "targetWorkerCount": 0,
-        "targetWorkerSizeId": 0
-      },
-      "dependsOn": []
-    },
-    {
       "type": "Microsoft.Web/sites",
       "kind": "app",
       "name": "[parameters('app_service_name')]",
@@ -137,7 +136,9 @@
         "dailyMemoryTimeQuota": 0,
         "cloningInfo": null
       },
-      "dependsOn": []
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('api_plan_name'))]"
+      ]
     }
   ]
 }
