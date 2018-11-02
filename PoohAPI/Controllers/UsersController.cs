@@ -56,7 +56,7 @@ namespace PoohAPI.Controllers
         {
             var user = this.userReadService.Login(loginRequest.Password, loginRequest.EmailAddress);
             if (user == null)
-                return BadRequest("Username or password was incorrect!");
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Username or password was incorrect!");
 
             var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
