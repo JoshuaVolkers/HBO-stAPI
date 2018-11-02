@@ -4,6 +4,9 @@ def pytest_addoption(parser):
     parser.addoption("--studentemail", action="store", default="default name")
     parser.addoption("--studentpass", action="store", default="default name")
     parser.addoption("--apiurl", action="store", default="default name")
+    parser.addoption("--jwtKey", actio="store", default="default name")
+    parser.addoption("--jwtIssuer", actio="store", default="default name")
+    parser.addoption("--jwtAudience", actio="store", default="default name")
 
 def pytest_generate_tests(metafunc):
     option_value = metafunc.config.option.adminemail
@@ -25,3 +28,15 @@ def pytest_generate_tests(metafunc):
     option_value5 = metafunc.config.option.apiurl
     if 'apiurl' in metafunc.fixturenames and option_value5 is not None:
         metafunc.parametrize("apiurl", [option_value5])
+
+    option_value6 = metafunc.config.option.apiurl
+    if 'jwtKey' in metafunc.fixturenames and option_value6 is not None:
+        metafunc.parametrize("jwtKey", [option_value6])
+    
+    option_value7 = metafunc.config.option.apiurl
+    if 'jwtIssuer' in metafunc.fixturenames and option_value7 is not None:
+        metafunc.parametrize("jwtIssuer", [option_value7])
+
+    option_value8 = metafunc.config.option.apiurl
+    if 'jwtAudience' in metafunc.fixturenames and option_value8 is not None:
+        metafunc.parametrize("jwtAudience", [option_value8])

@@ -183,11 +183,13 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>
+        /// <response code="200">If the refreshToken is not a valid guid</response>
         /// <response code="404">If the refreshtoken does not exist</response>
         [AllowAnonymous]
         [HttpGet]
         [Route("token/{refreshToken}/refresh")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult RefreshAccesToken(string refreshToken)
         {
@@ -195,7 +197,7 @@ namespace PoohAPI.Controllers
             {
                 var user = this.userReadService.GetUserByRefreshToken(parsedGuid.ToString("N"));
                 if (user == null)
-                    return BadRequest("Specified token does not exist!");
+                    return NotFound("Specified token does not exist!");
 
                 var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), parsedGuid.ToString("N"));
 
