@@ -30,6 +30,11 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
             return GetSingle<DBReview>(query, parameters);
         }
 
+        public DBReview GetReview(string query)
+        {
+            return GetSingle<DBReview>(query);
+        }
+
         public void UpdateReview(string query, Dictionary<string, object> parameters)
         {
             NonQuery(query, parameters);

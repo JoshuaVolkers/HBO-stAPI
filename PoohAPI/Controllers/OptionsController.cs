@@ -56,7 +56,7 @@ namespace PoohAPI.Controllers
         /// <response code="400">If the request failed</response>
         /// <response code="404">If no education levels were found</response>
         [HttpGet]
-        [Route("eductionlevels")]
+        [Route("educationlevels")]
         [ProducesResponseType(typeof(IEnumerable<EducationLevel>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]

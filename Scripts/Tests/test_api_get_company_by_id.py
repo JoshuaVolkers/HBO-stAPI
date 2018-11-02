@@ -24,6 +24,7 @@ base_url = ''
 companies_path = "companies"
 
 # set global base_url variable
+@pytest.mark.unit
 def test_api_path(apiurl):
     global base_url
     base_url = apiurl

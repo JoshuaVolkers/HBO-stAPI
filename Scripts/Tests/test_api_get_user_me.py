@@ -19,6 +19,7 @@ def f_test_status_code_200(request):
 
 # set global base_url variable
 base_url = ''
+@pytest.mark.unit
 def test_api_path(apiurl):
     global base_url
     base_url = apiurl
@@ -32,10 +33,9 @@ def test_login_student(studentemail, studentpass):
     login_request = requests.post(base_url+users_path+"/login", json=payload)
     f_test_status_code_200(login_request)
     token = login_request.json()
-    jwt_token = token["authToken"]
 
     global headers
-    headers = {'Authorization': 'Bearer '+jwt_token}
+    headers = {'Authorization': 'Bearer '+token}
 
 # Test user schema
 def test_user_schema():

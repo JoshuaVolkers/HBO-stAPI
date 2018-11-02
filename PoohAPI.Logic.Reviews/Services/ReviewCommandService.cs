@@ -89,7 +89,8 @@ namespace PoohAPI.Logic.Reviews.Services
                 "VALUES (@bedrijfId, @studentId, @sterren, @geschreven, @anoniem, @datum, @status, @bevestigdDoor);";
 
             _reviewRepository.PostReview(query, parameters);
-            return _mapper.Map<Review>(dbReview);
+            
+            return _reviewReadService.GetLastReview();
         }
     }
 }

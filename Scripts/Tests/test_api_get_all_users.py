@@ -98,10 +98,9 @@ def test_admin_login(adminemail, adminpass):
     login_request = requests.post(base_url+users_path+"/login", json=payload)
     f_test_status_code_200(login_request)
     token = login_request.json()
-    jwt_token = token["authToken"]
 
     global headers
-    headers = {'Authorization': 'Bearer '+jwt_token}
+    headers = {'Authorization': 'Bearer '+token}
 
 # Test users schema
 def test_users_schema():
