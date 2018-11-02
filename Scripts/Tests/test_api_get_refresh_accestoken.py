@@ -36,7 +36,7 @@ def test_api_path(apiurl):
     global base_url
     base_url = apiurl
 
-decodedToken = ''
+decodedToken = {}
 
 # login with valid credentials
 @pytest.mark.unit
