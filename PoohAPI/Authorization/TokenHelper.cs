@@ -26,8 +26,9 @@ namespace PoohAPI.Authorization
                 user.FindFirst("id"),
                 user.FindFirst("active"),
                 user.FindFirst(JwtRegisteredClaimNames.Iat),
-                user.FindFirst(ClaimTypes.Role)
-            };            
+                user.FindFirst(ClaimTypes.Role),
+                user.FindFirst("refreshToken")
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configSettings.GetValue<string>("JWTSigningKey")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -43,27 +44,21 @@ namespace PoohAPI.Authorization
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsIdentity CreateClaimsIdentity(bool activeUser, int userId, string userRole)
+        public ClaimsIdentity CreateClaimsIdentity(bool activeUser, int userId, string userRole, string refreshToken = null)
         {
             return new ClaimsIdentity(new GenericIdentity(userId.ToString(), "Token"), new[]
             {
                 new Claim("active", activeUser.ToString()),
                 new Claim("id", userId.ToString()),
+                new Claim("refreshToken", string.IsNullOrWhiteSpace(refreshToken) ? "" : refreshToken),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
                 new Claim(ClaimTypes.Role, userRole)
             });
         }
 
-        public JWTToken GenerateJWT(ClaimsIdentity user, string refreshToken, int expiryTimeInSeconds = 3600)
+        public string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 3600)
         {
-            var response = new JWTToken
-            (
-                user.Claims.SingleOrDefault(c => c.Type == "id").Value,
-                RequestToken(user, expiryTimeInSeconds),
-                expiryTimeInSeconds,
-                refreshToken
-            );
-            return response;
+            return RequestToken(user, expiryTimeInSeconds);
         }
     }
 }
