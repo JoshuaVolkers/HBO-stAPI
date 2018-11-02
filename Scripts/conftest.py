@@ -3,6 +3,7 @@ def pytest_addoption(parser):
     parser.addoption("--adminpass", action="store", default="default name")
     parser.addoption("--studentemail", action="store", default="default name")
     parser.addoption("--studentpass", action="store", default="default name")
+    parser.addoption("--apiurl", action="store", default="default name")
 
 def pytest_generate_tests(metafunc):
     option_value = metafunc.config.option.adminemail
@@ -20,3 +21,7 @@ def pytest_generate_tests(metafunc):
     option_value4 = metafunc.config.option.studentpass
     if 'studentpass' in metafunc.fixturenames and option_value4 is not None:
         metafunc.parametrize("studentpass", [option_value4])
+
+    option_value5 = metafunc.config.option.apiurl
+    if 'apiurl' in metafunc.fixturenames and option_value5 is not None:
+        metafunc.parametrize("apiurl", [option_value5])

@@ -4,9 +4,6 @@ import cerberus
 import pytest
 from cerberus import Validator
 
-base_url = "https://elbho-api-dev.azurewebsites.net/"
-companies_path = "companies"
-
 def f_test_company(company):
     v = Validator(api_schemas.company_schema)
     correct = v.validate(company)
@@ -21,6 +18,15 @@ def f_test_company_id(company, id):
 
 def f_test_status_code_200(request):
     assert request.status_code == 200
+
+
+base_url = ''
+companies_path = "companies"
+
+# set global base_url variable
+def test_api_path(apiurl):
+    global base_url
+    base_url = apiurl
 
 # Test single company
 def test_company():

@@ -4,9 +4,6 @@ import cerberus
 import pytest
 from cerberus import Validator
 
-base_url = "https://elbho-api-dev.azurewebsites.net/"
-companies_path = "companies"
-
 def f_test_review(review):
     v = Validator(api_schemas.company_review_schema)
     correct = v.validate(review)
@@ -14,6 +11,16 @@ def f_test_review(review):
 
 def f_test_status_code_200(request):
     assert request.status_code == 200
+
+
+
+base_url = ''
+companies_path = "companies"
+
+# set global base_url variable
+def test_api_path(apiurl):
+    global base_url
+    base_url = apiurl
 
 # Test review of company
 def test_review_company():

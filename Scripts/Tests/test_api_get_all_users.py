@@ -5,9 +5,6 @@ import pytest
 from cerberus import Validator
 import json
 
-base_url = "https://elbho-api-dev.azurewebsites.net/"
-users_path = "users"
-
 def f_test_user(user):
     v = Validator(api_schemas.user_schema)
     correct = v.validate(user)
@@ -80,6 +77,16 @@ def f_test_preferred_language(users, lanuage_id):
 
 def f_test_status_code_200(request):
     assert request.status_code == 200
+
+
+
+base_url = ''
+users_path = "users"
+
+# set global base_url variable
+def test_api_path(apiurl):
+    global base_url
+    base_url = apiurl
 
 # global headers variable
 headers = ''
