@@ -62,9 +62,9 @@ def test_refresh_token(jwtKey, jwtIssuer, jwtAudience):
     f_test_token(newToken)
 
     refreshedDecodedToken = jwt.decode(newToken, jwtKey, issuer = jwtIssuer, audience = jwtAudience, algorithms=['HS256'])
+    f_test_refresh_token_not_empty(refreshedDecodedToken)
+
     newRefreshToken = refreshedDecodedToken['refreshToken']
-   
-    f_test_refresh_token_not_empty(newRefreshToken)
     f_test_refresh_token_matches_old_refresh_token(refreshToken, newRefreshToken)
 
 # test revoking of existing token
@@ -84,4 +84,4 @@ def test_invalid_requests():
     f_test_status_code_404(revoked_refresh_token_request)
 
     revoked_revoke_token_request = requests.delete(base_url+users_path+"token/"+revokedToken+"/revoke")
-    f_test_status_code_404(revoked_revoke_token_request)
+    f_test_status_code_400(revoked_revoke_token_request)
