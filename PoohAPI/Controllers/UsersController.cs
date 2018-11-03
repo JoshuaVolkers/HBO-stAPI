@@ -217,7 +217,7 @@ namespace PoohAPI.Controllers
         [HttpDelete]
         [Route("token/{refreshToken}/revoke")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult RevokeRefreshToken(string refreshToken)
         {
             if (Guid.TryParse(refreshToken, out Guid parsedGuid))
