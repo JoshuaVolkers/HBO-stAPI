@@ -37,6 +37,7 @@ def test_api_path(apiurl):
     base_url = apiurl
 
 decodedToken = {}
+refreshedDecodedToken = {}
 
 # login with valid credentials
 @pytest.mark.unit
@@ -47,11 +48,10 @@ def test_valid_jwt_token(studentemail, studentpass, jwtKey, jwtIssuer, jwtAudien
     token = login_request.json()
     f_test_token(token)
 
-    global decodedToken
     decodedToken = jwt.decode(token, jwtKey, issuer = jwtIssuer, audience = jwtAudience, algorithms=['HS256'])
 
 # test refresh token
-def test_refresh_token():
+def test_refresh_token(jwtKey, jwtIssuer, jwtAudience):
     f_test_refresh_token_not_empty(decodedToken)
 
     refreshToken = decodedToken['refreshToken']
@@ -59,15 +59,17 @@ def test_refresh_token():
     refreshedToken_request = requests.get(base_url+users_path+"token/"+refreshToken+"/refresh")
     f_test_status_code_200(refreshedToken_request)
     newToken = refreshedToken_request.json()
-    newRefreshToken = newToken['refreshToken']
-
     f_test_token(newToken)
+
+    refreshedDecodedToken = jwt.decode(newToken, jwtKey, issuer = jwtIssuer, audience = jwtAudience, algorithms=['HS256'])
+    newRefreshToken = refreshedDecodedToken['refreshToken']
+   
     f_test_refresh_token_not_empty(newRefreshToken)
     f_test_refresh_token_matches_old_refresh_token(refreshToken, newRefreshToken)
 
 # test revoking of existing token
 def test_revoke_token():
-    refreshToken = decodedToken['refreshToken']
+    refreshToken = refreshedDecodedToken['refreshToken']
 
     revoke_refresh_token_request = requests.delete(base_url+users_path+"token/"+refreshToken+"/revoke")
     f_test_status_code_200(revoke_refresh_token_request)
@@ -77,7 +79,7 @@ def test_invalid_requests():
     invalidGuid_refreshedToken_request = requests.get(base_url+users_path+"token/DitIsGeenGUIDDusDeHeleMeukGaatOpZijnPlaat/refresh")
     f_test_status_code_400(invalidGuid_refreshedToken_request)
 
-    revokedToken = decodedToken['refreshToken']
+    revokedToken = refreshedDecodedToken['refreshToken']
     revoked_refresh_token_request = requests.get(base_url+users_path+"token/"+revokedToken+"/refresh")
     f_test_status_code_404(revoked_refresh_token_request)
 
