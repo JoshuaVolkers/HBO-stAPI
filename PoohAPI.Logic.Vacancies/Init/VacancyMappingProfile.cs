@@ -31,7 +31,7 @@ namespace PoohAPI.Logic.Vacancies.Init
 
             CreateMap<DBVacancy, Vacancy>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.vacature_id))
-                .ForMember(d => d.Description, o => o.MapFrom(s => s.vacature_text))
+                .ForMember(d => d.Description, o => o.MapFrom(s => s.vacature_tekst))
                 .ForMember(d => d.ClosingDate, o => o.MapFrom(s => s.vacature_datum_verlopen))
                 .ForMember(d => d.CreationDate, o => o.MapFrom(s => s.vacature_datum_plaatsing))
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.vacature_titel))
