@@ -29,14 +29,14 @@ def pytest_generate_tests(metafunc):
     if 'apiurl' in metafunc.fixturenames and option_value5 is not None:
         metafunc.parametrize("apiurl", [option_value5])
 
-    option_value6 = metafunc.config.option.apiurl
+    option_value6 = metafunc.config.option.jwtKey
     if 'jwtKey' in metafunc.fixturenames and option_value6 is not None:
         metafunc.parametrize("jwtKey", [option_value6])
     
-    option_value7 = metafunc.config.option.apiurl
+    option_value7 = metafunc.config.option.jwtIssuer
     if 'jwtIssuer' in metafunc.fixturenames and option_value7 is not None:
         metafunc.parametrize("jwtIssuer", [option_value7])
 
-    option_value8 = metafunc.config.option.apiurl
+    option_value8 = metafunc.config.option.jwtAudience
     if 'jwtAudience' in metafunc.fixturenames and option_value8 is not None:
         metafunc.parametrize("jwtAudience", [option_value8])
