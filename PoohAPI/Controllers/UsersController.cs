@@ -212,7 +212,7 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="404">If the refreshtoken does not exist</response>
+        /// <response code="400">If the refreshtoken does not exist</response>
         [AllowAnonymous]
         [HttpDelete]
         [Route("token/{refreshToken}/revoke")]

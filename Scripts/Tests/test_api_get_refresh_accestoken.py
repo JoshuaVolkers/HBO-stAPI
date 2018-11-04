@@ -56,7 +56,7 @@ def test_refresh_token(jwtKey, jwtIssuer, jwtAudience):
     refreshToken = decodedToken['refreshToken']
     f_test_refresh_token_not_empty(refreshToken)
 
-    refreshedToken_request = requests.get(base_url+users_path+"token/"+refreshToken+"/refresh")
+    refreshedToken_request = requests.get(base_url+users_path+"/token/"+refreshToken+"/refresh")
     f_test_status_code_200(refreshedToken_request)
     newToken = refreshedToken_request.json()
     f_test_token(newToken)
@@ -73,22 +73,22 @@ def test_refresh_token(jwtKey, jwtIssuer, jwtAudience):
 def test_revoke_token():
     refreshToken = refreshedDecodedToken['refreshToken']
 
-    revoke_refresh_token_request = requests.delete(base_url+users_path+"token/"+refreshToken+"/revoke")
+    revoke_refresh_token_request = requests.delete(base_url+users_path+"/token/"+refreshToken+"/revoke")
     f_test_status_code_200(revoke_refresh_token_request)
 
 # test refreshing invalid token and revoked token
 def test_invalid_requests_refresh():
-    invalidGuid_refreshedToken_request = requests.get(base_url+users_path+"token/DitIsGeenGUIDDusDeHeleMeukGaatOpZijnPlaat/refresh")
+    invalidGuid_refreshedToken_request = requests.get(base_url+users_path+"/token/DitIsGeenGUIDDusDeHeleMeukGaatOpZijnPlaat/refresh")
     f_test_status_code_400(invalidGuid_refreshedToken_request)
 
     revokedToken = refreshedDecodedToken['refreshToken']
-    revoked_refresh_token_request = requests.get(base_url+users_path+"token/"+revokedToken+"/refresh")
+    revoked_refresh_token_request = requests.get(base_url+users_path+"/token/"+revokedToken+"/refresh")
     f_test_status_code_404(revoked_refresh_token_request)
 
 def test_invalid_requests_revoke():
-    invalidGuid_revokeToken_request = requests.delete(base_url+users_path+"token/DitIsGeenGUIDDusDeHeleMeukGaatOpZijnPlaat/revoke")
+    invalidGuid_revokeToken_request = requests.delete(base_url+users_path+"/token/DitIsGeenGUIDDusDeHeleMeukGaatOpZijnPlaat/revoke")
     f_test_status_code_400(invalidGuid_revokeToken_request)
 
     revokedToken = refreshedDecodedToken['refreshToken']
-    revoked_revoke_token_request = requests.delete(base_url+users_path+"token/"+revokedToken+"/revoke")
+    revoked_revoke_token_request = requests.delete(base_url+users_path+"/token/"+revokedToken+"/revoke")
     f_test_status_code_200(revoked_revoke_token_request)
