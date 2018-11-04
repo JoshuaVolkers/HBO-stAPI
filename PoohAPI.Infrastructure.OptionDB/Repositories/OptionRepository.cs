@@ -44,5 +44,10 @@ namespace PoohAPI.Infrastructure.OptionDB.Repositories
         {
             return GetSingle<DBCountry>(query, parameters);
         }
+
+        public IEnumerable<DBCountry> GetAllCountries(string query)
+        {
+            return GetAll<DBCountry>(query);
+        }
     }
 }
