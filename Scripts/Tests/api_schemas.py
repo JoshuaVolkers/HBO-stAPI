@@ -110,3 +110,23 @@ internshipType_schema = {
                     'id' : {'type' : 'integer'},
 					'name' : {'type' : 'string'}
                 }
+				
+vacancy_schema = {
+                    'id' : {'type' : 'integer'}, 
+                    'title' : {'type' : 'string'},
+                    'creationDate' : {'type' : 'string'}, 
+                    'education' : {'type' : 'string'}, 
+                    'description' : {'type' : 'string'}, 
+                    'companyId' : {'type' : 'integer'}, 
+                    'language' : {'type' : 'string'}, 
+                    'closingDate' : {'type' : 'string'},
+                    'link' : {'type' : 'string'},
+                    'educationalAttainment' : {'type' : 'string'},
+                    'internshipType' : {'type' : 'string'},
+                    'location' : {'type' : 'dict', 'schema' : location_schema},
+                    }
+
+country_schema = {
+                    'id' : {'type' : 'integer'},
+                    'name' : {'type' : 'string'}
+                    }
