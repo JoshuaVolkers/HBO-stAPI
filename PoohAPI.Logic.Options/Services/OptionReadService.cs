@@ -120,5 +120,16 @@ namespace PoohAPI.Logic.Options.Services
 
             return _mapper.Map<Country>(country);
         }
+
+        public IEnumerable<Country> GetAllCountries()
+        {
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_landen");
+
+            string query = _queryBuilder.BuildQuery();
+
+            var countries = _optionRepository.GetAllCountries(query);
+            return _mapper.Map<IEnumerable<Country>>(countries);
+        }
     }
 }

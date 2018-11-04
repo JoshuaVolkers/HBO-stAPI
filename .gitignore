@@ -336,3 +336,4 @@ PoohAPI/appsettings.json
 *.json
 PoohAPI/appsettings.json
 PoohAPI/appsettings.json
+PoohAPI/appsettings.Development.json

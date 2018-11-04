@@ -16,7 +16,7 @@ namespace PoohAPI.Infrastructure.VacancyDB.Models
         public string vacature_plaats { get; set; }
         public DateTime vacature_datum_plaatsing { get; set; }
         public DateTime vacature_datum_verlopen { get; set; }
-        public string vacature_text { get; set; }
+        public string vacature_tekst { get; set; }
         public string vacature_link { get; set; }
         public int vacature_actief { get; set; }
         public decimal vacature_breedtegraad { get; set; }

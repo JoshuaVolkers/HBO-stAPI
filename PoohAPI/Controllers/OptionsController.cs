@@ -146,5 +146,27 @@ namespace PoohAPI.Controllers
 
             return Ok(languages);
         }
+
+        /// <summary>
+        /// Gets countries for vacancies, companies and users
+        /// </summary>
+        /// <returns>A list of countries</returns>
+        /// <response code="200">If the request was a success</response>
+        /// <response code="400">If the request failed</response>
+        /// <response code="404">If no countries were found</response>
+        [HttpGet]
+        [Route("countries")]
+        [ProducesResponseType(typeof(IEnumerable<Country>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetCountries()
+        {
+            IEnumerable<Country> countries = _optionReadService.GetAllCountries();
+
+            if (countries is null)
+                return NotFound("No countries found");
+
+            return Ok(countries);
+        }
     }
 }
