@@ -48,6 +48,7 @@ def test_valid_jwt_token(studentemail, studentpass, jwtKey, jwtIssuer, jwtAudien
     token = login_request.json()
     f_test_token(token)
 
+    global decodedToken
     decodedToken = jwt.decode(token, jwtKey, issuer = jwtIssuer, audience = jwtAudience, algorithms=['HS256'])
 
 # test refresh token
@@ -60,7 +61,9 @@ def test_refresh_token(jwtKey, jwtIssuer, jwtAudience):
     newToken = refreshedToken_request.json()
     f_test_token(newToken)
 
+    global refreshedDecodedToken
     refreshedDecodedToken = jwt.decode(newToken, jwtKey, issuer = jwtIssuer, audience = jwtAudience, algorithms=['HS256'])
+
     newRefreshToken = refreshedDecodedToken['refreshToken']
     f_test_refresh_token_not_empty(newRefreshToken)
   
