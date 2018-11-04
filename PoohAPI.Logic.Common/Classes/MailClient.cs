@@ -23,8 +23,7 @@ namespace PoohAPI.Logic.Common.Classes
         {
             if (userEmail is null || subject is null || body is null)
                 return;
-
-            // TODO: change sender email address and host
+            
             MailMessage mail = new MailMessage(this.config.GetValue<string>("MailSender"), userEmail);
             mail.IsBodyHtml = true;
             mail.BodyEncoding = Encoding.UTF8;
@@ -40,8 +39,12 @@ namespace PoohAPI.Logic.Common.Classes
             client.Credentials = new NetworkCredential(this.config.GetValue<string>("MailSender"), 
                 this.config.GetValue<string>("MailPassword"));
             
-            
-            client.Send(mail);
+            try {
+                client.Send(mail);
+            }
+            catch (Exception e) {
+
+            }
         }
     }
 }
