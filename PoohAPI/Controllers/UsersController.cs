@@ -529,9 +529,9 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
-            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
 
-            if (vacancy != null)
+            if (vacancies.Any(c => c.Id == vacancyId))
             {
                 int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.DeleteFavourite(userid, vacancyId);
