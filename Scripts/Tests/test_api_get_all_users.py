@@ -25,6 +25,7 @@ def f_test_educational_attainments_filter(users, educationalAttainmentIds):
         for j in range(0, len(educationalAttainmentIds)):
             if user["educationalAttainmentId"] == educationalAttainmentIds[j]:
                 correct = True
+                break
 
         assert correct == True
 
@@ -36,6 +37,7 @@ def f_test_educations_filter(users, educationIds):
         for j in range(0, len(educationIds)):
             if user["educationId"] == educationIds[j]:
                 correct = True
+                break
 
         assert correct == True
 
@@ -108,10 +110,7 @@ def test_users_schema():
     f_test_status_code_200(users_request)
     users = users_request.json()
     f_test_max_users(users, 5)
-
-    if len(users) > 0:
-        user = users[0]
-        f_test_user(user)
+    f_test_user(users[0])
 
 # Test users (educationalAttainments = 1,2)
 def test_users_educationalattainments():

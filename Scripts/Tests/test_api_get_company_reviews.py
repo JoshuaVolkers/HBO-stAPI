@@ -29,7 +29,4 @@ def test_review_company():
     company_review_request = requests.get(base_url+companies_path+"/"+str(id)+"/reviews")
     f_test_status_code_200(company_review_request)
     reviews = company_review_request.json()
-
-    if len(reviews) > 0:
-        review = reviews[0]
-        f_test_review(review)
+    f_test_review(reviews[0])
