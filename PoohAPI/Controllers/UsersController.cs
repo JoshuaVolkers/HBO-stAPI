@@ -169,9 +169,17 @@ namespace PoohAPI.Controllers
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
 
-            if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
-                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
-                    registerRequest.EmailAddress));      
+            User existingUser = this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress);
+            if (existingUser != null)
+            {
+                if (existingUser.Active)
+                    return BadRequest(string.Format("A user with emailaddres '{0}' already exists!", 
+                        registerRequest.EmailAddress));
+
+                // Just in case the user exists but did not verify his email in time
+                this.userCommandService.CreateUserVerification(existingUser.Id);
+                return Ok("Verification email has been sent.");
+            }                     
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 

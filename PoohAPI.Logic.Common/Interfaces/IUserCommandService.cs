@@ -24,5 +24,6 @@ namespace PoohAPI.Logic.Common.Interfaces
         void DeleteRefreshToken(string refreshToken);
         string UpdateRefreshToken(int userId);
         bool UpdatePassword(int userid, string newPassword, string oldPassword = null, bool isreset = false);
+        User CreateUserVerification(int createdUserId);
     }
 }

@@ -66,21 +66,27 @@ namespace PoohAPI.Logic.Users.Services
 
             var createdUserId = this.userRepository.UpdateDelete(query, parameters);
 
+            User user = CreateUserVerification(createdUserId);
+
+            return this.mapper.Map<JwtUser>(user);
+        }
+
+        public User CreateUserVerification(int createdUserId)
+        {
             string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
             var user = this.userReadService.GetUserById(createdUserId, false);
 
-            int minutes = 15;
+            int minutes = 2880;
             this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
             this.SendVerificationEmail(user, emailVerificationToken, minutes);
-
-            return this.mapper.Map<JwtUser>(user);
+            return user;
         }
 
         public void ResetPassword(string email, int userid)
         {
             string emailVerificationToken = this.CreateEmailVerificationToken(userid);
             var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 15;
+            int minutes = 2880;
             this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
             this.SendResetEmail(user, emailVerificationToken, minutes);
         }
@@ -132,8 +138,6 @@ namespace PoohAPI.Logic.Users.Services
 
             string emailValidationToken = "";
 
-            //TODO: maybe refactor this, total number of unique GUIDS is 2^128 (very many), so do-while is overbodig.
-            // Create token until it is unique
             do
             {
                 emailValidationToken = Guid.NewGuid().ToString();
