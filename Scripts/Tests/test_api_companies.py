@@ -99,38 +99,28 @@ def test_companies_default():
     f_test_status_code_200(companies_request)
     companies = companies_request.json()
     f_test_max_companies(companies, 5)
-
-    if len(companies) > 0:
-        base_company = companies[0]
-        f_test_base_company(base_company)
+    f_test_base_company(companies[0])
 
 # Test multiple companies (detailedCompanies = true)
 def test_companies_detailed():
     companies_request = requests.get(base_url+companies_path+"?detailedCompanies=true")
     f_test_status_code_200(companies_request)
     companies = companies_request.json()
-
-    if len(companies) > 0:
-        company = companies[0]
-        f_test_company(company)
+    f_test_company(companies[0])
 
 # Test multiple companies (minStars = 2)
 def test_companies_minstars():
     companies_request = requests.get(base_url+companies_path+"?minStars=2")
     f_test_status_code_200(companies_request)
     companies = companies_request.json()
-
-    if len(companies) > 0:
-        f_test_min_stars(companies, 2)
+    f_test_min_stars(companies, 2)
     
 # Test multiple companies (maxStars = 2)
 def test_companies_maxstars():
     companies_request = requests.get(base_url+companies_path+"?maxStars=2")
     f_test_status_code_200(companies_request)
     companies = companies_request.json()
-
-    if len(companies) > 0:
-        f_test_max_stars(companies, 2)
+    f_test_max_stars(companies, 2)
 
 # Test multiple companies (countryName = Nederland)
 def test_companies_countryname():
@@ -153,8 +143,7 @@ def test_companies_range():
     companies_request = requests.get(base_url+companies_path+"?cityName=Haarlem&locationRange="+str(r))
     f_test_status_code_200(companies_request)
     companies = companies_request.json()
-    if len(companies) > 0:
-        f_test_location_range(companies, r)
+    f_test_location_range(companies, r)
 
 # Test multiple companies (major = 1)
 def test_companies_major():
