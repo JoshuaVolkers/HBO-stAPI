@@ -64,16 +64,16 @@ namespace PoohAPI.Logic.Companies.Services
         /// <summary>
         /// Get a list of companies. Filters can be included. Only active companies will be returned.
         /// </summary>
-        /// <param name="maxCount"></param>
+        /// <param name="maxCount">Maximum number of companies to retrieve</param>
         /// <param name="offset"></param>
-        /// <param name="minStars"></param>
-        /// <param name="maxStars"></param>
-        /// <param name="cityName"></param>
-        /// <param name="countryName"></param>
-        /// <param name="locationRange"></param>
-        /// <param name="additionalLocationSearchTerms"></param>
-        /// <param name="major"></param>
-        /// <param name="detailedCompanies"></param>
+        /// <param name="minStars">Minimum number of stars the companies should have</param>
+        /// <param name="maxStars">Maximum number of stars the companies should have</param>
+        /// <param name="cityName">The name of the city in which the companies should be located</param>
+        /// <param name="countryName">The name of the country the companies should be located</param>
+        /// <param name="locationRange">The range around the city in which the companies should be located</param>
+        /// <param name="additionalLocationSearchTerms">Search terms if there are more cities with the same name within the country</param>
+        /// <param name="major">The major which the companies should be approved for</param>
+        /// <param name="detailedCompanies">Whether or not the companies should have detailed information</param>
         /// <returns></returns>
         public IEnumerable<BaseCompany> GetListCompanies(int maxCount, int offset, double? minStars = null,
             double? maxStars = null, string cityName = null, string countryName = null, int? locationRange = null,
