@@ -118,7 +118,7 @@ namespace PoohAPI.Controllers
                 {
                     return BadRequest("Review not found.");
                 }
-                else if (CustomAuthorizationHelper.GetCurrentUserId(User) != reviewData.UserId)
+                else if (CustomAuthorizationHelper.GetCurrentUserId(User) != review.UserId)
                 {
                     return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
                 }
@@ -126,7 +126,7 @@ namespace PoohAPI.Controllers
                 {
                     return BadRequest("Review has been locked.");
                 }
-                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, reviewData.UserId, reviewData.Stars,
+                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, review.UserId, reviewData.Stars,
                         reviewData.WrittenReview, reviewData.Anonymous, reviewData.CreationDate,
                         reviewData.VerifiedReview, reviewData.VerifiedBy));
             }

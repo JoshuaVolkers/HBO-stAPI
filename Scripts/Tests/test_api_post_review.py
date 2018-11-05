@@ -29,7 +29,7 @@ def f_test_review_input(review, companyId, stars, writtenReview, anonymous):
 
     assert correct == True
 
-def f_test_review_update_input(review, id, companyId, stars, writtenReview, anonymous, creationDate, verifiedReview, verifiedBy):
+def f_test_review_update_input(review, id, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy):
     correct = True
     if review["id"] != id:
         correct = False
@@ -46,9 +46,6 @@ def f_test_review_update_input(review, id, companyId, stars, writtenReview, anon
     if review["anonymous"] != anonymous:
         correct = False
 
-    if review["creationDate"] != creationDate:
-        correct = False
-
     if review["verifiedReview"] != verifiedReview:
         correct = False
 
@@ -56,7 +53,6 @@ def f_test_review_update_input(review, id, companyId, stars, writtenReview, anon
         correct = False
 
     assert correct == True
-
 
 def f_test_status_code_200(request):
     assert request.status_code == 200
@@ -69,17 +65,7 @@ token = {}
 headers = ''
 createdReviewId = ''
 
-# set global base_url variable
-
-
-def test_api_path(apiurl):
-    global base_url
-    base_url = apiurl
-
 # login with student credentials
-
-
-@pytest.mark.unit
 def test_login(studentemail, studentpass):
     payload = {'emailAddress': studentemail, 'password': studentpass}
     login_request = requests.post(base_url+users_path+"/login", json=payload)
@@ -90,8 +76,6 @@ def test_login(studentemail, studentpass):
     headers = {'Authorization': 'Bearer '+token}
 
 # Test review post
-
-
 def test_post_new_review():
     companyId = 1
     stars = 3
@@ -113,18 +97,16 @@ def test_post_new_review():
     f_test_review_input(review, companyId, stars, writtenReview, anonymous)
 
     global createdReviewId
-    createdReviewId = review['Id']
+    createdReviewId = review['id']
 
 # Test review update
-
-
 def test_update_created_review():
     reviewId = createdReviewId
     companyId = 1
     stars = 4
     writtenReview = "TEST_ update, nog steeds prima"
     anonymous = 0
-    creationDate = datetime.datetime.now()
+    creationDate = str(datetime.datetime.now())
     verifiedReview = 0
     verifiedBy = 0
 
@@ -143,14 +125,16 @@ def test_update_created_review():
     f_test_status_code_200(review_update_request)
     review = review_update_request.json()
     f_test_review(review)
-    f_test_review_update_input(review, reviewId, companyId, stars, writtenReview, anonymous, creationDate, verifiedReview, verifiedBy)
+    f_test_review_update_input(review, reviewId, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy)
 
+# Test review get
 def test_get_updated_review():
     review_get_request = requests.get(base_url+reviews_path+"/"+str(createdReviewId), headers=headers)
     f_test_status_code_200(review_get_request)
     review = review_get_request.json()
     f_test_review(review)
 
+# Test review delete
 def test_delete_review():
     review_delete_request = requests.delete(base_url+reviews_path+"/"+str(createdReviewId), headers=headers)
     f_test_status_code_200(review_delete_request)
