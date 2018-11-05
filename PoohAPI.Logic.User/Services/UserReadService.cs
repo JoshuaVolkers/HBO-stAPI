@@ -95,7 +95,6 @@ namespace PoohAPI.Logic.Users.Services
                     l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
 
             this.queryBuilder.SetFrom("reg_users u");
-
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_talen t ON s.user_taal = t.talen_id");
@@ -180,16 +179,21 @@ namespace PoohAPI.Logic.Users.Services
             if (educationsIds is null)
                 return;
 
+            // The filter allows multiple majors separated by commas. 
+            // Therefore, these should be split and put together with an OR statement in SQL.
+
+            // Split ids
             List<string> splitIds = educationsIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
-
             if (ids.Count <= 0)
                 return;
 
             string educationOr = "(";
 
+            // Put ids together with OR statement
             for (int i = 0; i < ids.Count; i++)
             {
+                // Each id should have its own unique parameter
                 parameters.Add("@eid" + i.ToString(), ids[i]);
                 educationOr += "s.user_opleiding_id = @eid" + i.ToString() + " ";
 
@@ -207,16 +211,21 @@ namespace PoohAPI.Logic.Users.Services
             if (educationalAttainmentIds is null)
                 return;
 
+            // The filter allows multiple educational attainments separated by commas. 
+            // Therefore, these should be split and put together with an OR statement in SQL.
+
+            // Split ids
             List<string> splitIds = educationalAttainmentIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
-
             if (ids.Count <= 0)
                 return;
 
             string educationOr = "(";
-
+            
+            // Put ids together with OR statement
             for (int i = 0; i < ids.Count; i++)
             {
+                // Each id should have its own unique parameter
                 parameters.Add("@aid" + i.ToString(), ids[i]);
                 educationOr += "s.user_op_niveau = @aid" + i.ToString() + " ";
 

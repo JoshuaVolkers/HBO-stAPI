@@ -41,9 +41,11 @@ namespace PoohAPI.Controllers
         /// <param name="detailedCompanies">The type of model to return, false = BaseCompany, true = Company. Set to true to retrieve more details.</param>
         /// <returns>A list of all basicCompanies</returns>
         /// <response code="200">Returns the list of basicCompanies</response>
+        /// <response code="400">If the request was invalid</response>
         /// <response code="404">If no companies are found</response>   
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Company>), 200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]double? minStars = null,
             [FromQuery]double? maxStars = null, [FromQuery]string cityName = null, [FromQuery]string countryName = null,

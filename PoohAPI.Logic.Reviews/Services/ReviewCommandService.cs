@@ -82,15 +82,16 @@ namespace PoohAPI.Logic.Reviews.Services
             parameters.Add("@datum", dbReview.review_datum);
             parameters.Add("@status", dbReview.review_status);
             parameters.Add("@bevestigdDoor", dbReview.review_status_bevestigd_door);
-            
+
             string query = "INSERT INTO reg_reviews (review_bedrijf_id, review_student_id" +
                 ", review_sterren, review_geschreven, review_anoniem, review_datum" +
                 ", review_status, review_status_bevestigd_door) " +
-                "VALUES (@bedrijfId, @studentId, @sterren, @geschreven, @anoniem, @datum, @status, @bevestigdDoor);";
+                "VALUES (@bedrijfId, @studentId, @sterren, @geschreven, @anoniem, @datum, @status, @bevestigdDoor);" +
+                "SELECT LAST_INSERT_ID()";
 
-            _reviewRepository.PostReview(query, parameters);
-            
-            return _reviewReadService.GetLastReview();
+            var createdReviewId = _reviewRepository.PostReview(query, parameters);
+
+            return _reviewReadService.GetReviewById(createdReviewId);
         }
     }
 }
