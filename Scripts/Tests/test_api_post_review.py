@@ -57,7 +57,6 @@ def f_test_review_update_input(review, id, companyId, stars, writtenReview, anon
 def f_test_status_code_200(request):
     assert request.status_code == 200
 
-
 base_url = ''
 reviews_path = "reviews"
 users_path = "users"
@@ -65,7 +64,13 @@ token = {}
 headers = ''
 createdReviewId = ''
 
+# set global base_url variable
+def test_api_path(apiurl):
+    global base_url
+    base_url = apiurl
+
 # login with student credentials
+@pytest.mark.unit
 def test_login(studentemail, studentpass):
     payload = {'emailAddress': studentemail, 'password': studentpass}
     login_request = requests.post(base_url+users_path+"/login", json=payload)
