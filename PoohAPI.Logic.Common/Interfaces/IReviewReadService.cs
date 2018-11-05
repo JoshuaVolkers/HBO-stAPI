@@ -8,7 +8,6 @@ namespace PoohAPI.Logic.Common.Interfaces
     {
         IEnumerable<Review> GetAllReviews(int maxCount, int offset);
         Review GetReviewById(int id);
-        Review GetLastReview();
         IEnumerable<int> GetListReviewIdsForUser(int userId);
         IEnumerable<ReviewPublic> GetListReviewsForCompany(int companyId);
     }
