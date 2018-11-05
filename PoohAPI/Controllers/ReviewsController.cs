@@ -10,9 +10,13 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using System.Net.Http.Headers;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
+using PoohAPI.Authorization;
+using System.Net;
 
 namespace PoohAPI.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("reviews")]
     public class ReviewsController : Controller
@@ -48,15 +52,17 @@ namespace PoohAPI.Controllers
         public IActionResult GetReviewById(int id)
         {
             Review review = _reviewReadService.GetReviewById(id);
+            var userId = CustomAuthorizationHelper.GetCurrentUserId(User);
 
             if (review == null)
             {
                 return NotFound("Review not found.");
             }
-            else
+            else if (review.UserId == userId)
             {
                 return Ok(_reviewReadService.GetReviewById(id));
             }
+            else return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
         }
 
         /// <summary>
@@ -79,75 +85,12 @@ namespace PoohAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, reviewData.UserId, reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));
+                return Ok(_reviewCommandService.PostReview(reviewData.CompanyId, CustomAuthorizationHelper.GetCurrentUserId(User), reviewData.Stars, reviewData.WrittenReview, reviewData.Anonymous));
             }
             else
             {
                 return BadRequest("Review information is incomplete");
             }
-        }
-
-        /// <summary>
-        /// Updates the specified review.
-        /// </summary>
-        /// <remarks>Reviews can only be updated until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewData">The updated review model</param>
-        /// <returns>A list of Review objects</returns>
-        /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the specified review does not exist</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>
-        [Obsolete]
-        [HttpPut]
-        [Route("{reviewId}/PostInternshipContract")]
-        [ProducesResponseType(typeof(Review), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
-        public IActionResult UpdateReviewContract(string name)
-        {
-            var newFileName = string.Empty;
-
-            if (HttpContext.Request.Form.Files != null)
-            {
-                var fileName = string.Empty;
-                string PathDB = string.Empty;
-
-                var files = HttpContext.Request.Form.Files;
-
-                foreach (var file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        //Getting FileName
-                        fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-
-                        //Assigning Unique Filename (Guid)
-                        var myUniqueFileName = Convert.ToString(Guid.NewGuid());
-
-                        //Getting file Extension
-                        var FileExtension = Path.GetExtension(fileName);
-
-                        // concating  FileName + FileExtension
-                        newFileName = myUniqueFileName + FileExtension;
-
-                        // Combines two strings into a path.
-                        fileName = Path.Combine(_environment.WebRootPath, "demoImages") + $@"\{newFileName}";
-
-                        // if you want to store path of folder in database
-                        PathDB = "demoImages/" + newFileName;
-
-                        using (FileStream fs = System.IO.File.Create(fileName))
-                        {
-                            file.CopyTo(fs);
-                            fs.Flush();
-                        }
-                    }
-                }
-
-
-            }
-            return View();
         }
 
         /// <summary>
@@ -175,12 +118,15 @@ namespace PoohAPI.Controllers
                 {
                     return BadRequest("Review not found.");
                 }
+                else if (CustomAuthorizationHelper.GetCurrentUserId(User) != reviewData.UserId)
+                {
+                    return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
+                }
                 else if (review.Locked == true)
                 {
                     return BadRequest("Review has been locked.");
                 }
-                else
-                    return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, reviewData.UserId, reviewData.Stars,
+                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, reviewData.UserId, reviewData.Stars,
                         reviewData.WrittenReview, reviewData.Anonymous, reviewData.CreationDate,
                         reviewData.VerifiedReview, reviewData.VerifiedBy));
             }
@@ -194,7 +140,7 @@ namespace PoohAPI.Controllers
         /// Deletes the specified review
         /// </summary>
         /// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to delete</param>
+        /// <param name="id">The id of the review to delete</param>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the specified reviewId does not exist</response>   
@@ -208,6 +154,10 @@ namespace PoohAPI.Controllers
             if (review == null)
             {
                 return BadRequest("Review not found.");
+            }
+            else if (CustomAuthorizationHelper.GetCurrentUserId(User) != review.UserId)
+            {
+                return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
             }
             else if (review.Locked == false)
             {

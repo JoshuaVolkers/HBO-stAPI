@@ -56,8 +56,13 @@ namespace PoohAPI.Authorization
             });
         }
 
-        public string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 3600)
+        /// <summary>
+        /// Generates a JWT token. Giving the expiryTimeInSeconds a value of '0' will make it use the value defined in the applicationsettings.
+        /// </summary>
+        public string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 0)
         {
+            if (expiryTimeInSeconds == 0)
+                expiryTimeInSeconds = _configSettings.GetValue<int>("JWTExpiryTime");
             return RequestToken(user, expiryTimeInSeconds);
         }
     }

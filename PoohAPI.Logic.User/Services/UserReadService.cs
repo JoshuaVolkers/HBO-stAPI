@@ -2,14 +2,11 @@
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Classes;
 using System.Linq;
-using System.Threading.Tasks;
-using PoohAPI.Infrastructure.UserDB.Models;
 
 namespace PoohAPI.Logic.Users.Services
 {
