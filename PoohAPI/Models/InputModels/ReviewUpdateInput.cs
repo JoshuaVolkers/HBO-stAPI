@@ -14,8 +14,6 @@ namespace PoohAPI.Models.InputModels
         [Required]
         public int CompanyId { get; set; }
         [Required]
-        public int UserId { get; set; }
-        [Required]
         public int Stars { get; set; }
         [Required]
         public string WrittenReview { get; set; }
