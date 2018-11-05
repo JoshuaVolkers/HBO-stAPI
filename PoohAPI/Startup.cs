@@ -82,7 +82,6 @@ namespace PoohAPI
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 s.IncludeXmlComments(xmlPath);
 
-                //s.IgnoreObsoleteActions();
                 s.DescribeAllEnumsAsStrings();
             });
             #endregion
@@ -111,7 +110,6 @@ namespace PoohAPI
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = tokenOptions;
-                    //options.SaveToken = true;
                 });
             #endregion
 

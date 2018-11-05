@@ -73,6 +73,7 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("facebook")]
@@ -90,7 +91,7 @@ namespace PoohAPI.Controllers
             if (!userAccessTokenValidation.IsValid)
             {
                 client.Dispose();
-                return BadRequest("Facebook access token is invalid!");
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Facebook access token is invalid!");
             }
 
             var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
@@ -118,6 +119,7 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("linkedin")]
@@ -152,12 +154,12 @@ namespace PoohAPI.Controllers
         /// <param name="registerRequest">The registerRequest model</param>
         /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>
+        /// <response code="400">If the login failed due to incomplete personal information</response>
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
             if (!ModelState.IsValid)
