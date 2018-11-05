@@ -272,7 +272,6 @@ namespace PoohAPI.Logic.Users.Services
 
         public void DeleteRefreshToken(string refreshToken)
         {
-            //Using "user_id <> 0" is a hacky way of avoiding the "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column" error.
             string query = @"UPDATE reg_users SET user_refresh_token = NULL WHERE user_refresh_token = @refreshToken AND user_id <> 0";
             var parameters = new Dictionary<string, object>
             {
