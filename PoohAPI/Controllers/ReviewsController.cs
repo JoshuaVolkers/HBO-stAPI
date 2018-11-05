@@ -118,7 +118,7 @@ namespace PoohAPI.Controllers
                 {
                     return BadRequest("Review not found.");
                 }
-                else if (CustomAuthorizationHelper.GetCurrentUserId(User) == reviewData.Id)
+                else if (CustomAuthorizationHelper.GetCurrentUserId(User) != reviewData.UserId)
                 {
                     return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
                 }
@@ -140,7 +140,7 @@ namespace PoohAPI.Controllers
         /// Deletes the specified review
         /// </summary>
         /// <remarks>Reviews can only be deleted until 72 hours after they have been created. Otherwise they will be locked.</remarks>
-        /// <param name="reviewId">The id of the review to delete</param>
+        /// <param name="id">The id of the review to delete</param>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the specified reviewId does not exist</response>   
@@ -155,7 +155,7 @@ namespace PoohAPI.Controllers
             {
                 return BadRequest("Review not found.");
             }
-            else if (CustomAuthorizationHelper.GetCurrentUserId(User) == id)
+            else if (CustomAuthorizationHelper.GetCurrentUserId(User) != review.UserId)
             {
                 return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
             }
