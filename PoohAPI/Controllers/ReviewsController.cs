@@ -126,7 +126,7 @@ namespace PoohAPI.Controllers
                 {
                     return BadRequest("Review has been locked.");
                 }
-                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, reviewData.UserId, reviewData.Stars,
+                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, CustomAuthorizationHelper.GetCurrentUserId(User), reviewData.Stars,
                         reviewData.WrittenReview, reviewData.Anonymous, reviewData.CreationDate,
                         reviewData.VerifiedReview, reviewData.VerifiedBy));
             }
