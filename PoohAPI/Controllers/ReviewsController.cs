@@ -160,13 +160,13 @@ namespace PoohAPI.Controllers
             {
                 return StatusCode((int)HttpStatusCode.Unauthorized, "User id does not match");
             }
-            else if (review.Locked == false)
+            else if (review.Locked == true)
             {
-                _reviewCommandService.DeleteReview(id);
-                return Ok("Review has been deleted.");
+                return BadRequest("Review has been locked.");                
             }
             else
-                return BadRequest("Review has been locked.");
+                _reviewCommandService.DeleteReview(id);
+                return Ok("Review has been deleted.");
         }
     }
 }
