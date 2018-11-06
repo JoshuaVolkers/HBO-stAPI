@@ -73,6 +73,7 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("facebook")]
@@ -90,7 +91,7 @@ namespace PoohAPI.Controllers
             if (!userAccessTokenValidation.IsValid)
             {
                 client.Dispose();
-                return BadRequest("Facebook access token is invalid!");
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Facebook access token is invalid!");
             }
 
             var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
@@ -118,6 +119,7 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("linkedin")]
@@ -152,12 +154,12 @@ namespace PoohAPI.Controllers
         /// <param name="registerRequest">The registerRequest model</param>
         /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>
+        /// <response code="400">If the login failed due to incomplete personal information</response>
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
             if (!ModelState.IsValid)
@@ -169,9 +171,17 @@ namespace PoohAPI.Controllers
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
 
-            if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
-                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
-                    registerRequest.EmailAddress));      
+            User existingUser = this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress);
+            if (existingUser != null)
+            {
+                if (existingUser.Active)
+                    return BadRequest(string.Format("A user with emailaddres '{0}' already exists!", 
+                        registerRequest.EmailAddress));
+
+                // Just in case the user exists but did not verify his email in time
+                this.userCommandService.CreateUserVerification(existingUser.Id);
+                return Ok("Verification email has been sent.");
+            }                     
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 
@@ -212,7 +222,7 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="404">If the refreshtoken does not exist</response>
+        /// <response code="400">If the refreshtoken does not exist</response>
         [AllowAnonymous]
         [HttpDelete]
         [Route("token/{refreshToken}/revoke")]
@@ -267,6 +277,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
+        /// <response code="400">If the request was invalid</response>
         [Authorize(Roles = "Validator, Elbho_medewerker")]
         [HttpGet]
         [Route("")]
@@ -274,6 +285,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
             [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
             [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
@@ -322,20 +334,22 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response> 
+        /// <response code="404">If the user was not found</response>
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
-        /// <response code="404">If the user was not found</response>  
         [HttpDelete]
         [Route("me")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public IActionResult DeleteUser()
         {
+            if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
+                return NotFound("User not found.");
+
             this.userCommandService.DeleteUser(CustomAuthorizationHelper.GetCurrentUserId(User));
-            return Ok();
+            return Ok("User deleted.");
         }
 
         /// <summary>
@@ -347,18 +361,23 @@ namespace PoohAPI.Controllers
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
+        /// <response code="401">If the request was invalid</response>
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid)
-                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
-            else
-                return BadRequest("Informatie involledig.");
+            if (!ModelState.IsValid)
+                return BadRequest("Body incorrect.");
+            
+            if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
+                return NotFound("User not found.");
+
+            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
         }
 
         /// <summary>

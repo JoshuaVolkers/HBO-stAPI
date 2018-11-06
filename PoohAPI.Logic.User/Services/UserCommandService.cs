@@ -66,16 +66,34 @@ namespace PoohAPI.Logic.Users.Services
 
             var createdUserId = this.userRepository.UpdateDelete(query, parameters);
 
-            string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
-            var user = this.userReadService.GetUserById(createdUserId, false);
-
-            int minutes = 15;
-            this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendVerificationEmail(user, emailVerificationToken, minutes);
+            User user = CreateUserVerification(createdUserId);
 
             return this.mapper.Map<JwtUser>(user);
         }
 
+        public User CreateUserVerification(int createdUserId)
+        {
+            string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
+            var user = this.userReadService.GetUserById(createdUserId, false);
+
+            int minutes = 2880;
+            this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
+            this.SendVerificationEmail(user, emailVerificationToken, minutes);
+            return user;
+        }
+
+<<<<<<< HEAD
+=======
+        public void ResetPassword(string email, int userid)
+        {
+            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
+            var user = this.userReadService.GetUserByEmail<User>(email);
+            int minutes = 2880;
+            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
+            this.SendResetEmail(user, emailVerificationToken, minutes);
+        }
+
+>>>>>>> dev2
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
             string url = this.config.GetValue<string>("ApiHost") + "/users/verify?token=" + emailVerificationToken;
@@ -107,8 +125,6 @@ namespace PoohAPI.Logic.Users.Services
 
             string emailValidationToken = "";
 
-            //TODO: maybe refactor this, total number of unique GUIDS is 2^128 (very many), so do-while is overbodig.
-            // Create token until it is unique
             do
             {
                 emailValidationToken = Guid.NewGuid().ToString();
@@ -224,7 +240,6 @@ namespace PoohAPI.Logic.Users.Services
 
         public void DeleteRefreshToken(string refreshToken)
         {
-            //Using "user_id <> 0" is a hacky way of avoiding the "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column" error.
             string query = @"UPDATE reg_users SET user_refresh_token = NULL WHERE user_refresh_token = @refreshToken AND user_id <> 0";
             var parameters = new Dictionary<string, object>
             {

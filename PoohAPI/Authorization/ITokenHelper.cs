@@ -10,6 +10,6 @@ namespace PoohAPI.Authorization
     public interface ITokenHelper
     {
         ClaimsIdentity CreateClaimsIdentity(bool activeUser, int userId, string userRole, string refreshToken);
-        string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 3600);
+        string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 0);
     }
 }

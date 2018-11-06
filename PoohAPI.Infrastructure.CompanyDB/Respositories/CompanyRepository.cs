@@ -18,19 +18,9 @@ namespace PoohAPI.Infrastructure.CompanyDB.Respositories
             _mapper = mapper;
         }
 
-        public DBCompany GetCompany(string query)
-        {
-            return GetSingle<DBCompany>(query);
-        }
-
         public DBCompany GetCompany(string query, Dictionary<string, object> parameters)
         {
             return GetSingle<DBCompany>(query, parameters);
-        }
-
-        public IEnumerable<DBCompany> GetListCompanies(string query)
-        {
-            return GetAll<DBCompany>(query);
         }
 
         public IEnumerable<DBCompany> GetListCompanies(string query, Dictionary<string, object> parameters)

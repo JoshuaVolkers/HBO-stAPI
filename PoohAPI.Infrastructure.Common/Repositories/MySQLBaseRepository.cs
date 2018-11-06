@@ -106,19 +106,6 @@ namespace PoohAPI.Infrastructure.Common.Repositories
             return null;
         }
 
-        public int NonQuery(string query)
-        {
-            if (_client.OpenConnection())
-            {
-                var command = new MySqlCommand(query, _client.Connection());
-                var result = command.ExecuteNonQuery();
-                _client.CloseConnection();
-                return result;
-            }
-
-            return 0;
-        }
-
         public int NonQuery(string query, Dictionary<string, object> parameters)
         {
             if (_client.OpenConnection())

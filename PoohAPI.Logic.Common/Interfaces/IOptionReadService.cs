@@ -14,6 +14,7 @@ namespace PoohAPI.Logic.Common.Interfaces
         IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount = 0, int offset = 0);
         IEnumerable<Language> GetAllLanguages();
         IEnumerable<InternshipType> GetAllInternshipTypes();
+        IEnumerable<Country> GetAllCountries();
         Country GetCountryById(int id);
     }
 }

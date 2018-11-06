@@ -156,8 +156,48 @@ namespace PoohAPI.Logic.Vacancies.Services
 
         private void AddLimitAndOffset(Dictionary<string, object> parameters, int maxCount, int offset)
         {
+<<<<<<< HEAD
             this.queryBuilder.SetLimit("@limit");
             this.queryBuilder.SetOffset("@offset");
+=======
+            if (!(cityName is null) && !(locationRange is null))
+            {
+                // Use Map API
+                Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(cityName, countryName, municipalityName);
+
+                if (!(coordinates is null))
+                {
+                    parameters.Add("@latitude", coordinates.Latitude);
+                    parameters.Add("@longitude", coordinates.Longitude);
+                    parameters.Add("@rangeKm", locationRange);
+
+                    // Select vacancies within the range. The formula is called a haversine formula.
+                    this.queryBuilder.AddSelect(@"(
+                        6371 * acos(
+                          cos(radians(@latitude))
+                          * cos(radians(v.vacature_breedtegraad))
+                          * cos(radians(v.vacature_lengtegraad) - radians(@longitude))
+                          + sin(radians(@latitude))
+                          * sin(radians(v.vacature_breedtegraad))
+                        )) as distance");
+                    this.queryBuilder.AddHaving("distance < @rangeKm");
+                }
+            }
+            else
+            {
+                // Find matches in database
+                if (!(cityName is null))
+                {
+                    AddCityFilter(parameters, cityName);
+                }
+
+                if (!(countryName is null))
+                {
+                    AddCountryFilter(parameters, countryName);
+                }
+            }
+        }
+>>>>>>> dev2
 
             parameters.Add("@limit", maxCount);
             parameters.Add("@offset", offset);
