@@ -153,61 +153,10 @@ namespace PoohAPI.Logic.Companies.Services
             }
         }
 
-        private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null, 
+        private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null,
             string municipalityName = null, string cityName = null, int? locationRange = null)
         {
-<<<<<<< HEAD
             locationHelper.AddLocationFilter(ref parameters, mapAPIReadService, ref queryBuilder, 'b', "bedrijf", countryName, municipalityName, cityName, locationRange);
-=======
-            if (cityName != null && locationRange != null)
-            {
-                // Use Map API
-                Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(cityName, countryName, municipalityName);
-
-                if (coordinates != null)
-                {
-                    parameters.Add("@latitude", coordinates.Latitude);
-                    parameters.Add("@longitude", coordinates.Longitude);
-                    parameters.Add("@rangeKm", locationRange);
-
-                    // Select companies within the range. The formula is called a haversine formula.
-                    this.queryBuilder.AddSelect(@"(
-                        6371 * acos(
-                          cos(radians(@latitude))
-                          * cos(radians(b.bedrijf_breedtegraad))
-                          * cos(radians(b.bedrijf_lengtegraad) - radians(@longitude))
-                          + sin(radians(@latitude))
-                          * sin(radians(b.bedrijf_breedtegraad))
-                        )) as distance");
-                    this.queryBuilder.AddHaving("distance < @rangeKm");
-                }
-                else
-                {
-                    // Find matches in database
-                    this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
-                }
-            }
-            else
-            {
-                // Find matches in database
-                this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
-            }
-        }
-
-        private void AddLocationFilterWithoutCoordinates(Dictionary<string, object> parameters, string countryName, string cityName)
-        {
-            if (cityName != null)
-                AddCityFilter(parameters, cityName);
-
-            if (countryName != null)
-                AddCountryFilter(parameters, countryName);
-        }
-
-        private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
-        {
-            this.queryBuilder.AddWhere("l.land_naam = @countryName");
-            parameters.Add("@countryName", countryName);
->>>>>>> dev2
-        }
+        }  
     }
 }

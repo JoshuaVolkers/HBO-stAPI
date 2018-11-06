@@ -82,18 +82,6 @@ namespace PoohAPI.Logic.Users.Services
             return user;
         }
 
-<<<<<<< HEAD
-=======
-        public void ResetPassword(string email, int userid)
-        {
-            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
-            var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 2880;
-            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendResetEmail(user, emailVerificationToken, minutes);
-        }
-
->>>>>>> dev2
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
             string url = this.config.GetValue<string>("ApiHost") + "/users/verify?token=" + emailVerificationToken;
@@ -372,19 +360,10 @@ namespace PoohAPI.Logic.Users.Services
         }
         public void ResetPassword(string email, int userid)
         {
-            //Create emailverificationtoken to be sent to the email
             string emailVerificationToken = this.CreateEmailVerificationToken(userid);
-
-            //Get user
             var user = this.userReadService.GetUserByEmail<User>(email);
-
-            //Set the expirytime of the token
-            int minutes = 15;
-
-            //Add the verificationtoken to the database to compare after the user clicks on the link
+            int minutes = 2880;
             this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-
-            //Send the mail to the user
             this.SendResetEmail(user, emailVerificationToken, minutes);
         }
     }
