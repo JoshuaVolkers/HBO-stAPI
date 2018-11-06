@@ -2,6 +2,7 @@
 using PoohAPI.Infrastructure.OptionDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Classes;
 using PoohAPI.Logic.Common.Models.OptionModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,11 +15,11 @@ namespace PoohAPI.Logic.Options.Services
         private readonly IMapper _mapper;
         private readonly IQueryBuilder _queryBuilder;
 
-        public OptionReadService(IOptionRepository optionRepository, IMapper mapper, IQueryBuilder queryBuilder)
+        public OptionReadService(IOptionRepository optionRepository, IMapper mapper)
         {
             _optionRepository = optionRepository;
             _mapper = mapper;
-            _queryBuilder = queryBuilder;
+            _queryBuilder = new QueryBuilder();
         }
 
         public IEnumerable<Major> GetAllMajors(int maxCount, int offset)
@@ -26,13 +27,13 @@ namespace PoohAPI.Logic.Options.Services
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             _queryBuilder.AddSelect(@"*");
-            _queryBuilder.SetFrom("reg_opleidingen");            
+            _queryBuilder.SetFrom("reg_opleidingen");
             _queryBuilder.SetLimit("@limit");
             _queryBuilder.SetOffset("@offset");
 
             parameters.Add("@limit", maxCount);
             parameters.Add("@offset", offset);
-                        
+
             string query = _queryBuilder.BuildQuery();
 
             var majors = _optionRepository.GetAllMajors(query, parameters);
@@ -57,17 +58,23 @@ namespace PoohAPI.Logic.Options.Services
             return _mapper.Map<IEnumerable<EducationLevel>>(edLevels);
         }
 
-        public IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount, int offset)
+        public IEnumerable<AllowedEmailAddress> GetAllAllowedEmailAddresses(int maxCount = 0, int offset = 0)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
             _queryBuilder.AddSelect(@"*");
             _queryBuilder.SetFrom("reg_student_email");
-            _queryBuilder.SetLimit("@limit");
-            _queryBuilder.SetOffset("@offset");
 
-            parameters.Add("@limit", maxCount);
-            parameters.Add("@offset", offset);
+            if (maxCount > 0)
+            {
+                _queryBuilder.SetLimit("@limit");
+                parameters.Add("@limit", maxCount);
+            }
+            if (offset > 0)
+            {
+                _queryBuilder.SetOffset("@offset");
+                parameters.Add("@offset", offset);
+            }
 
             string query = _queryBuilder.BuildQuery();
 
@@ -95,6 +102,34 @@ namespace PoohAPI.Logic.Options.Services
 
             var internshiptypes = _optionRepository.GetAllIntershipTypes(query);
             return _mapper.Map<IEnumerable<InternshipType>>(internshiptypes);
+        }
+
+        public Country GetCountryById(int id)
+        {
+            _queryBuilder.AddSelect("*");
+            _queryBuilder.SetFrom("reg_landen");
+            _queryBuilder.AddWhere("land_id = @id");
+
+            string query = _queryBuilder.BuildQuery();
+
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            parameters.Add("@id", id);
+
+            var country = _optionRepository.GetCountryById(query, parameters);
+
+            return _mapper.Map<Country>(country);
+        }
+
+        public IEnumerable<Country> GetAllCountries()
+        {
+            _queryBuilder.AddSelect(@"*");
+            _queryBuilder.SetFrom("reg_landen");
+
+            string query = _queryBuilder.BuildQuery();
+
+            var countries = _optionRepository.GetAllCountries(query);
+            return _mapper.Map<IEnumerable<Country>>(countries);
         }
     }
 }

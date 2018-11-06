@@ -2,13 +2,11 @@
 using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
-using PoohAPI.Logic.Common.Models.BaseModels;
 using System;
 using System.Collections.Generic;
 using PoohAPI.Logic.Common.Enums;
+using PoohAPI.Logic.Common.Classes;
 using System.Linq;
-using System.Threading.Tasks;
-using PoohAPI.Infrastructure.UserDB.Models;
 
 namespace PoohAPI.Logic.Users.Services
 {
@@ -19,15 +17,17 @@ namespace PoohAPI.Logic.Users.Services
         private readonly IQueryBuilder queryBuilder;
         private readonly IMapAPIReadService mapAPIReadService;
         private readonly IReviewReadService reviewReadService;
+        private readonly IVacancyReadService vacancyReadService;
 
-        public UserReadService(IUserRepository userRepository, IMapper mapper, IQueryBuilder queryBuilder,
-            IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService)
+        public UserReadService(IUserRepository userRepository, IMapper mapper,
+            IMapAPIReadService mapAPIReadService, IReviewReadService reviewReadService, IVacancyReadService vacancyReadService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
             this.mapAPIReadService = mapAPIReadService;
             this.reviewReadService = reviewReadService;
+            this.vacancyReadService = vacancyReadService;
         }
 
         public IEnumerable<User> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
@@ -38,7 +38,7 @@ namespace PoohAPI.Logic.Users.Services
 
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
                     s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad,
-                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
+                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam, u.user_active");
             this.queryBuilder.SetFrom("reg_users u");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
@@ -91,12 +91,10 @@ namespace PoohAPI.Logic.Users.Services
         public User GetUserById(int id, bool isActive = true)
         {
             this.queryBuilder.AddSelect(@"u.user_id, u.user_email, u.user_name, u.user_role, s.user_land, s.user_woonplaats, s.user_opleiding_id, 
-                    s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, 
-                    IF(l.land_naam IS NULL, '', l.land_naam) AS land_naam, IF(t.talen_naam IS NULL, '', t.talen_naam) AS talen_naam, 
-                    IF(o.opl_naam IS NULL, '', o.opl_naam) AS opl_naam, IF(op.opn_naam IS NULL, '', op.opn_naam) AS opn_naam");
+                    s.user_op_niveau, s.user_taal, s.user_breedtegraad, s.user_lengtegraad, u.user_active,  
+                    l.land_naam, t.talen_naam, o.opl_naam, op.opn_naam");
 
             this.queryBuilder.SetFrom("reg_users u");
-
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_user_studenten s ON u.user_id = s.user_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON s.user_land = l.land_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_talen t ON s.user_taal = t.talen_id");
@@ -120,6 +118,7 @@ namespace PoohAPI.Logic.Users.Services
                 return null;
 
             user.Reviews = this.reviewReadService.GetListReviewIdsForUser(user.Id);
+            user.FavoriteVacancies = this.vacancyReadService.GetListVacancyIdsForUser(user.Id);
 
             return user;
         }
@@ -180,16 +179,21 @@ namespace PoohAPI.Logic.Users.Services
             if (educationsIds is null)
                 return;
 
+            // The filter allows multiple majors separated by commas. 
+            // Therefore, these should be split and put together with an OR statement in SQL.
+
+            // Split ids
             List<string> splitIds = educationsIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
-
             if (ids.Count <= 0)
                 return;
 
             string educationOr = "(";
 
+            // Put ids together with OR statement
             for (int i = 0; i < ids.Count; i++)
             {
+                // Each id should have its own unique parameter
                 parameters.Add("@eid" + i.ToString(), ids[i]);
                 educationOr += "s.user_opleiding_id = @eid" + i.ToString() + " ";
 
@@ -207,16 +211,21 @@ namespace PoohAPI.Logic.Users.Services
             if (educationalAttainmentIds is null)
                 return;
 
+            // The filter allows multiple educational attainments separated by commas. 
+            // Therefore, these should be split and put together with an OR statement in SQL.
+
+            // Split ids
             List<string> splitIds = educationalAttainmentIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
-
             if (ids.Count <= 0)
                 return;
 
             string educationOr = "(";
-
+            
+            // Put ids together with OR statement
             for (int i = 0; i < ids.Count; i++)
             {
+                // Each id should have its own unique parameter
                 parameters.Add("@aid" + i.ToString(), ids[i]);
                 educationOr += "s.user_op_niveau = @aid" + i.ToString() + " ";
 
@@ -274,6 +283,7 @@ namespace PoohAPI.Logic.Users.Services
                     parameters.Add("@longitude", coordinates.Longitude);
                     parameters.Add("@rangeKm", locationRange);
 
+                    // Select users within the range. The formula is called a haversine formula.
                     this.queryBuilder.AddSelect(@"(
                         6371 * acos(
                           cos(radians(@latitude))

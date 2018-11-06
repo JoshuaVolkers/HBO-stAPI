@@ -10,9 +10,7 @@ namespace PoohAPI.Infrastructure.CompanyDB.Respositories
 {
     public interface ICompanyRepository
     {
-        IEnumerable<DBCompany> GetListCompanies(string query);
         IEnumerable<DBCompany> GetListCompanies(string query, Dictionary<string, object> parameters);
-        DBCompany GetCompany(string query);
         DBCompany GetCompany(string query, Dictionary<string,object> parameters);
     }
 }

@@ -24,10 +24,11 @@ namespace PoohAPI.Authorization
             var claims = new List<Claim>()
             {
                 user.FindFirst("id"),
-                user.FindFirst(ClaimTypes.Name),
+                user.FindFirst("active"),
                 user.FindFirst(JwtRegisteredClaimNames.Iat),
-                user.FindFirst(ClaimTypes.Role)
-            };            
+                user.FindFirst(ClaimTypes.Role),
+                user.FindFirst("refreshToken")
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configSettings.GetValue<string>("JWTSigningKey")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -43,27 +44,26 @@ namespace PoohAPI.Authorization
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsIdentity CreateClaimsIdentity(string userName, int userId, string userRole)
+        public ClaimsIdentity CreateClaimsIdentity(bool activeUser, int userId, string userRole, string refreshToken = null)
         {
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            return new ClaimsIdentity(new GenericIdentity(userId.ToString(), "Token"), new[]
             {
-                new Claim(ClaimTypes.Name, userName),
-                new Claim("id", userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                new Claim("active", activeUser.ToString()),
+                new Claim("id", userId.ToString(), ClaimValueTypes.Integer32),
+                new Claim("refreshToken", string.IsNullOrWhiteSpace(refreshToken) ? "" : refreshToken),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                 new Claim(ClaimTypes.Role, userRole)
             });
         }
 
-        public JWTToken GenerateJWT(ClaimsIdentity user, string refreshToken, int expiryTimeInSeconds = 3600)
+        /// <summary>
+        /// Generates a JWT token. Giving the expiryTimeInSeconds a value of '0' will make it use the value defined in the applicationsettings.
+        /// </summary>
+        public string GenerateJWT(ClaimsIdentity user, int expiryTimeInSeconds = 0)
         {
-            var response = new JWTToken
-            (
-                user.Claims.SingleOrDefault(c => c.Type == "id").Value,
-                RequestToken(user, expiryTimeInSeconds),
-                expiryTimeInSeconds,
-                refreshToken
-            );
-            return response;
+            if (expiryTimeInSeconds == 0)
+                expiryTimeInSeconds = _configSettings.GetValue<int>("JWTExpiryTime");
+            return RequestToken(user, expiryTimeInSeconds);
         }
     }
 }

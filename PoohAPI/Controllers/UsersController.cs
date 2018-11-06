@@ -3,6 +3,7 @@ using PoohAPI.RequestModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
@@ -27,14 +28,16 @@ namespace PoohAPI.Controllers
         private readonly IVacancyReadService vacancyReadService;
         private readonly IVacancyCommandService vacancyCommandService;
         private readonly ITokenHelper tokenHelper;
+        private readonly IOptionReadService optionReadService;
 
-        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper)
+        public UsersController(IUserReadService userReadService, IUserCommandService userCommandService, IVacancyCommandService vacancyCommandService, IVacancyReadService vacancyReadService, ITokenHelper tokenHelper, IOptionReadService optionReadService)
         {
             this.userReadService = userReadService;
             this.userCommandService = userCommandService;
             this.vacancyReadService = vacancyReadService;
             this.vacancyCommandService = vacancyCommandService;
             this.tokenHelper = tokenHelper;
+            this.optionReadService = optionReadService;
         }
 
         /// <summary>
@@ -47,19 +50,19 @@ namespace PoohAPI.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public IActionResult Login([FromBody]LoginRequest loginRequest)
         {
             var user = this.userReadService.Login(loginRequest.Password, loginRequest.EmailAddress);
             if (user == null)
-                return BadRequest("Username or password was incorrect!");
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Username or password was incorrect!");
 
             var refreshToken = this.userCommandService.UpdateRefreshToken(user.Id);
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), refreshToken);
 
-            return Ok(this.tokenHelper.GenerateJWT(identity, refreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -70,10 +73,11 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of Facebook accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("facebook")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public async System.Threading.Tasks.Task<IActionResult> FacebookAsync([FromBody] string AccessToken)
         {
@@ -87,7 +91,7 @@ namespace PoohAPI.Controllers
             if (!userAccessTokenValidation.IsValid)
             {
                 client.Dispose();
-                return BadRequest("Facebook access token is invalid!");
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Facebook access token is invalid!");
             }
 
             var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name&access_token={AccessToken}");
@@ -102,8 +106,8 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.Name, userInfo.Email, UserAccountType.FacebookUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
-            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), user.RefreshToken);
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -115,10 +119,11 @@ namespace PoohAPI.Controllers
         /// <response code="200">If the request was a success</response>  
         /// <response code="401">If the login failed due to incorrect credentials</response>
         /// <remarks>The expirytime for the token is equal to the expirytime of LinkedIn accesstokens</remarks>
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         [Route("linkedin")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         public async System.Threading.Tasks.Task<IActionResult> LinkedInAsync([FromBody] string AccessToken, [FromBody] string redirectUri)
         {
@@ -138,9 +143,9 @@ namespace PoohAPI.Controllers
                 user = this.userCommandService.RegisterUser(userInfo.FormattedName, userInfo.Email, UserAccountType.LinkedInUser);
             }
 
-            var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+            var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), user.RefreshToken);
 
-            return Ok(this.tokenHelper.GenerateJWT(identity, user.RefreshToken));
+            return Ok(this.tokenHelper.GenerateJWT(identity));
         }
 
         /// <summary>
@@ -149,23 +154,34 @@ namespace PoohAPI.Controllers
         /// <param name="registerRequest">The registerRequest model</param>
         /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>  
-        /// <response code="401">If the login failed due to incomplete personal information</response>
+        /// <response code="400">If the login failed due to incomplete personal information</response>
         [AllowAnonymous]
         [HttpPost]
         [Route("register")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(400)]
         public IActionResult Register([FromBody]RegisterRequest registerRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Not all values were filled in correctly!");
+
             if (!registerRequest.AcceptTermsAndConditions)
                 return BadRequest("You need to accept the terms and conditions before creating your account!");
+
             if (!CheckIfEmailAddressIsAllowed(registerRequest.EmailAddress))
                 return BadRequest("The filled in emailaddress is not allowed!");
-            if (this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress) != null)
-                return BadRequest(string.Format("A user with emailaddres '{0}' already exists!",
-                    registerRequest.EmailAddress));      
+
+            User existingUser = this.userReadService.GetUserByEmail<User>(registerRequest.EmailAddress);
+            if (existingUser != null)
+            {
+                if (existingUser.Active)
+                    return BadRequest(string.Format("A user with emailaddres '{0}' already exists!", 
+                        registerRequest.EmailAddress));
+
+                // Just in case the user exists but did not verify his email in time
+                this.userCommandService.CreateUserVerification(existingUser.Id);
+                return Ok("Verification email has been sent.");
+            }                     
 
             var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 
@@ -177,11 +193,13 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200">If the request was a success</response>
+        /// <response code="200">If the refreshToken is not a valid guid</response>
         /// <response code="404">If the refreshtoken does not exist</response>
         [AllowAnonymous]
         [HttpGet]
         [Route("token/{refreshToken}/refresh")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult RefreshAccesToken(string refreshToken)
         {
@@ -189,11 +207,11 @@ namespace PoohAPI.Controllers
             {
                 var user = this.userReadService.GetUserByRefreshToken(parsedGuid.ToString("N"));
                 if (user == null)
-                    return BadRequest("Specified token does not exist!");
+                    return NotFound("Specified token does not exist!");
 
-                var identity = this.tokenHelper.CreateClaimsIdentity(user.Name, user.Id, user.Role.ToString());
+                var identity = this.tokenHelper.CreateClaimsIdentity(user.Active, user.Id, user.Role.ToString(), parsedGuid.ToString("N"));
 
-                return Ok(this.tokenHelper.GenerateJWT(identity, parsedGuid.ToString("N")));
+                return Ok(this.tokenHelper.GenerateJWT(identity));
             }
 
             return BadRequest("Refresh token is not a valid GUID!");
@@ -202,14 +220,14 @@ namespace PoohAPI.Controllers
         /// <summary>
         /// Revokes the refresh token, invalidating it for future use.
         /// </summary>
-        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
+        /// <returns></returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="404">If the refreshtoken does not exist</response>
+        /// <response code="400">If the refreshtoken does not exist</response>
         [AllowAnonymous]
         [HttpDelete]
         [Route("token/{refreshToken}/revoke")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult RevokeRefreshToken(string refreshToken)
         {
             if (Guid.TryParse(refreshToken, out Guid parsedGuid))
@@ -224,13 +242,13 @@ namespace PoohAPI.Controllers
         /// Verifies email address of newly registered users and activates their accounts.
         /// </summary>
         /// <param name="token">Token that is send to the users' email address.</param>
-        /// <returns></returns>
+        /// <returns>A JWTtoken used when accessing protected endpoints</returns>
         /// <response code="200"></response>
         /// <response code="400"></response>
         [AllowAnonymous]
         [HttpGet]
         [Route("verify")]
-        [ProducesResponseType(typeof(JWTToken), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(400)]
         public IActionResult VerifyEmail([FromQuery]string token)
         {
@@ -259,6 +277,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no users were found for the specified filters</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
+        /// <response code="400">If the request was invalid</response>
         [Authorize(Roles = "Validator, Elbho_medewerker")]
         [HttpGet]
         [Route("")]
@@ -266,6 +285,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
             [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
             [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
@@ -300,9 +320,9 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        public object GetUserById()
+        public IActionResult GetUserById()
         {
-            var user = this.userReadService.GetUserById(GetCurrentUserId());
+            var user = this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false);
             if (user == null)
                 return NotFound("User not found.");
 
@@ -314,20 +334,22 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response> 
+        /// <response code="404">If the user was not found</response>
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>  
-        /// <response code="404">If the user was not found</response>  
         [HttpDelete]
         [Route("me")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public IActionResult DeleteUser()
         {
-            this.userCommandService.DeleteUser(GetCurrentUserId());
-            return Ok();
+            if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
+                return NotFound("User not found.");
+
+            this.userCommandService.DeleteUser(CustomAuthorizationHelper.GetCurrentUserId(User));
+            return Ok("User deleted.");
         }
 
         /// <summary>
@@ -339,18 +361,23 @@ namespace PoohAPI.Controllers
         /// <response code="404">If the specified user was not found</response>   
         /// <response code="403">If the user was unauthorized</response>  
         /// <response code="401">If the user was unauthenticated</response>
+        /// <response code="401">If the request was invalid</response>
         [HttpPut]
         [Route("me")]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
         [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult UpdateUser([FromBody]UserUpdateInput userData)
         {
-            if (ModelState.IsValid /*&& GetCurrentUserId().Equals(userData.Id)*/)
-                return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, userData.Id, userData.AdditionalLocationIdentifier));
-            else
-                return BadRequest("Informatie involledig.");
+            if (!ModelState.IsValid)
+                return BadRequest("Body incorrect.");
+            
+            if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
+                return NotFound("User not found.");
+
+            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
         }
 
         /// <summary>
@@ -372,7 +399,7 @@ namespace PoohAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(userCommandService.UpdatePassword(GetCurrentUserId(), passwordUpdateInput.NewPassword, passwordUpdateInput.OldPassword))
+                if(userCommandService.UpdatePassword(CustomAuthorizationHelper.GetCurrentUserId(User), passwordUpdateInput.NewPassword, passwordUpdateInput.OldPassword))
                 {
                     return Ok("Password has been changed.");
                 }
@@ -461,7 +488,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
-            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(GetCurrentUserId());
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
             if (!(vacancies is null))
             {
                 return Ok(vacancies);
@@ -493,7 +520,7 @@ namespace PoohAPI.Controllers
 
             if(vacancy != null)
             {
-                int userid = GetCurrentUserId();
+                int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.AddFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
             }
@@ -521,11 +548,11 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
-            Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
+            IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
 
-            if (vacancy != null)
+            if (vacancies.Any(c => c.Id == vacancyId))
             {
-                int userid = GetCurrentUserId();
+                int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.DeleteFavourite(userid, vacancyId);
                 return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
             }
@@ -555,17 +582,12 @@ namespace PoohAPI.Controllers
             return Ok(new List<Review>());
         }
 
-        private int GetCurrentUserId()
-        {
-            return Int32.Parse(User.Claims.SingleOrDefault(c => c.Type == "id").Value);
-        }
-
-        //TODO: remove this hardcoded stuff.
         private bool CheckIfEmailAddressIsAllowed(string emailAddress)
         {
-            var allowedEmails = new List<string>() { "student.inholland.nl", "student.hva.nl" };
+            var allowedEmails = this.optionReadService.GetAllAllowedEmailAddresses(0, 0)
+                .Select(x => x.EmailAddress);
             var domain = emailAddress.Substring(emailAddress.LastIndexOf("@") + 1);
-            return allowedEmails.Any(d => d.Contains(domain));
+            return allowedEmails.Any(address => address.Contains(domain));
         }
     }
 }

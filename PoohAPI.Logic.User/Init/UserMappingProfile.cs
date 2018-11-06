@@ -18,6 +18,7 @@ namespace PoohAPI.Logic.Users.Init
                 .ForMember(d => d.NiceName, o => o.MapFrom(s => s.user_name))
                 .ForMember(d => d.EmailAddress, o => o.MapFrom(s => s.user_email))
                 .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role))
+                .ForMember(d => d.Active, o => o.MapFrom(s => s.user_active))
                 .ReverseMap();
 
             CreateMap<DBUser, User>()
@@ -33,13 +34,14 @@ namespace PoohAPI.Logic.Users.Init
 
             CreateMap<User, JwtUser>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.NiceName))
+                .ForMember(d => d.Active, o => o.MapFrom(s => s.Active))
                 .ForMember(d => d.Role, o => o.MapFrom(s => s.Role));
 
             CreateMap<DBUser, JwtUser>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.user_id))
-                .ForMember(d => d.Name, o => o.MapFrom(s => s.user_name))
-                .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role));
+                .ForMember(d => d.Active, o => o.MapFrom(s => s.user_active))
+                .ForMember(d => d.Role, o => o.MapFrom(s => s.user_role))
+                .ForMember(d => d.RefreshToken, o => o.MapFrom(s => s.user_refresh_token));
 
             CreateMap<DBUser, BaseLocation>()
                 .ForMember(d => d.CountryId, o => o.MapFrom(s => s.user_land))

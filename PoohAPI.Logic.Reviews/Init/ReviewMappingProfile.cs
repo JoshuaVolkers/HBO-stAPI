@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using PoohAPI.Infrastructure.ReviewDB.Models;
 using PoohAPI.Logic.Common;
-using PoohAPI.Logic.Common.Models.PresentationModels;
+using PoohAPI.Logic.Common.Models;
 using System.Collections.Generic;
 using System.Data;
 
@@ -26,10 +26,12 @@ namespace PoohAPI.Logic.Reviews.Init
 
             CreateMap<IDataReader, DBReview>().ConvertUsing<DataReaderTypeConverter<DBReview>>();
 
-            CreateMap<IDataReader, int>()
-                .ConvertUsing(s => (int)s["review_id"]);
+            CreateMap<IDataReader, DBReviewId>().ConvertUsing<DataReaderTypeConverter<DBReviewId>>();
 
-            CreateMap<DBReview, ReviewPublicPresentation>()
+            CreateMap<DBReviewId, int>()
+                .ConvertUsing(s => s.review_id);
+
+            CreateMap<DBReview, ReviewPublic>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.review_id))
                 .ForMember(d => d.CompanyId, o => o.MapFrom(s => s.review_bedrijf_id))
                 .ForMember(d => d.NameReviewer, o => o.MapFrom(s => s.review_student_name))

@@ -30,19 +30,24 @@ namespace PoohAPI.Infrastructure.ReviewDB.Repositories
             return GetSingle<DBReview>(query, parameters);
         }
 
+        public DBReview GetReview(string query)
+        {
+            return GetSingle<DBReview>(query);
+        }
+
         public void UpdateReview(string query, Dictionary<string, object> parameters)
         {
             NonQuery(query, parameters);
         }
 
-        public void PostReview(string query, Dictionary<string, object> parameters)
+        public int PostReview(string query, Dictionary<string, object> parameters)
         {
-            NonQuery(query, parameters);
+            return(NonQuery(query, parameters));
         }
 
-        public IEnumerable<int> GetListReviewIds(string query, Dictionary<string, object> parameters)
+        public IEnumerable<DBReviewId> GetListReviewIds(string query, Dictionary<string, object> parameters)
         {
-            return GetAll<int>(query, parameters);
+            return GetAll<DBReviewId>(query, parameters);
         }
 
         public IEnumerable<DBReview> GetListReviews(string query, Dictionary<string, object> parameters)

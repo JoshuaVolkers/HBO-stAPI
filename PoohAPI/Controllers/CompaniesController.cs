@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
-using PoohAPI.Logic.Common.Models.PresentationModels;
 using System.Collections.Generic;
 
 namespace PoohAPI.Controllers
@@ -42,9 +41,11 @@ namespace PoohAPI.Controllers
         /// <param name="detailedCompanies">The type of model to return, false = BaseCompany, true = Company. Set to true to retrieve more details.</param>
         /// <returns>A list of all basicCompanies</returns>
         /// <response code="200">Returns the list of basicCompanies</response>
+        /// <response code="400">If the request was invalid</response>
         /// <response code="404">If no companies are found</response>   
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Company>), 200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]double? minStars = null,
             [FromQuery]double? maxStars = null, [FromQuery]string cityName = null, [FromQuery]string countryName = null,
@@ -78,9 +79,6 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(404)]
         public IActionResult Get(int id)
         {
-            string testValue = this.config.GetValue<string>("TestValue");
-            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
-
             Company company = this.companyReadService.GetCompanyById(id);
             
             if (company is null)
@@ -97,12 +95,11 @@ namespace PoohAPI.Controllers
         /// <response code="200">Returns the anonymous reviews of the company</response>
         /// <response code="404">If the specified company was not found</response>   
         [HttpGet("{id}/reviews")]
-        [ProducesResponseType(typeof(IEnumerable<ReviewPublicPresentation>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ReviewPublic>), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetCompanyReviews(int id)
         {
-            //TODO: we should be able to return both anonymous and normal reviews based on the choice the student made when posting it.
-            IEnumerable<ReviewPublicPresentation> reviews = this.reviewReadService.GetListReviewsForCompany(id);
+            IEnumerable<ReviewPublic> reviews = this.reviewReadService.GetListReviewsForCompany(id);
 
             if (reviews is null)
                 return NotFound("No reviews found for this company.");

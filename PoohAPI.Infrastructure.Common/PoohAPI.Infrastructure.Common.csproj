@@ -100,9 +100,7 @@
     <Compile Include="Repositories\IMySQLBaseRepository.cs" />
     <Compile Include="Repositories\MySQLBaseRepository.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />

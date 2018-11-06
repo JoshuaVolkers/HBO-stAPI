@@ -29,7 +29,7 @@ namespace PoohAPI.Controllers
         /// <param name="additionalLocationSearchTerms">Searchwords to narrow the resultsets, comma seperated list</param>
         /// <param name="educationId">The id of the education</param>
         /// <param name="educationalAttainmentId">The id of the educationlevel (HBO, WO, Univerity, etc.)</param>
-        /// <param name="intershipType">The type of intership</param>
+        /// <param name="internshipType">The type of intership</param>
         /// <param name="languageId">id of the language to get vacancies for</param>
         /// <param name="cityname">The city name where the vacancy is located in</param>
         /// <param name="countryname">The coutry name where the vacancy is located in</param>
@@ -40,7 +40,7 @@ namespace PoohAPI.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Vacancy>), 200)]
         [ProducesResponseType(404)]
-        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? educationId = null, [FromQuery]int? educationalAttainmentId = null, [FromQuery]IntershipType? intershipType = null, [FromQuery]int? languageId = null, [FromQuery]string cityname = null, [FromQuery]string countryname = null, [FromQuery]int? locationrange = null)
+        public IActionResult GetAll([FromQuery]int maxCount = 5, [FromQuery]int offset = 0, [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? educationId = null, [FromQuery]int? educationalAttainmentId = null, [FromQuery]IntershipType? internshipType = null, [FromQuery]int? languageId = null, [FromQuery]string cityname = null, [FromQuery]string countryname = null, [FromQuery]int? locationrange = null)
         {
             if (maxCount < 0 || maxCount > 100)
             {
@@ -52,7 +52,7 @@ namespace PoohAPI.Controllers
                 return BadRequest("Offset should be 0 or larger");
             }
 
-            IEnumerable<Vacancy> vacancies = this.vacancyReadService.GetListVacancies(maxCount, offset, additionalLocationSearchTerms, educationId, educationalAttainmentId, intershipType, languageId, cityname, countryname, locationrange);
+            IEnumerable<Vacancy> vacancies = this.vacancyReadService.GetListVacancies(maxCount, offset, additionalLocationSearchTerms, educationId, educationalAttainmentId, internshipType, languageId, cityname, countryname, locationrange);
 
             if (!(vacancies is null))
             {

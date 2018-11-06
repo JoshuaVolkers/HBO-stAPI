@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
 using PoohAPI.Logic.Common.Models.BaseModels;
+using PoohAPI.Logic.Common.Classes;
 using PoohAPI.Infrastructure.CompanyDB.Respositories;
 using AutoMapper;
 using PoohAPI.Infrastructure.CompanyDB.Models;
@@ -22,12 +23,12 @@ namespace PoohAPI.Logic.Companies.Services
         private readonly IQueryBuilder queryBuilder;
         private readonly IConfiguration config;
 
-        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IConfiguration config)
+        public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IConfiguration config)
         {
             this.companyRepository = companyRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
             this.config = config;
         }
 
@@ -38,9 +39,6 @@ namespace PoohAPI.Logic.Companies.Services
         /// <returns></returns>
         public Company GetCompanyById(int id)
         {
-            string testValue = this.config.GetValue<string>("TestValue");
-            string testToken = this.config.GetSection("JWTSettings").GetValue<string>("JWTSigningKey");
-
             string query = @"SELECT b.*, l.land_naam, GROUP_CONCAT(DISTINCT o.opl_naam) as opleidingen, 
                     IF(r.review_sterren IS NULL, 0,
                             CASE WHEN COUNT(r.review_sterren) > 4
@@ -48,7 +46,7 @@ namespace PoohAPI.Logic.Companies.Services
                             ELSE 0 END
                        ) as average_reviews
                 FROM reg_bedrijven b
-                INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id
+                LEFT JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id
                 LEFT JOIN reg_reviews r ON b.bedrijf_id = r.review_bedrijf_id
                 LEFT JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id
                 LEFT JOIN reg_opleidingen o ON ob.opb_opleiding_id = o.opl_id
@@ -66,23 +64,23 @@ namespace PoohAPI.Logic.Companies.Services
         /// <summary>
         /// Get a list of companies. Filters can be included. Only active companies will be returned.
         /// </summary>
-        /// <param name="maxCount"></param>
+        /// <param name="maxCount">Maximum number of companies to retrieve</param>
         /// <param name="offset"></param>
-        /// <param name="minStars"></param>
-        /// <param name="maxStars"></param>
-        /// <param name="cityName"></param>
-        /// <param name="countryName"></param>
-        /// <param name="locationRange"></param>
-        /// <param name="additionalLocationSearchTerms"></param>
-        /// <param name="major"></param>
-        /// <param name="detailedCompanies"></param>
+        /// <param name="minStars">Minimum number of stars the companies should have</param>
+        /// <param name="maxStars">Maximum number of stars the companies should have</param>
+        /// <param name="cityName">The name of the city in which the companies should be located</param>
+        /// <param name="countryName">The name of the country the companies should be located</param>
+        /// <param name="locationRange">The range around the city in which the companies should be located</param>
+        /// <param name="additionalLocationSearchTerms">Search terms if there are more cities with the same name within the country</param>
+        /// <param name="major">The major which the companies should be approved for</param>
+        /// <param name="detailedCompanies">Whether or not the companies should have detailed information</param>
         /// <returns></returns>
         public IEnumerable<BaseCompany> GetListCompanies(int maxCount, int offset, double? minStars = null,
             double? maxStars = null, string cityName = null, string countryName = null, int? locationRange = null,
             string additionalLocationSearchTerms = null, int? major = null, bool detailedCompanies = false)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-
+            
             this.AddCompanyBaseQuery(parameters, maxCount, offset);
             this.AddStarFilter(parameters, minStars, maxStars);
             this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
@@ -92,7 +90,7 @@ namespace PoohAPI.Logic.Companies.Services
                 this.queryBuilder.AddSelect("b.bedrijf_contactpersoon_email, b.bedrijf_website, b.bedrijf_social_linkedin, b.bedrijf_beschrijving");
 
             string query = this.queryBuilder.BuildQuery();
-
+            
             IEnumerable<DBCompany> dbCompanies = this.companyRepository.GetListCompanies(query, parameters);
 
             if (detailedCompanies)
@@ -124,7 +122,7 @@ namespace PoohAPI.Logic.Companies.Services
                             ELSE 0 END
                        ) as average_reviews");
             this.queryBuilder.SetFrom("reg_bedrijven b");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
+            this.queryBuilder.AddJoinLine("LEFT JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_reviews r ON b.bedrijf_id = r.review_bedrijf_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleiding_per_bedrijf ob ON b.bedrijf_id = ob.opb_bedrijf_id");
             this.queryBuilder.AddJoinLine("LEFT JOIN reg_opleidingen o ON ob.opb_opleiding_id = o.opl_id");
@@ -166,6 +164,7 @@ namespace PoohAPI.Logic.Companies.Services
                     parameters.Add("@longitude", coordinates.Longitude);
                     parameters.Add("@rangeKm", locationRange);
 
+                    // Select companies within the range. The formula is called a haversine formula.
                     this.queryBuilder.AddSelect(@"(
                         6371 * acos(
                           cos(radians(@latitude))

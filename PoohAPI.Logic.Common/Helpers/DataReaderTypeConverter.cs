@@ -22,10 +22,9 @@ namespace PoohAPI.Logic.Common
                 .ToList()
                 .ForEach(property =>
                 {
-                    //Check if the property exists as a column in the source
-                    if (Enumerable.Range(0, source.FieldCount).Any(i => source.GetName(i) == property.Name))
-                        if (source[property.Name].GetType() != typeof(DBNull))
-                            property.SetValue(destination, source[property.Name]);
+                    //Check if the property exists as a column in the source and is not of type DBNull.
+                    if (Enumerable.Range(0, source.FieldCount).Any(i => source.GetName(i) == property.Name) && source[property.Name].GetType() != typeof(DBNull))
+                        property.SetValue(destination, source[property.Name]);
                 });
 
             return destination;

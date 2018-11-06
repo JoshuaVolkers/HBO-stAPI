@@ -5,9 +5,12 @@ using PoohAPI.Infrastructure.UserDB.Repositories;
 using PoohAPI.Logic.Common.Enums;
 using PoohAPI.Logic.Common.Interfaces;
 using PoohAPI.Logic.Common.Models;
+using PoohAPI.Logic.Common.Classes;
+using PoohAPI.Logic.Common.Models.OptionModels;
 using System.Net.Mail;
 using System;
 using System.Web;
+using Microsoft.Extensions.Configuration;
 
 namespace PoohAPI.Logic.Users.Services
 {
@@ -19,17 +22,21 @@ namespace PoohAPI.Logic.Users.Services
         private readonly IQueryBuilder queryBuilder;
         private readonly IUserReadService userReadService;
         private readonly IMailClient mailClient;
+        private readonly IOptionReadService optionReadService;
+        private readonly IConfiguration config;
 
         public UserCommandService(IUserRepository userRepository, IMapper mapper,
-            IMapAPIReadService mapAPIReadService, IQueryBuilder queryBuilder, IUserReadService userReadService,
-            IMailClient mailClient)
+            IMapAPIReadService mapAPIReadService, IUserReadService userReadService,
+            IMailClient mailClient, IOptionReadService optionReadService, IConfiguration config)
         {
             this.userRepository = userRepository;
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
-            this.queryBuilder = queryBuilder;
+            this.queryBuilder = new QueryBuilder();
             this.userReadService = userReadService;
             this.mailClient = mailClient;
+            this.optionReadService = optionReadService;
+            this.config = config;
         }
 
         public JwtUser RegisterUser(string login, string email, UserAccountType accountType, string password = null)
@@ -59,28 +66,34 @@ namespace PoohAPI.Logic.Users.Services
 
             var createdUserId = this.userRepository.UpdateDelete(query, parameters);
 
+            User user = CreateUserVerification(createdUserId);
+
+            return this.mapper.Map<JwtUser>(user);
+        }
+
+        public User CreateUserVerification(int createdUserId)
+        {
             string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
             var user = this.userReadService.GetUserById(createdUserId, false);
 
-            int minutes = 15;
+            int minutes = 2880;
             this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
             this.SendVerificationEmail(user, emailVerificationToken, minutes);
-
-            return this.mapper.Map<JwtUser>(user);
+            return user;
         }
 
         public void ResetPassword(string email, int userid)
         {
             string emailVerificationToken = this.CreateEmailVerificationToken(userid);
             var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 15;
+            int minutes = 2880;
             this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
             this.SendResetEmail(user, emailVerificationToken, minutes);
         }
 
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
-            string url = "http://localhost:60824/users/verify?token=" + emailVerificationToken;
+            string url = this.config.GetValue<string>("ApiHost") + "/users/verify?token=" + emailVerificationToken;
 
             string subject = "e-mail verification hbo-stagemarkt";
             string body = "Beste " + user.NiceName + ",<br/><br/>";
@@ -95,7 +108,7 @@ namespace PoohAPI.Logic.Users.Services
 
         private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
-            string url = "http://localhost:49970/users/verifyreset?token=" + emailVerificationToken;
+            string url = this.config.GetValue<string>("ApiHost") + "/users/verifyreset?token=" + emailVerificationToken;
 
             string subject = "wachtwoord reset hbo-stagemarkt";
             string body = "Beste " + user.NiceName + ",<br/><br/>";
@@ -125,8 +138,6 @@ namespace PoohAPI.Logic.Users.Services
 
             string emailValidationToken = "";
 
-            //TODO: maybe refactor this, total number of unique GUIDS is 2^128 (very many), so do-while is overbodig.
-            // Create token until it is unique
             do
             {
                 emailValidationToken = Guid.NewGuid().ToString();
@@ -226,7 +237,6 @@ namespace PoohAPI.Logic.Users.Services
         public User UpdateUser(int countryId, string city, int educationId, int educationalAttainmentId, int preferredLanguageId, int userId, string AdditionalLocationIdentifier = null)
         {
             this.InsertStudentDataIfNotExist(userId);
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             
             this.queryBuilder.SetUpdate("reg_user_studenten");
@@ -241,9 +251,15 @@ namespace PoohAPI.Logic.Users.Services
             parameters.Add("@languageId", preferredLanguageId);
             parameters.Add("@id", userId);
 
-            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(city, null, AdditionalLocationIdentifier);
+            Country country = this.optionReadService.GetCountryById(countryId);
 
-            if (coordinates is Coordinates)
+            string countryName = "";
+            if (country != null)
+                countryName = country.Name;
+
+            Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(city, countryName, AdditionalLocationIdentifier);
+
+            if (coordinates != null)
             {
                 this.queryBuilder.AddUpdateSet("user_breedtegraad = @latitude");
                 this.queryBuilder.AddUpdateSet("user_lengtegraad = @longitude");
@@ -260,7 +276,6 @@ namespace PoohAPI.Logic.Users.Services
 
         public void DeleteRefreshToken(string refreshToken)
         {
-            //Using "user_id <> 0" is a hacky way of avoiding the "You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column" error.
             string query = @"UPDATE reg_users SET user_refresh_token = NULL WHERE user_refresh_token = @refreshToken AND user_id <> 0";
             var parameters = new Dictionary<string, object>
             {
