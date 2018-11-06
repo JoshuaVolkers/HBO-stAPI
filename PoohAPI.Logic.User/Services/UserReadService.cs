@@ -159,7 +159,7 @@ namespace PoohAPI.Logic.Users.Services
 
         public JwtUser GetUserByRefreshToken(string refreshToken)
         {
-            this.queryBuilder.AddSelect(@"user_id, user_name, user_role");
+            this.queryBuilder.AddSelect(@"user_id, user_name, user_role, user_active");
             this.queryBuilder.SetFrom("reg_users");
             this.queryBuilder.AddWhere("user_refresh_token = @token");
             var query = this.queryBuilder.BuildQuery();
