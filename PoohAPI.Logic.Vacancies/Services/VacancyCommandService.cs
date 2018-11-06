@@ -22,32 +22,42 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.mapper = mapper;
             this.queryBuilder = new QueryBuilder();
         }
-
+        
+        /// <summary>
+        /// Adding a vacancy as favorite
+        /// </summary>
+        /// <param name="userid">id of the user that is adding the vacancy as favorite</param>
+        /// <param name="vacancyid">id of the vacancy that is being added as a favorite</param>
         public void AddFavourite(int userid, int vacancyid)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"@userid", userid},
+                { "@vacancyid", vacancyid}
+            };
 
             string query = @"INSERT INTO reg_vacatures_favoriet (vf_vacature_id, vf_user_id)    
                              VALUES (@vacancyid, @userid)";
 
-            parameters.Add("@userid", userid);
-            parameters.Add("@vacancyid", vacancyid);
-
-
             vacancyRepository.AddFavouriteVacanacy(query, parameters);
         }
 
+        /// <summary>
+        /// Deleting a favourite vacancy with from user
+        /// </summary>
+        /// <param name="userid">id of the user</param>
+        /// <param name="vacancyid">id of the vacancy to be unfavorited</param>
         public void DeleteFavourite(int userid, int vacancyid)
         {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            Dictionary<string, object> parameters = new Dictionary<string, object>
+            {
+                {"@userid", userid},
+                { "@vacancyid", vacancyid}
+            };
 
             string query = @"DELETE FROM reg_vacatures_favoriet   
                              WHERE vf_user_id = @userid
                              AND vf_vacature_id = @vacancyid";
-
-            parameters.Add("@userid", userid);
-            parameters.Add("@vacancyid", vacancyid);
-
 
             vacancyRepository.DeleteFavouriteVacanacy(query, parameters);
         }

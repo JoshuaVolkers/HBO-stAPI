@@ -30,8 +30,8 @@ namespace PoohAPI.Logic.Users.Services
             this.vacancyReadService = vacancyReadService;
         }
 
-        public IEnumerable<User> GetAllUsers(int maxCount, int offset, string educationalAttainment = null,
-            string educations = null, string cityName = null, string countryName = null, int? range = null,
+        public IEnumerable<User> GetAllUsers(int maxCount, int offset, string educationLevels = null,
+            string majors = null, string cityName = null, string countryName = null, int? range = null,
             string additionalLocationSearchTerms = null, int? preferredLanguage = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -54,8 +54,8 @@ namespace PoohAPI.Logic.Users.Services
             parameters.Add("@offset", offset);
 
             this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, range);
-            this.AddEducationsFilter(parameters, educations);
-            this.AddEducationalAttainmentIds(parameters, educationalAttainment);
+            this.AddMajorsFilter(parameters, majors);
+            this.AddEducationLevelsFilter(parameters, educationLevels);
             this.AddPreferredLanguageFilter(parameters, preferredLanguage);
 
             string query = this.queryBuilder.BuildQuery();
@@ -159,7 +159,7 @@ namespace PoohAPI.Logic.Users.Services
 
         public JwtUser GetUserByRefreshToken(string refreshToken)
         {
-            this.queryBuilder.AddSelect(@"user_id, user_name, user_role");
+            this.queryBuilder.AddSelect(@"user_id, user_name, user_role, user_active");
             this.queryBuilder.SetFrom("reg_users");
             this.queryBuilder.AddWhere("user_refresh_token = @token");
             var query = this.queryBuilder.BuildQuery();
@@ -174,16 +174,16 @@ namespace PoohAPI.Logic.Users.Services
             return _mapper.Map<JwtUser>(user);
         }
 
-        private void AddEducationsFilter(Dictionary<string, object> parameters, string educationsIds)
+        private void AddMajorsFilter(Dictionary<string, object> parameters, string majorIds)
         {
-            if (educationsIds is null)
+            if (majorIds is null)
                 return;
 
             // The filter allows multiple majors separated by commas. 
             // Therefore, these should be split and put together with an OR statement in SQL.
 
             // Split ids
-            List<string> splitIds = educationsIds.Split(',').ToList();
+            List<string> splitIds = majorIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
             if (ids.Count <= 0)
                 return;
@@ -206,16 +206,16 @@ namespace PoohAPI.Logic.Users.Services
             this.queryBuilder.AddWhere(educationOr);
         }
 
-        private void AddEducationalAttainmentIds(Dictionary<string, object> parameters, string educationalAttainmentIds)
+        private void AddEducationLevelsFilter(Dictionary<string, object> parameters, string educationLevelIds)
         {
-            if (educationalAttainmentIds is null)
+            if (educationLevelIds is null)
                 return;
 
-            // The filter allows multiple educational attainments separated by commas. 
+            // The filter allows multiple education levels separated by commas. 
             // Therefore, these should be split and put together with an OR statement in SQL.
 
             // Split ids
-            List<string> splitIds = educationalAttainmentIds.Split(',').ToList();
+            List<string> splitIds = educationLevelIds.Split(',').ToList();
             List<int> ids = this.CreateIdList(splitIds);
             if (ids.Count <= 0)
                 return;

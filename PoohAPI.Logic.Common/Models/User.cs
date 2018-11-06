@@ -11,10 +11,10 @@ namespace PoohAPI.Logic.Common.Models
         /// <summary>
         /// For Dutch speakers, dit is het opleidingsniveau.
         /// </summary>
-        public int EducationalAttainmentId { get; set; }
-        public string EducationalAttainment { get; set; }
-        public int EducationId { get; set; }
-        public string Education { get; set; }
+        public int EducationLevelId { get; set; }
+        public string EducationLevel { get; set; }
+        public int MajorId { get; set; }
+        public string Major { get; set; }
         public BaseLocation Location { get; set; }
         public IEnumerable<int> FavoriteVacancies { get; set; }
         public IEnumerable<int> Reviews { get; set; }

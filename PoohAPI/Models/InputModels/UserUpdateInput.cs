@@ -5,9 +5,9 @@ namespace PoohAPI.Models.InputModels
     public class UserUpdateInput
     {
         [Required]
-        public int EducationalAttainmentId { get; set; }
+        public int EducationLevelId { get; set; }
         [Required]
-        public int EducationId { get; set; }
+        public int MajorId { get; set; }
         [Required]
         public int PreferredLanguageId { get; set; }
         [Required]

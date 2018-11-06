@@ -82,15 +82,6 @@ namespace PoohAPI.Logic.Users.Services
             return user;
         }
 
-        public void ResetPassword(string email, int userid)
-        {
-            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
-            var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 2880;
-            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendResetEmail(user, emailVerificationToken, minutes);
-        }
-
         private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
         {
             string url = this.config.GetValue<string>("ApiHost") + "/users/verify?token=" + emailVerificationToken;
@@ -98,22 +89,6 @@ namespace PoohAPI.Logic.Users.Services
             string subject = "e-mail verification hbo-stagemarkt";
             string body = "Beste " + user.NiceName + ",<br/><br/>";
             body += "Dank je voor het aanmelden bij hbo-stagemarkt. Klik op de volgende link om je account te bevestigen: <br/><br/> ";
-            body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
-            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
-            body += "Met vriendelijke groet, <br/><br/>";
-            body += "Stichting ELBHO";
-
-            this.mailClient.SendEmail(user.EmailAddress, subject, body);
-        }
-
-        private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
-        {
-            string url = this.config.GetValue<string>("ApiHost") + "/users/verifyreset?token=" + emailVerificationToken;
-
-            string subject = "wachtwoord reset hbo-stagemarkt";
-            string body = "Beste " + user.NiceName + ",<br/><br/>";
-            body += "Deze mail wordt gestuurd omdat het wachtwoord van uw hbo-stagemarkt account is gereset.: <br/><br/> ";
-            body += "Klik op de volgende link om je nieuwe wachtwoord te genereren. Als u niet uw wachtwoord wilt resetten, dan klikt u niet op de link: <br/><br/> ";
             body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
             body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
             body += "Met vriendelijke groet, <br/><br/>";
@@ -194,29 +169,6 @@ namespace PoohAPI.Logic.Users.Services
             this.DeleteEmailVerificationToken(userEmailValidation.UserId);
 
             return this.mapper.Map<User>(this.userReadService.GetUserById(userEmailValidation.UserId));
-        }
-
-        public string VerifyResetPassword(string token)
-        {
-            UserEmailVerification userEmailValidation = this.userReadService.GetUserEmailVerificationByToken(token);
-
-            if(userEmailValidation is null)
-            {
-                return null;
-            }
-
-            if (userEmailValidation.ExpirationDate < DateTime.Now)
-            {
-                this.DeleteEmailVerificationToken(userEmailValidation.UserId);
-                return null;
-            }
-
-            else
-            {
-                string newPassword = Guid.NewGuid().ToString("d").Substring(1, 12);
-                this.UpdatePassword(userEmailValidation.UserId, newPassword, null, true);
-                return newPassword;
-            }
         }
 
         public void DeleteUser(int id)
@@ -324,20 +276,27 @@ namespace PoohAPI.Logic.Users.Services
         {
             JwtUser jwtUser;
 
+            //Check if the password had been reset or is just being changed
             if (isreset)
             {
                 jwtUser = null;
             }
 
+            //If the password is being changed, verify the old password
             else
             {
                 jwtUser = userReadService.Login(oldPassword, null, userid);
             }
 
+            //If the password is being reset or old password was not wrong
             if (isreset || jwtUser != null)
             {
+                //Hash the new password
                 string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(newPassword, 10);
+
+                //Query to update the password
                 string query = @"UPDATE reg_users SET user_password = @password WHERE user_id = @userid";
+
                 Dictionary<string, object> parameters = new Dictionary<string, object>
                 {
                     { "@userid", userid },
@@ -353,6 +312,59 @@ namespace PoohAPI.Logic.Users.Services
             {
                 return false;
             }
+        }
+
+        public string VerifyResetPassword(string token)
+        {
+            //Verify the email token that was send to the user's email after resetting their password
+            UserEmailVerification userEmailValidation = this.userReadService.GetUserEmailVerificationByToken(token);
+
+            //If the token was not correct
+            if (userEmailValidation is null)
+            {
+                return null;
+            }
+
+            //If the token was correct but expired
+            if (userEmailValidation.ExpirationDate < DateTime.Now)
+            {
+                //Delete the token from db
+                this.DeleteEmailVerificationToken(userEmailValidation.UserId);
+                return null;
+            }
+
+            //If the token was correct
+            else
+            {
+                //Generate new password
+                string newPassword = Guid.NewGuid().ToString("d").Substring(1, 12);
+                //Upate the password in the database
+                this.UpdatePassword(userEmailValidation.UserId, newPassword, null, true);
+                return newPassword;
+            }
+        }
+        private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
+        {
+            string url = this.config.GetValue<string>("ApiHost") + "/users/verifyreset?token=" + emailVerificationToken;
+
+            string subject = "wachtwoord reset hbo-stagemarkt";
+            string body = "Beste " + user.NiceName + ",<br/><br/>";
+            body += "Deze mail wordt gestuurd omdat het wachtwoord van uw hbo-stagemarkt account is gereset.: <br/><br/> ";
+            body += "Klik op de volgende link om je nieuwe wachtwoord te genereren. Als u niet uw wachtwoord wilt resetten, dan klikt u niet op de link: <br/><br/> ";
+            body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
+            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
+            body += "Met vriendelijke groet, <br/><br/>";
+            body += "Stichting ELBHO";
+
+            this.mailClient.SendEmail(user.EmailAddress, subject, body);
+        }
+        public void ResetPassword(string email, int userid)
+        {
+            string emailVerificationToken = this.CreateEmailVerificationToken(userid);
+            var user = this.userReadService.GetUserByEmail<User>(email);
+            int minutes = 2880;
+            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
+            this.SendResetEmail(user, emailVerificationToken, minutes);
         }
     }
 }

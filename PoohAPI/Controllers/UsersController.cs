@@ -183,7 +183,7 @@ namespace PoohAPI.Controllers
                 return Ok("Verification email has been sent.");
             }                     
 
-            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
+            var user = this.userCommandService.RegisterUser(registerRequest.UserName, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 
             return Ok("Verification email has been sent.");
         }
@@ -265,8 +265,8 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
-        /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
-        /// <param name="educations">A comma seperated list of education Ids</param>
+        /// <param name="educationLevels">A comma seperated list of education level ids</param>
+        /// <param name="majors">A comma seperated list of major ids</param>
         /// <param name="cityName">The city in which the user should be located.</param>
         /// <param name="countryName">The name of the country where the student should live. Country names can be found in the country endpoint.</param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
@@ -287,7 +287,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(400)]
         public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
-            [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
+            [FromQuery]string educationLevels = null, [FromQuery]string majors = null,
             [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
             [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
@@ -296,8 +296,8 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
-                educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
+            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationLevels,
+                majors, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
                 return NotFound("No users found");
@@ -377,7 +377,7 @@ namespace PoohAPI.Controllers
             if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
                 return NotFound("User not found.");
 
-            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
+            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.MajorId, userData.EducationLevelId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
         }
 
         /// <summary>
@@ -488,11 +488,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
+            //Get list of favorite vacancies with the user id of the authenticated user
             IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
+
+            //If there are results
             if (!(vacancies is null))
             {
                 return Ok(vacancies);
             }
+
+            //If no results were found
             else
             {
                 return NotFound("No vacancies were found");
@@ -516,15 +521,19 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult AddVacancyToFavorites(int vacancyId)
         {
+            //Check if the vacancy exists
             Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
 
+            //If it exists
             if(vacancy != null)
             {
+                //Get authenticated user id
                 int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.AddFavourite(userid, vacancyId);
-                return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
+                return Ok(String.Format("Vacancy with id {0} has been added to favorite of user with user id {1}", vacancyId, userid));
             }
 
+            //If not
             else
             {
                 return NotFound("Specified vacancy was not found!");
@@ -548,8 +557,10 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
+            //Retrieve list of vacancies that are favorited by the authenticated user
             IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
 
+            //If the vacancy that is being removed exists as a favorite
             if (vacancies.Any(c => c.Id == vacancyId))
             {
                 int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
@@ -557,6 +568,7 @@ namespace PoohAPI.Controllers
                 return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
             }
 
+            //If not
             else
             {
                 return NotFound("Specified vacancy was not found!");
