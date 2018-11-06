@@ -17,25 +17,25 @@ def f_test_max_users(users, max):
 
     assert correct == True
 
-def f_test_educational_attainments_filter(users, educationalAttainmentIds):
+def f_test_educational_attainments_filter(users, educationLevelIds):
     for i in range(0, len(users)):
         user = users[i]
         correct = False
 
-        for j in range(0, len(educationalAttainmentIds)):
-            if user["educationalAttainmentId"] == educationalAttainmentIds[j]:
+        for j in range(0, len(educationLevelIds)):
+            if user["educationLevelId"] == educationLevelIds[j]:
                 correct = True
                 break
 
         assert correct == True
 
-def f_test_educations_filter(users, educationIds):
+def f_test_educations_filter(users, majorIds):
     for i in range(0, len(users)):
         user = users[i]
         correct = False
 
-        for j in range(0, len(educationIds)):
-            if user["educationId"] == educationIds[j]:
+        for j in range(0, len(majorIds)):
+            if user["majorId"] == majorIds[j]:
                 correct = True
                 break
 
@@ -112,16 +112,16 @@ def test_users_schema():
     f_test_max_users(users, 5)
     f_test_user(users[0])
 
-# Test users (educationalAttainments = 1,2)
+# Test users (educationLevels = 1,2)
 def test_users_educationalattainments():
-    users_request = requests.get(base_url+users_path+"?educationalAttainments=1,2", headers=headers)
+    users_request = requests.get(base_url+users_path+"?educationLevels=1,2", headers=headers)
     f_test_status_code_200(users_request)
     users = users_request.json()
     f_test_educational_attainments_filter(users, [1,2])
 
-# Test users (educations = 1,2)
+# Test users (majors = 1,2)
 def test_users_educations():
-    users_request = requests.get(base_url+users_path+"?educations=1,2", headers=headers)
+    users_request = requests.get(base_url+users_path+"?majors=1,2", headers=headers)
     f_test_status_code_200(users_request)
     users = users_request.json()
     f_test_educations_filter(users, [1,2])
