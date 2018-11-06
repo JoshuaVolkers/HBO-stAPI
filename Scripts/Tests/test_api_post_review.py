@@ -29,11 +29,8 @@ def f_test_review_input(review, companyId, stars, writtenReview, anonymous):
 
     assert correct == True
 
-def f_test_review_update_input(review, id, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy):
+def f_test_review_update_input(review, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy):
     correct = True
-    if review["id"] != id:
-        correct = False
-
     if review["companyId"] != companyId:
         correct = False
 
@@ -106,7 +103,6 @@ def test_post_new_review():
 
 # Test review update
 def test_update_created_review():
-    reviewId = createdReviewId
     companyId = 1
     stars = 4
     writtenReview = "TEST_ update, nog steeds prima"
@@ -116,7 +112,6 @@ def test_update_created_review():
     verifiedBy = 0
 
     payload = {
-        'id': reviewId,
         'companyId': companyId,
         'stars': stars,
         'writtenreview': writtenReview,
@@ -130,7 +125,7 @@ def test_update_created_review():
     f_test_status_code_200(review_update_request)
     review = review_update_request.json()
     f_test_review(review)
-    f_test_review_update_input(review, reviewId, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy)
+    f_test_review_update_input(review, companyId, stars, writtenReview, anonymous, verifiedReview, verifiedBy)
 
 # Test review get
 def test_get_updated_review():

@@ -10,8 +10,6 @@ namespace PoohAPI.Models.InputModels
     public class ReviewUpdateInput
     {
         [Required]
-        public int Id { get; set; }
-        [Required]
         public int CompanyId { get; set; }
         [Required]
         public int Stars { get; set; }

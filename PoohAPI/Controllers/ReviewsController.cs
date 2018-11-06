@@ -47,7 +47,6 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
         [ProducesResponseType(400)]
         public IActionResult GetReviewById(int id)
         {
@@ -73,14 +72,10 @@ namespace PoohAPI.Controllers
         /// <returns>A list of Review objects</returns>
         /// <response code="200">If the request was a success</response>
         /// <response code="400">If the required fields were not included</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
         [HttpPost]
         [Route("")]
         [ProducesResponseType(typeof(Review), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public IActionResult PostReview([FromBody]ReviewPost reviewData)
         {
             if (ModelState.IsValid)
@@ -100,23 +95,22 @@ namespace PoohAPI.Controllers
         /// <param name="reviewData">The updated review model</param>
         /// <returns>A list of Review objects</returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the specified review does not exist</response>   
+        /// <response code="400">If the specified review is incomplete or locked</response>   
         /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
         [HttpPut]
-        [Route("{Id}")]
+        [Route("{id}")]
         [ProducesResponseType(typeof(Review), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
-        public IActionResult UpdateReview([FromBody]ReviewUpdateInput reviewData)
+        [ProducesResponseType(400)]
+        public IActionResult UpdateReview([FromBody]ReviewUpdateInput reviewData, int id)
         {
             if (ModelState.IsValid)
             {
-                Review review = _reviewReadService.GetReviewById(reviewData.Id);
+                Review review = _reviewReadService.GetReviewById(id);
                 if (review == null)
                 {
-                    return BadRequest("Review not found.");
+                    return NotFound("Review not found.");
                 }
                 else if (CustomAuthorizationHelper.GetCurrentUserId(User) != review.UserId)
                 {
@@ -127,7 +121,7 @@ namespace PoohAPI.Controllers
                     return BadRequest("Review has been locked.");
                 }
 
-                else return Ok(_reviewCommandService.UpdateReview(reviewData.Id, reviewData.CompanyId, review.UserId, reviewData.Stars,
+                else return Ok(_reviewCommandService.UpdateReview(id, reviewData.CompanyId, review.UserId, reviewData.Stars,
                         reviewData.WrittenReview, reviewData.Anonymous, reviewData.CreationDate,
                         reviewData.VerifiedReview, reviewData.VerifiedBy));
             }
@@ -144,17 +138,21 @@ namespace PoohAPI.Controllers
         /// <param name="id">The id of the review to delete</param>
         /// <returns></returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the specified reviewId does not exist</response>   
-        /// <response code="403">If the user was unauthorized</response>  
-        /// <response code="401">If the user was unauthenticated</response>  
+        /// <response code="400">If the review has been locked</response>  
+        /// <response code="401">If the user was unauthorized</response>  
+        /// <response code="404">If the specified reviewId does not exist</response> 
         [HttpDelete]
-        [Route("{Id}")]
+        [Route("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]       
         public IActionResult DeleteReview(int id)
         {
             Review review = _reviewReadService.GetReviewById(id);
             if (review == null)
             {
-                return BadRequest("Review not found.");
+                return NotFound("Review not found.");
             }
             else if (CustomAuthorizationHelper.GetCurrentUserId(User) != review.UserId)
             {

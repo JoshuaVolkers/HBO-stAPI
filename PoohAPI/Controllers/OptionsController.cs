@@ -85,7 +85,7 @@ namespace PoohAPI.Controllers
 
         [HttpGet]
         [Route("internshiptypes")]
-        [ProducesResponseType(typeof(InternshipType), 200)]
+        [ProducesResponseType(typeof(IEnumerable<InternshipType>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetInternshipTypes()
@@ -107,7 +107,7 @@ namespace PoohAPI.Controllers
         /// <response code="404">If no email addresses were found</response>
         [HttpGet]
         [Route("allowedemailaddresses")]
-        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AllowedEmailAddress>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetAllowedEmailAddresses([FromQuery]int maxCount = 5, [FromQuery]int offset = 0)
@@ -130,12 +130,10 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns>A list of languages</returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the request failed</response>
         /// <response code="404">If no languages were found</response>
         [HttpGet]
         [Route("languages")]
         [ProducesResponseType(typeof(IEnumerable<Language>), 200)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetLanguages()
         {
@@ -152,12 +150,10 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <returns>A list of countries</returns>
         /// <response code="200">If the request was a success</response>
-        /// <response code="400">If the request failed</response>
         /// <response code="404">If no countries were found</response>
         [HttpGet]
         [Route("countries")]
         [ProducesResponseType(typeof(IEnumerable<Country>), 200)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetCountries()
         {
