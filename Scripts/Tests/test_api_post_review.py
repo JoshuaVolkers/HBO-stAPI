@@ -121,7 +121,7 @@ def test_update_created_review():
         'verifiedBy': verifiedBy
     }
 
-    review_update_request = requests.put(base_url+reviews_path+"/"+str(reviewId), json=payload, headers=headers)
+    review_update_request = requests.put(base_url+reviews_path+"/"+str(createdReviewId), json=payload, headers=headers)
     f_test_status_code_200(review_update_request)
     review = review_update_request.json()
     f_test_review(review)
