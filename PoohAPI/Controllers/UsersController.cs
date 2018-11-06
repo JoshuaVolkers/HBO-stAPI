@@ -183,7 +183,7 @@ namespace PoohAPI.Controllers
                 return Ok("Verification email has been sent.");
             }                     
 
-            var user = this.userCommandService.RegisterUser(registerRequest.Login, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
+            var user = this.userCommandService.RegisterUser(registerRequest.UserName, registerRequest.EmailAddress, UserAccountType.ApiUser, registerRequest.Password);
 
             return Ok("Verification email has been sent.");
         }
