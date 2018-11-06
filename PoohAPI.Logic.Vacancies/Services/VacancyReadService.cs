@@ -132,6 +132,7 @@ namespace PoohAPI.Logic.Vacancies.Services
                     parameters.Add("@longitude", coordinates.Longitude);
                     parameters.Add("@rangeKm", locationRange);
 
+                    // Select vacancies within the range. The formula is called a haversine formula.
                     this.queryBuilder.AddSelect(@"(
                         6371 * acos(
                           cos(radians(@latitude))
