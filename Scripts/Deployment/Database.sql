@@ -8,19 +8,18 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema elbho_dev
+-- Schema elbho_register_prod
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema elbho_dev
+-- Schema elbho_register_prod
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS @database DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE @database ;
+USE `elbho_register_prod`;
 
 -- -----------------------------------------------------
--- Table @database.`reg_aanvragen`
+-- Table `elbho_register_prod`.`reg_aanvragen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_aanvragen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_aanvragen` (
   `aanvraag_id` INT(11) NOT NULL AUTO_INCREMENT,
   `aanvraag_nummer` TEXT NOT NULL,
   `aanvraag_bedrijf` TEXT NOT NULL,
@@ -49,17 +48,15 @@ CREATE TABLE IF NOT EXISTS @database.`reg_aanvragen` (
   `aanvraag_afgerond` INT(1) NOT NULL DEFAULT '0' COMMENT '0 = nog niet afgerond, 1 = afgerond',
   `aanvraag_actief` INT(11) NOT NULL DEFAULT '1' COMMENT '0 = niet actief, 1 = actief',
   PRIMARY KEY (`aanvraag_id`),
-  INDEX `aanvraag_id` (`aanvraag_id` ASC) VISIBLE,
-  INDEX `aanvraag_id_2` (`aanvraag_id` ASC) VISIBLE)
+  INDEX `aanvraag_id` (`aanvraag_id` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 55
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_aanvragen_historie`
+-- Table `elbho_register_prod`.`reg_aanvragen_historie`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_aanvragen_historie` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_aanvragen_historie` (
   `ahis_id` INT(11) NOT NULL AUTO_INCREMENT,
   `ahis_aanvraag_id` INT(11) NOT NULL,
   `ahis_datum` DATE NOT NULL,
@@ -67,14 +64,13 @@ CREATE TABLE IF NOT EXISTS @database.`reg_aanvragen_historie` (
   `ahis_omschrijving` TEXT NOT NULL,
   PRIMARY KEY (`ahis_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 43
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_bedrijven`
+-- Table `elbho_register_prod`.`reg_bedrijven`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_bedrijven` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_bedrijven` (
   `bedrijf_id` INT(11) NOT NULL AUTO_INCREMENT,
   `bedrijf_kvk` INT(11) NOT NULL,
   `bedrijf_handelsnaam` TEXT NOT NULL,
@@ -111,14 +107,14 @@ CREATE TABLE IF NOT EXISTS @database.`reg_bedrijven` (
   PRIMARY KEY (`bedrijf_id`),
   INDEX `bedrijf_id` (`bedrijf_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 43
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_erkenning`
+-- Table `elbho_register_prod`.`reg_erkenning`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_erkenning` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_erkenning` (
   `erkenning_id` INT(11) NOT NULL AUTO_INCREMENT,
   `erkenning_bedrijf_id` INT(11) NOT NULL,
   `erkenning_erkend` INT(11) NOT NULL DEFAULT '1' COMMENT '0 = niet erkend, 1 = erkend, 2 = onder review',
@@ -132,14 +128,13 @@ CREATE TABLE IF NOT EXISTS @database.`reg_erkenning` (
   PRIMARY KEY (`erkenning_id`),
   INDEX `erkenning_id` (`erkenning_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 38
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_facturen`
+-- Table `elbho_register_prod`.`reg_facturen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_facturen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_facturen` (
   `factuur_id` INT(11) NOT NULL AUTO_INCREMENT,
   `factuur_bedrijf_id` INT(11) NOT NULL,
   `factuur_totaal_incl` FLOAT(10,2) NOT NULL,
@@ -147,14 +142,13 @@ CREATE TABLE IF NOT EXISTS @database.`reg_facturen` (
   `factuur_actief` INT(1) NOT NULL DEFAULT '1',
   INDEX `factuur_id` (`factuur_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_landen`
+-- Table `elbho_register_prod`.`reg_landen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_landen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_landen` (
   `land_id` INT(11) NOT NULL AUTO_INCREMENT,
   `land_naam` TEXT NOT NULL,
   PRIMARY KEY (`land_id`),
@@ -165,9 +159,9 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_onderwijsinstellingen`
+-- Table `elbho_register_prod`.`reg_onderwijsinstellingen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_onderwijsinstellingen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_onderwijsinstellingen` (
   `instelling_id` INT(11) NOT NULL AUTO_INCREMENT,
   `instelling_brin` TEXT NOT NULL,
   `instelling_naam` TEXT NOT NULL,
@@ -181,9 +175,9 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_opleiding_per_bedrijf`
+-- Table `elbho_register_prod`.`reg_opleiding_per_bedrijf`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_opleiding_per_bedrijf` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_opleiding_per_bedrijf` (
   `opb_id` INT(11) NOT NULL AUTO_INCREMENT,
   `opb_bedrijf_id` INT(11) NOT NULL,
   `opb_opleiding_id` INT(11) NOT NULL,
@@ -194,14 +188,14 @@ CREATE TABLE IF NOT EXISTS @database.`reg_opleiding_per_bedrijf` (
   PRIMARY KEY (`opb_id`),
   INDEX `opb_id` (`opb_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 190
+AUTO_INCREMENT = 7
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_opleidingen`
+-- Table `elbho_register_prod`.`reg_opleidingen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_opleidingen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_opleidingen` (
   `opl_id` INT(11) NOT NULL AUTO_INCREMENT,
   `opl_croho_nr` TEXT NOT NULL,
   `opl_naam` TEXT NOT NULL,
@@ -210,16 +204,16 @@ CREATE TABLE IF NOT EXISTS @database.`reg_opleidingen` (
   PRIMARY KEY (`opl_id`),
   INDEX `opl_id` (`opl_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 4057
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_opleidingsniveau`
+-- Table `elbho_register_prod`.`reg_opleidingsniveau`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_opleidingsniveau` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_opleidingsniveau` (
   `opn_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `opn_naam` TEXT CHARACTER SET 'latin1' COLLATE 'latin1_bin' NOT NULL,
+  `opn_naam` TEXT NOT NULL,
   PRIMARY KEY (`opn_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 6
@@ -228,9 +222,9 @@ COLLATE = latin1_bin;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_potentials`
+-- Table `elbho_register_prod`.`reg_potentials`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_potentials` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_potentials` (
   `potential_id` INT(11) NOT NULL AUTO_INCREMENT,
   `potential_naam` TEXT NOT NULL,
   `potential_contactpersoon` TEXT NOT NULL,
@@ -240,36 +234,47 @@ CREATE TABLE IF NOT EXISTS @database.`reg_potentials` (
   `potential_terugbellen` DATE NOT NULL,
   PRIMARY KEY (`potential_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 55032045
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_reviews`
+-- Table `elbho_register_prod`.`reg_reviews`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_reviews` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_reviews` (
   `review_id` INT(11) NOT NULL AUTO_INCREMENT,
   `review_bedrijf_id` INT(11) NOT NULL,
   `review_student_id` INT(11) NOT NULL,
   `review_sterren` INT(11) NOT NULL,
-  `review_geschreven` TEXT CHARACTER SET 'latin1' NOT NULL,
+  `review_geschreven` TEXT NOT NULL,
   `review_anoniem` INT(1) NOT NULL DEFAULT '0' COMMENT '0 = anoniem, 1 = niet anoniem',
   `review_datum` DATETIME NOT NULL,
   `review_status` INT(11) NOT NULL DEFAULT '0' COMMENT '0 = in afwachting, 1 = bevestigd, 2 = afgewezen',
   `review_status_bevestigd_door` INT(11) NOT NULL,
-  `review_stagecontract` BLOB NULL DEFAULT NULL,
+  `review_stagecontract` BLOB NULL DEFAULT NULL COMMENT 'PDF file',
   PRIMARY KEY (`review_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 33
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_student_email`
+-- Table `elbho_register_prod`.`reg_stagesoort`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_student_email` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_stagesoort` (
+  `stage_id` INT(32) NOT NULL AUTO_INCREMENT,
+  `stagesoort` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`stage_id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `elbho_register_prod`.`reg_student_email`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_student_email` (
   `se_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `se_domein` TEXT CHARACTER SET 'latin1' NOT NULL,
+  `se_domein` TEXT NOT NULL,
   `se_onderwijsinstelling_id` INT(11) NOT NULL,
   PRIMARY KEY (`se_id`))
 ENGINE = InnoDB
@@ -278,12 +283,12 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_talen`
+-- Table `elbho_register_prod`.`reg_talen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_talen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_talen` (
   `talen_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `talen_naam` TEXT CHARACTER SET 'latin1' NOT NULL,
-  `talen_iso` TEXT CHARACTER SET 'latin1' NOT NULL,
+  `talen_naam` TEXT NOT NULL,
+  `talen_iso` TEXT NOT NULL,
   PRIMARY KEY (`talen_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 5
@@ -291,12 +296,12 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_user_studenten`
+-- Table `elbho_register_prod`.`reg_user_studenten`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_user_studenten` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_user_studenten` (
   `user_id` INT(11) NOT NULL COMMENT 'Is hetzelfde als de id van de student in de users tabel',
   `user_land` INT(11) NOT NULL,
-  `user_woonplaats` TEXT CHARACTER SET 'latin1' NOT NULL,
+  `user_woonplaats` TEXT NOT NULL,
   `user_opleiding_id` INT(11) NOT NULL,
   `user_op_niveau` INT(11) NOT NULL,
   `user_taal` INT(11) NOT NULL,
@@ -310,9 +315,24 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_users`
+-- Table `elbho_register_prod`.`reg_user_verification`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_users` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_user_verification` (
+  `ver_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `ver_user_id` INT(11) NOT NULL,
+  `ver_token` TEXT NOT NULL,
+  `ver_expiration` DATETIME NOT NULL,
+  PRIMARY KEY (`ver_id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 12
+DEFAULT CHARACTER SET = latin1
+ROW_FORMAT = COMPACT;
+
+
+-- -----------------------------------------------------
+-- Table `elbho_register_prod`.`reg_users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_users` (
   `user_id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_email` TEXT NOT NULL,
   `user_password` TEXT NULL DEFAULT NULL,
@@ -320,19 +340,19 @@ CREATE TABLE IF NOT EXISTS @database.`reg_users` (
   `user_role` INT(11) NOT NULL COMMENT '0 = student, 1 = bedrijf, 2 = onderwijs, 3 = validator, 4 = elbho medewerker',
   `user_role_id` INT(11) NOT NULL COMMENT 'verwijst naar reg_bedrijven als dit een bedrijfsmedewerker is of naar reg_onderwijsinstellingen als het een coordinator is',
   `user_active` INT(1) NOT NULL DEFAULT '1',
-  `user_account_type` INT(1) NOT NULL DEFAULT '0' COMMENT '0 = API account, 1 = Facebook account, 2 = LinkedIn account',
-  `user_refresh_token` VARCHAR(32) NULL DEFAULT NULL COMMENT 'Unique refreshtoken used for retrieving new accestoken for the API.',
+  `user_account_type` INT(1) NOT NULL DEFAULT '0',
+  `user_refresh_token` VARCHAR(32) NULL DEFAULT NULL COMMENT 'Unique refreshtoken used for retrieving new accesstoken for the API.',
   PRIMARY KEY (`user_id`),
   INDEX `user_id` (`user_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 45
+AUTO_INCREMENT = 33
 DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_vacatures`
+-- Table `elbho_register_prod`.`reg_vacatures`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_vacatures` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_vacatures` (
   `vacature_id` INT(11) NOT NULL AUTO_INCREMENT,
   `vacature_bedrijf_id` INT(11) NOT NULL,
   `vacature_user_id` INT(11) NOT NULL COMMENT 'welke user heeft dit toegevoegd?',
@@ -347,6 +367,7 @@ CREATE TABLE IF NOT EXISTS @database.`reg_vacatures` (
   `vacature_taal` INT(11) NOT NULL,
   `vacature_breedtegraad` DECIMAL(5,2) NOT NULL,
   `vacature_lengtegraad` DECIMAL(5,2) NOT NULL,
+  `vacature_stagesoort` INT(1) NOT NULL,
   PRIMARY KEY (`vacature_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 5
@@ -354,23 +375,23 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_vacatures_favoriet`
+-- Table `elbho_register_prod`.`reg_vacatures_favoriet`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_vacatures_favoriet` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_vacatures_favoriet` (
   `vf_id` INT(11) NOT NULL AUTO_INCREMENT,
   `vf_vacature_id` INT(11) NOT NULL,
   `vf_user_id` INT(11) NOT NULL,
   PRIMARY KEY (`vf_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 18
 DEFAULT CHARACTER SET = latin1
 COLLATE = latin1_bin;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_vacatures_opleidingen`
+-- Table `elbho_register_prod`.`reg_vacatures_opleidingen`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_vacatures_opleidingen` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_vacatures_opleidingen` (
   `rvo_id` INT(11) NOT NULL AUTO_INCREMENT,
   `rvo_vacature_id` INT(11) NOT NULL,
   `rvo_opleiding_id` INT(11) NOT NULL,
@@ -381,9 +402,22 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
--- Table @database.`reg_zoekhistorie`
+-- Table `elbho_register_prod`.`reg_vacatures_stagesoort`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS @database.`reg_zoekhistorie` (
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_vacatures_stagesoort` (
+  `rvo_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `rvs_vacature_id` INT(11) NOT NULL,
+  `rvs_stagesoort_id` INT(11) NOT NULL,
+  PRIMARY KEY (`rvo_id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `elbho_register_prod`.`reg_zoekhistorie`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `elbho_register_prod`.`reg_zoekhistorie` (
   `historie_id` INT(11) NOT NULL AUTO_INCREMENT,
   `historie_bedrijf_id` INT(11) NOT NULL,
   `historie_datum` DATE NOT NULL,
@@ -393,7 +427,6 @@ CREATE TABLE IF NOT EXISTS @database.`reg_zoekhistorie` (
   PRIMARY KEY (`historie_id`),
   INDEX `historie_id` (`historie_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1427
 DEFAULT CHARACTER SET = latin1;
 
 
