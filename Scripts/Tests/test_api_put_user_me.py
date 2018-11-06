@@ -10,12 +10,12 @@ def f_test_user(user):
     correct = v.validate(user)
     assert correct == True
 
-def f_test_user_input(user, educationalAttainmentId, educationId, preferredLanguageId, countryId, city):
+def f_test_user_input(user, educationLevelId, majorId, preferredLanguageId, countryId, city):
     correct = True
-    if user["educationalAttainmentId"] != educationalAttainmentId:
+    if user["educationLevelId"] != educationLevelId:
         correct = False
 
-    if user["educationId"] != educationId:
+    if user["majorId"] != majorId:
         correct = False
 
     if user["preferredLanguageId"] != preferredLanguageId:
@@ -57,16 +57,16 @@ def test_login_student(studentemail, studentpass):
 
 # Test user update
 def test_user_update():
-    educationalAttainmentId = 1
-    educationId = 1
+    educationLevelId = 1
+    majorId = 1
     preferredLanguageId = 1
     countryId = 1
     city = 'Haarlem'
     additionalLocationIdentifier = 'Noord Holland'
 
     payload = {
-        'educationalAttainmentId': educationalAttainmentId, 
-        'educationId': educationId,
+        'educationLevelId': educationLevelId, 
+        'majorId': majorId,
         'preferredLanguageId': preferredLanguageId,
         'countryId': countryId,
         'city': city,
@@ -76,4 +76,4 @@ def test_user_update():
     f_test_status_code_200(user_request)
     user = user_request.json()
     f_test_user(user)
-    f_test_user_input(user, educationalAttainmentId, educationId, preferredLanguageId, countryId, city)
+    f_test_user_input(user, educationLevelId, majorId, preferredLanguageId, countryId, city)

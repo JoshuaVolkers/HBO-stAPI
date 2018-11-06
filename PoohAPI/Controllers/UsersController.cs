@@ -265,8 +265,8 @@ namespace PoohAPI.Controllers
         /// </summary>
         /// <param name="maxCount">The max amount of users to return</param>
         /// <param name="offset">The number of users to skip.</param>
-        /// <param name="educationalAttainments">A comma seperated list of educationalAttainment Ids (opleidingsniveau)</param>
-        /// <param name="educations">A comma seperated list of education Ids</param>
+        /// <param name="educationLevels">A comma seperated list of education level ids</param>
+        /// <param name="majors">A comma seperated list of major ids</param>
         /// <param name="cityName">The city in which the user should be located.</param>
         /// <param name="countryName">The name of the country where the student should live. Country names can be found in the country endpoint.</param>
         /// <param name="range">The range in which the user's location should be found from the city parameter</param>
@@ -287,7 +287,7 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(400)]
         public IActionResult GetAllUsers([FromQuery]int maxCount = 5, [FromQuery]int offset = 0,
-            [FromQuery]string educationalAttainments = null, [FromQuery]string educations = null,
+            [FromQuery]string educationLevels = null, [FromQuery]string majors = null,
             [FromQuery]string cityName = null, [FromQuery]string countryName = null, [FromQuery]int? range = null,
             [FromQuery]string additionalLocationSearchTerms = null, [FromQuery]int? preferredLanguage = null)
         {
@@ -296,8 +296,8 @@ namespace PoohAPI.Controllers
             if (offset < 0)
                 return BadRequest("Offset should be 0 or larger");
 
-            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationalAttainments,
-                educations, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
+            IEnumerable<User> users = this.userReadService.GetAllUsers(maxCount, offset, educationLevels,
+                majors, cityName, countryName, range, additionalLocationSearchTerms, preferredLanguage);
 
             if (users is null)
                 return NotFound("No users found");
@@ -377,7 +377,7 @@ namespace PoohAPI.Controllers
             if (this.userReadService.GetUserById(CustomAuthorizationHelper.GetCurrentUserId(User), false) == null)
                 return NotFound("User not found.");
 
-            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.EducationId, userData.EducationalAttainmentId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
+            return Ok(this.userCommandService.UpdateUser(userData.CountryId, userData.City, userData.MajorId, userData.EducationLevelId, userData.PreferredLanguageId, CustomAuthorizationHelper.GetCurrentUserId(User), userData.AdditionalLocationIdentifier));
         }
 
         /// <summary>
