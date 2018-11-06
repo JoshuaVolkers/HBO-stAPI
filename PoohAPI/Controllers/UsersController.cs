@@ -469,11 +469,16 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult GetFavoriteVacancies()
         {
+            //Get list of favorite vacancies with the user id of the authenticated user
             IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
+
+            //If there are results
             if (!(vacancies is null))
             {
                 return Ok(vacancies);
             }
+
+            //If no results were found
             else
             {
                 return NotFound("No vacancies were found");
@@ -497,15 +502,19 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult AddVacancyToFavorites(int vacancyId)
         {
+            //Check if the vacancy exists
             Vacancy vacancy = vacancyReadService.GetVacancyById(vacancyId);
 
+            //If it exists
             if(vacancy != null)
             {
+                //Get authenticated user id
                 int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
                 vacancyCommandService.AddFavourite(userid, vacancyId);
-                return Ok(String.Format("Vacancy has been added to favorite of user with user id {0}", userid));
+                return Ok(String.Format("Vacancy with id {0} has been added to favorite of user with user id {1}", vacancyId, userid));
             }
 
+            //If not
             else
             {
                 return NotFound("Specified vacancy was not found!");
@@ -529,8 +538,10 @@ namespace PoohAPI.Controllers
         [ProducesResponseType(401)]
         public IActionResult RemoveVacancyFromFavorites(int vacancyId)
         {
+            //Retrieve list of vacancies that are favorited by the authenticated user
             IEnumerable<Vacancy> vacancies = vacancyReadService.GetFavoriteVacancies(CustomAuthorizationHelper.GetCurrentUserId(User));
 
+            //If the vacancy that is being removed exists as a favorite
             if (vacancies.Any(c => c.Id == vacancyId))
             {
                 int userid = CustomAuthorizationHelper.GetCurrentUserId(User);
@@ -538,6 +549,7 @@ namespace PoohAPI.Controllers
                 return Ok(String.Format("Vacancy has been deleted from favorites of user with user id {0}", userid));
             }
 
+            //If not
             else
             {
                 return NotFound("Specified vacancy was not found!");

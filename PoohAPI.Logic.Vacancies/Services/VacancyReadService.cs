@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PoohAPI.Logic.MapAPI.Helpers;
 
 namespace PoohAPI.Logic.Vacancies.Services
 {
@@ -18,7 +19,8 @@ namespace PoohAPI.Logic.Vacancies.Services
         private readonly IVacancyRepository vacancyRepository;
         private readonly IMapper mapper;
         private readonly IMapAPIReadService mapAPIReadService;
-        private readonly IQueryBuilder queryBuilder;
+        private readonly LocationHelper locationHelper;
+        private IQueryBuilder queryBuilder;
 
         public VacancyReadService(IVacancyRepository vacancyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService)
         {
@@ -26,60 +28,130 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
             this.queryBuilder = new QueryBuilder();
+            this.locationHelper = new LocationHelper();
         }
 
-        public IEnumerable<Vacancy> GetListVacancies(int maxCount = 5, int offset = 0, string additionalLocationSearchTerms = null, int? educationid = null, int? educationalAttainmentid = null, IntershipType? intershipType = null, int? languageid = null, string cityName = null, string countryName = null, int? locationRange = null)
+        public IEnumerable<Vacancy> GetListVacancies(int maxcount = 5, int offset = 0, string additionallocationsearchterms = null, int? educationid = null, int? educationalattainmentid = null, IntershipType? internshiptype = null, int? languageid = null, string cityname = null, string countryname = null, int? locationrange = null)
         {
-            this.queryBuilder.Clear();
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
+            //The base query without any filters
             this.AddVacancyBaseQuery();
-            this.AddLimitAndOffset(parameters, maxCount, offset);
-            this.AddLocationFilter(parameters, countryName, additionalLocationSearchTerms, cityName, locationRange);
-            this.AddEducationFilter(parameters, educationid, educationalAttainmentid, intershipType);
-            this.AddLanguageFilter(parameters, languageid);
-            string query = this.queryBuilder.BuildQuery();
-            this.queryBuilder.Clear();
 
+            //Adding the maxlimit and the offset to the query
+            this.AddLimitAndOffset(parameters, maxcount, offset);
+
+            //Adding the location filtering to the query
+            this.AddLocationFilter(parameters, countryname, additionallocationsearchterms, cityname, locationrange);
+
+            //Adding the education, educationalattainment and internshiptype to the filter
+            this.AddEducationFilter(parameters, educationid, educationalattainmentid, internshiptype);
+
+            //Adding language filter to the query
+            this.AddLanguageFilter(parameters, languageid);
+
+            //building the query
+            string query = this.queryBuilder.BuildQuery();
+
+            //Retrieving the vacancies from the database
             IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
 
+            //Returning the list of DB vacancies as a list of Vacancies using automapper
             return this.mapper.Map<IEnumerable<Vacancy>>(dbVacancies);
         }
 
         public Vacancy GetVacancyById(int id)
         {
-            this.queryBuilder.Clear();
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
+            //Adding the base vacancy query
             this.AddVacancyBaseQuery();
+
+            //Filtering on the specified vacancy with id
             this.AddVacancyFilter(parameters, id);
+
+            //Build query
             string query = this.queryBuilder.BuildQuery();
 
-            this.queryBuilder.Clear();
-
+            //Retrieve single vacancy
             DBVacancy dBVacancy = this.vacancyRepository.GetVacancy(query, parameters);
 
+            //Return single vancancy as vacancy object using automapper
             return this.mapper.Map<Vacancy>(dBVacancy);
         }
 
         public IEnumerable<Vacancy> GetFavoriteVacancies(int userid)
         {
-            this.queryBuilder.Clear();
-
             Dictionary<string, object> parameters = new Dictionary<string, object>();
 
+            //Base vacancy for getting vacancies
             this.AddVacancyBaseQuery();
+
+            //Join for joining vacancies on the user's favorite vacancies
             this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_favoriet f ON v.vacature_id = f.vf_vacature_id");
+
+            //Whereclause to filter on the userid
             this.queryBuilder.AddWhere("f.vf_user_id = " + userid);
 
+            //Build the query
             string query = this.queryBuilder.BuildQuery();
-            this.queryBuilder.Clear();
 
+            //Retrieve the vacancies
             IEnumerable<DBVacancy> dbVacancies = this.vacancyRepository.GetListVacancies(query, parameters);
 
+            //Return the list of vacancies as a vacancy list using automapper
             return this.mapper.Map<IEnumerable<Vacancy>>(dbVacancies);
+        }
+        public IEnumerable<int> GetListVacancyIdsForUser(int userId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("@id", userId);
+
+            string query = @"SELECT vacature_id 
+                             FROM reg_vacatures v
+                             INNER JOIN reg_vacatures_favoriet f ON v.vacature_id = f.vf_vacature_id
+                             WHERE vf_user_id = @id";
+
+            return this.mapper.Map<IEnumerable<int>>(this.vacancyRepository.GetListVacancyIds(query, parameters));
+        }
+
+        private void AddVacancyBaseQuery()
+        {
+            //Select query with the education as a group concat to get the results as 1 column seperated by a comma
+            this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
+                                        v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
+                                        v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
+                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_id,'-',o.opl_naam) as opleidingen, 
+                                        b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, 
+                                        b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");
+
+            //From the vacancies table
+            this.queryBuilder.SetFrom("reg_vacatures v");
+
+            //Join for the languages
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_talen t ON v.vacature_taal = t.talen_id");
+
+            //Join for the educationalattainment
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingsniveau n ON v.vacature_op_niveau = n.opn_id");
+
+            //Join for the educations (2 joins for the group concat to work)
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_opleidingen r ON v.vacature_id = r.rvo_vacature_id");
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingen o ON r.rvo_opleiding_id = o.opl_id");
+
+            //Join for the companies
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_bedrijven b ON v.vacature_bedrijf_id = b.bedrijf_id");
+
+            //Join for the countries
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
+
+            //Join for the internshiptype
+            this.queryBuilder.AddJoinLine("INNER JOIN reg_stagesoort s ON v.vacature_stagesoort = s.stage_id");
+
+            //Where clause to only get active vacancies
+            this.queryBuilder.AddWhere("v.vacature_actief = 1");
+
+            //Group by vacancyid needed for group concat to work
+            this.queryBuilder.AddGroupBy("v.vacature_id");
         }
 
         private void AddLimitAndOffset(Dictionary<string, object> parameters, int maxCount, int offset)
@@ -91,83 +163,10 @@ namespace PoohAPI.Logic.Vacancies.Services
             parameters.Add("@offset", offset);
         }
 
-        private void AddVacancyBaseQuery()
-        {
-            this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
-                                        v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
-                                        v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
-                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_id,'-',o.opl_naam) as opleidingen, b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");
-
-            this.queryBuilder.SetFrom("reg_vacatures v");
-
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_talen t ON v.vacature_taal = t.talen_id");
-
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingsniveau n ON v.vacature_op_niveau = n.opn_id");
-
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_vacatures_opleidingen r ON v.vacature_id = r.rvo_vacature_id");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_opleidingen o ON r.rvo_opleiding_id = o.opl_id");
-
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_stagesoort s ON v.vacature_stagesoort = s.stage_id");
-
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_bedrijven b ON v.vacature_bedrijf_id = b.bedrijf_id");
-            this.queryBuilder.AddJoinLine("INNER JOIN reg_landen l ON b.bedrijf_vestiging_land = l.land_id");
-
-            this.queryBuilder.AddWhere("v.vacature_actief = 1");
-            this.queryBuilder.AddGroupBy("v.vacature_id");
-        }
-
-
-
         private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null,
-    string municipalityName = null, string cityName = null, int? locationRange = null)
+                                       string municipalityName = null, string cityName = null, int? locationRange = null)
         {
-            if (!(cityName is null) && !(locationRange is null))
-            {
-                // Use Map API
-                Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(cityName, countryName, municipalityName);
-
-                if (!(coordinates is null))
-                {
-                    parameters.Add("@latitude", coordinates.Latitude);
-                    parameters.Add("@longitude", coordinates.Longitude);
-                    parameters.Add("@rangeKm", locationRange);
-
-                    this.queryBuilder.AddSelect(@"(
-                        6371 * acos(
-                          cos(radians(@latitude))
-                          * cos(radians(v.vacature_breedtegraad))
-                          * cos(radians(v.vacature_lengtegraad) - radians(@longitude))
-                          + sin(radians(@latitude))
-                          * sin(radians(v.vacature_breedtegraad))
-                        )) as distance");
-                    this.queryBuilder.AddHaving("distance < @rangeKm");
-                }
-            }
-            else
-            {
-                // Find matches in database
-                if (!(cityName is null))
-                {
-                    AddCityFilter(parameters, cityName);
-                }
-
-                if (!(countryName is null))
-                {
-                    AddCountryFilter(parameters, countryName);
-                }
-            }
-        }
-
-        private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
-        {
-            this.queryBuilder.AddWhere("l.land_naam = @countryName");
-            parameters.Add("@countryName", countryName);
-        }
-
-        private void AddCityFilter(Dictionary<string, object> parameters, string cityName)
-        {
-            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = @cityName");
-            parameters.Add("@cityName", cityName);
+            locationHelper.AddLocationFilter(ref parameters, mapAPIReadService, ref queryBuilder, 'v', "vacature", countryName, municipalityName, cityName, locationRange);
         }
 
         private void AddVacancyFilter(Dictionary<string, object> parameters, int id)
@@ -204,19 +203,6 @@ namespace PoohAPI.Logic.Vacancies.Services
                 this.queryBuilder.AddWhere("t.talen_id = @languageid");
                 parameters.Add("@languageid", languageid);
             }
-        }
-
-        public IEnumerable<int> GetListVacancyIdsForUser(int userId)
-        {
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("@id", userId);
-
-            string query = @"SELECT vacature_id 
-                             FROM reg_vacatures v
-                             INNER JOIN reg_vacatures_favoriet f ON v.vacature_id = f.vf_vacature_id
-                             WHERE vf_user_id = @id";
-
-            return this.mapper.Map<IEnumerable<int>>(this.vacancyRepository.GetListVacancyIds(query, parameters));
         }
     }
 }

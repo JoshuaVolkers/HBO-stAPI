@@ -12,6 +12,7 @@ using AutoMapper;
 using PoohAPI.Infrastructure.CompanyDB.Models;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using PoohAPI.Logic.MapAPI.Helpers;
 
 namespace PoohAPI.Logic.Companies.Services
 {
@@ -19,9 +20,10 @@ namespace PoohAPI.Logic.Companies.Services
     {
         private readonly ICompanyRepository companyRepository;
         private readonly IMapper mapper;
+        private readonly LocationHelper locationHelper;
         private readonly IMapAPIReadService mapAPIReadService;
-        private readonly IQueryBuilder queryBuilder;
         private readonly IConfiguration config;
+        private IQueryBuilder queryBuilder;
 
         public CompanyReadService(ICompanyRepository companyRepository, IMapper mapper, IMapAPIReadService mapAPIReadService, IConfiguration config)
         {
@@ -29,6 +31,7 @@ namespace PoohAPI.Logic.Companies.Services
             this.mapper = mapper;
             this.mapAPIReadService = mapAPIReadService;
             this.queryBuilder = new QueryBuilder();
+            this.locationHelper = new LocationHelper();
             this.config = config;
         }
 
@@ -153,60 +156,7 @@ namespace PoohAPI.Logic.Companies.Services
         private void AddLocationFilter(Dictionary<string, object> parameters, string countryName = null, 
             string municipalityName = null, string cityName = null, int? locationRange = null)
         {
-            if (cityName != null && locationRange != null)
-            {
-                // Use Map API
-                Coordinates coordinates = this.mapAPIReadService.GetMapCoordinates(cityName, countryName, municipalityName);
-
-                if (coordinates != null)
-                {
-                    parameters.Add("@latitude", coordinates.Latitude);
-                    parameters.Add("@longitude", coordinates.Longitude);
-                    parameters.Add("@rangeKm", locationRange);
-
-                    this.queryBuilder.AddSelect(@"(
-                        6371 * acos(
-                          cos(radians(@latitude))
-                          * cos(radians(b.bedrijf_breedtegraad))
-                          * cos(radians(b.bedrijf_lengtegraad) - radians(@longitude))
-                          + sin(radians(@latitude))
-                          * sin(radians(b.bedrijf_breedtegraad))
-                        )) as distance");
-                    this.queryBuilder.AddHaving("distance < @rangeKm");
-                }
-                else
-                {
-                    // Find matches in database
-                    this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
-                }
-            }
-            else
-            {
-                // Find matches in database
-                this.AddLocationFilterWithoutCoordinates(parameters, countryName, cityName);
-            }
+            locationHelper.AddLocationFilter(ref parameters, mapAPIReadService, ref queryBuilder, 'b', "bedrijf", countryName, municipalityName, cityName, locationRange);
         }
-
-        private void AddLocationFilterWithoutCoordinates(Dictionary<string, object> parameters, string countryName, string cityName)
-        {
-            if (cityName != null)
-                AddCityFilter(parameters, cityName);
-
-            if (countryName != null)
-                AddCountryFilter(parameters, countryName);
-        }
-
-        private void AddCountryFilter(Dictionary<string, object> parameters, string countryName)
-        {
-            this.queryBuilder.AddWhere("l.land_naam = @countryName");
-            parameters.Add("@countryName", countryName);
-        }
-
-        private void AddCityFilter(Dictionary<string, object> parameters, string cityName)
-        {
-            this.queryBuilder.AddWhere("b.bedrijf_vestiging_plaats = @cityName");
-            parameters.Add("@cityName", cityName);
-        }
-
     }
 }

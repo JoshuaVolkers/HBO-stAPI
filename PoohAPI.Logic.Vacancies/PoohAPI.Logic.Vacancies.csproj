@@ -106,6 +106,10 @@
       <Project>{5784f3f3-e383-4da8-ac93-4ebdeba8c05b}</Project>
       <Name>PoohAPI.Logic.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoohAPI.Logic.MapAPI\PoohAPI.Logic.MapAPI.csproj">
+      <Project>{88A2193C-920A-4EC7-9CEB-BBD512DCFBF3}</Project>
+      <Name>PoohAPI.Logic.MapAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
