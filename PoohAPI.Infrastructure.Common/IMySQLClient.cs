@@ -9,8 +9,8 @@ namespace PoohAPI.Infrastructure.Common
 {
     public interface IMySQLClient
     {
-        bool OpenConnection();
-        bool CloseConnection();
+        //bool OpenConnection();
+        //bool CloseConnection();
         MySqlConnection Connection();
     }
 }
