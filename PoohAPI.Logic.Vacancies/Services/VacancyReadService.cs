@@ -121,7 +121,7 @@ namespace PoohAPI.Logic.Vacancies.Services
             this.queryBuilder.AddSelect(@"v.vacature_id, v.vacature_bedrijf_id, v.vacature_user_id, v.vacature_titel, 
                                         v.vacature_plaats, v.vacature_datum_plaatsing, v.vacature_datum_verlopen, v.vacature_tekst,
                                         v.vacature_link, v.vacature_actief, v.vacature_breedtegraad, v.vacature_lengtegraad,
-                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_id,'-',o.opl_naam) as opleidingen, 
+                                        t.talen_naam, n.opn_naam, GROUP_CONCAT(DISTINCT o.opl_id) as opleidingen, 
                                         b.bedrijf_vestiging_land, b.bedrijf_vestiging_plaats, b.bedrijf_vestiging_straat, b.bedrijf_vestiging_huisnr, 
                                         b.bedrijf_vestiging_toev, b.bedrijf_vestiging_postcode, l.land_naam, s.stagesoort");
 
@@ -185,8 +185,7 @@ namespace PoohAPI.Logic.Vacancies.Services
 
             if(educationid != null)
             {
-                this.queryBuilder.AddHaving("opleidingen LIKE @educationid");
-                parameters.Add("@educationid", String.Format("%{0}%", educationid));
+                this.queryBuilder.AddHaving(String.Format("FIND_IN_SET( {0}, opleidingen ) > 0", educationid));
             }
 
             if(intershipType != null)
