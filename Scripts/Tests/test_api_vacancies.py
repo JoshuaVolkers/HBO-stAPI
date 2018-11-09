@@ -39,7 +39,7 @@ def test_max_vacancies():
 
 
 def test_education():
-    education = "Informatica"
+    education = "1"
     vacancies_request = requests.get(base_url+vacancies_path+"?educationId=1")
     f_test_status_code_200(vacancies_request)
     vacancies = vacancies_request.json()
