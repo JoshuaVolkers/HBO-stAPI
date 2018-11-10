@@ -11,9 +11,8 @@ namespace PoohAPI.RequestModels
         [Required]
         public int CompanyId { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public int Stars { get; set; }   
         [Required]
-        public int Stars { get; set; }        
         public string WrittenReview { get; set; }
         [Required]
         public int Anonymous { get; set; }
