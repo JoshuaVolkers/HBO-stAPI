@@ -76,13 +76,13 @@ namespace PoohAPI.Logic.Users.Services
             string emailVerificationToken = this.CreateEmailVerificationToken(createdUserId);
             var user = this.userReadService.GetUserById(createdUserId, false);
 
-            int minutes = 2880;
-            this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendVerificationEmail(user, emailVerificationToken, minutes);
+            int hours = 48;
+            this.CreateEmailVerification(createdUserId, emailVerificationToken, DateTime.Now.AddHours(hours));
+            this.SendVerificationEmail(user, emailVerificationToken, hours);
             return user;
         }
 
-        private void SendVerificationEmail(User user, string emailVerificationToken, int expirationMinutes)
+        private void SendVerificationEmail(User user, string emailVerificationToken, int expirationHours)
         {
             string url = this.config.GetValue<string>("ApiHost") + "/users/verify?token=" + emailVerificationToken;
 
@@ -90,7 +90,7 @@ namespace PoohAPI.Logic.Users.Services
             string body = "Beste " + user.NiceName + ",<br/><br/>";
             body += "Dank je voor het aanmelden bij hbo-stagemarkt. Klik op de volgende link om je account te bevestigen: <br/><br/> ";
             body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
-            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
+            body += "Deze link is " + expirationHours.ToString() + " uur geldig.<br/><br/>";
             body += "Met vriendelijke groet, <br/><br/>";
             body += "Stichting ELBHO";
 
@@ -343,7 +343,7 @@ namespace PoohAPI.Logic.Users.Services
                 return newPassword;
             }
         }
-        private void SendResetEmail(User user, string emailVerificationToken, int expirationMinutes)
+        private void SendResetEmail(User user, string emailVerificationToken, int expirationHours)
         {
             string url = this.config.GetValue<string>("ApiHost") + "/users/verifyreset?token=" + emailVerificationToken;
 
@@ -352,7 +352,7 @@ namespace PoohAPI.Logic.Users.Services
             body += "Deze mail wordt gestuurd omdat het wachtwoord van uw hbo-stagemarkt account is gereset.: <br/><br/> ";
             body += "Klik op de volgende link om je nieuwe wachtwoord te genereren. Als u niet uw wachtwoord wilt resetten, dan klikt u niet op de link: <br/><br/> ";
             body += "<a href=\"" + url + "\" target=\"_blank\" >" + url + "</a><br/><br/> ";
-            body += "Deze link is " + expirationMinutes.ToString() + " minuten geldig.<br/><br/>";
+            body += "Deze link is " + expirationHours.ToString() + " uur geldig.<br/><br/>";
             body += "Met vriendelijke groet, <br/><br/>";
             body += "Stichting ELBHO";
 
@@ -362,9 +362,9 @@ namespace PoohAPI.Logic.Users.Services
         {
             string emailVerificationToken = this.CreateEmailVerificationToken(userid);
             var user = this.userReadService.GetUserByEmail<User>(email);
-            int minutes = 2880;
-            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddMinutes(minutes));
-            this.SendResetEmail(user, emailVerificationToken, minutes);
+            int hours = 48;
+            this.CreateEmailVerification(userid, emailVerificationToken, DateTime.Now.AddHours(hours));
+            this.SendResetEmail(user, emailVerificationToken, hours);
         }
     }
 }
