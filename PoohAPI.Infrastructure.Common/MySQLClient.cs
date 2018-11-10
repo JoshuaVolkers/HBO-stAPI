@@ -10,7 +10,6 @@ namespace PoohAPI.Infrastructure.Common
 {
     public class MySQLClient : IMySQLClient
     {
-        //private MySqlConnection _connection;
         private string _server;
         private string _database;
         private string _uid;
@@ -43,23 +42,5 @@ namespace PoohAPI.Infrastructure.Common
             _connectionString = string.Format("server={0};database={1};uid={2};password={3};SslMode={4};", _server, _database,
                 _uid, _password, _sslmode);
         }
-
-        //public bool OpenConnection()
-        //{
-        //    //if (_connection.State == System.Data.ConnectionState.Open)
-        //    //    return true;
-            
-        //    //connection.Open();
-        //    return true;
-        //}
-
-        //public bool CloseConnection()
-        //{
-        //    //if (_connection.State == System.Data.ConnectionState.Closed)
-        //    //    return true;
-
-        //    //_connection.Close();
-        //    return true;
-        //}
     }
 }
